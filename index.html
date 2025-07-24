@@ -21,24 +21,24 @@
                 <option value="adult">Dentición Permanente (Adultos)</option>
                 <option value="children">Dentición Primaria (Niños)</option>
             </select>
-            <span id="teethRange" class="teeth-range">18-11, 21-28, 48-41, 31-38</span>
+
         </div>
 
         <!-- Layer Toggle Control -->
         <div class="layer-toggle-panel">
-            <h3>Capa de Anotación Activa</h3>
+            <h3>Tipo de Prestación</h3>
             <div class="toggle-container">
                 <div class="radio-group">
                     <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
                     <label for="layer-pre" class="layer-label pre-existing">
                         <span class="layer-indicator pre"></span>
-                        Pre-existente (rojo)
+                        Prestación Preexistente
                     </label>
 
                     <input type="radio" id="layer-req" name="annotation-layer" value="req">
                     <label for="layer-req" class="layer-label required">
                         <span class="layer-indicator req"></span>
-                        Requerido (azul)
+                        Prestación Requerida
                     </label>
                 </div>
                 <div class="layer-description">
@@ -49,7 +49,7 @@
         </div>
 
         <div class="control-group">
-            <h3>🗑️ Control de Borrado</h3>
+
             <button id="ODONTOGRAM_MODE_HAPUS" class="treatment-btn delete-btn"
                 title="Borrar tratamientos seleccionados">
                 <span class="icon">🗑️</span>
@@ -185,12 +185,7 @@
 
     <!-- Dental Information Panel -->
     <div class="dental-info-panel">
-        <div class="tooth-details">
-            <h3>Información del Diente</h3>
-            <div id="toothInfo" class="tooth-info-content">
-                <p>Haga clic en un diente para ver su información</p>
-            </div>
-        </div>
+
         <div class="odontogram-data">
             <h3>Datos del Odontograma</h3>
             <div id="odontogramData" class="odontogram-data-content">
