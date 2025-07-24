@@ -156,56 +156,58 @@ function getLayerInfo(layer) {
   )
 }
 
-/**
- * Initialize odontogram with specific type
- */
+// Update initializeOdontogram to always start clean
 function initializeOdontogram(type) {
-  console.log('Initializing odontogram with type:', type)
+    console.log('🦷 Initializing odontogram with type:', type);
+    
+    // Verify jQuery and plugin are available
+    if (typeof $ === 'undefined') {
+        console.error('❌ jQuery is not loaded');
+        return;
+    }
+    
+    if (typeof $.fn.odontogram === 'undefined') {
+        console.error('❌ Odontogram plugin is not loaded');
+        return;
+    }
+    
+    // Check if canvas element exists
+    const $canvas = $("#odontogram");
+    if ($canvas.length === 0) {
+        console.error('❌ Canvas element #odontogram not found');
+        return;
+    }
+    
+    // Clear existing odontogram instance
+    $canvas.off('mousemove click').removeData('odontogram');
 
-  // Clear existing odontogram
-  $('#odontogram').off('mousemove click').removeData('odontogram')
+    // Configure odontogram options following dental standards
+    const options = {
+        width: "900px",
+        height: "450px",
+        toothType: type === 'children' ? 'primary' : 'permanent'
+    };
 
-  const options = {
-    width: '900px',
-    height: '450px',
-  }
+    console.log('🔧 Odontogram options:', options);
 
-  if (type === 'children') {
-    options.toothType = 'primary'
-  } else {
-    options.toothType = 'permanent'
-  }
-
-  console.log('Odontogram options:', options)
-
-  // Initialize the odontogram
-  $('#odontogram').odontogram('init', options)
-
-  console.log('Odontogram initialized')
-
-  // Set sample data
-  if (type === 'children') {
-    $('#odontogram').odontogram('setGeometryByPos', [
-      { code: 'AMF', pos: '55-T' },
-      { code: 'CARIES', pos: '63-M' },
-      { code: 'CARIES_UNTREATABLE', pos: '74-L' },
-      { code: 'SIL', pos: '84-M' },
-      { code: 'POC', pos: '51' },
-    ])
-  } else {
-    $('#odontogram').odontogram('setGeometryByPos', [
-      { code: 'AMF', pos: '18-R' },
-      { code: 'AMF', pos: '18-L' },
-      { code: 'COF', pos: '17-M' },
-      { code: 'CARIES', pos: '36-M' },
-      { code: 'CARIES_UNTREATABLE', pos: '46-T' },
-      { code: 'POC', pos: '21' },
-      { code: 'RCT', pos: '22' },
-      { code: 'INC', pos: '16-M' },
-      { code: 'IPX', pos: '35' },
-      { code: 'MIS', pos: '37' },
-    ])
-  }
+    try {
+        // Initialize the odontogram using jQuery plugin
+        $canvas.odontogram('init', options);
+        
+        // ALWAYS START CLEAN - no default treatments
+        $canvas.odontogram('clearAll');
+        $canvas.odontogram('setMode', ODONTOGRAM_MODE_DEFAULT);
+        
+        // Reset all UI state
+        $(".controls-panel button").removeClass("active");
+        currentGeometry = {};
+        updateOdontogramData({});
+        
+        console.log('✅ Odontogram initialized successfully - CLEAN START');
+        
+    } catch (error) {
+        console.error('❌ Error initializing odontogram:', error);
+    }
 }
 
 /**
@@ -404,101 +406,122 @@ async function initApp() {
   console.log('App initialization completed')
 }
 
-/**
- * Setup event handlers for all UI interactions
- */
+// Update setupEventHandlers function to include delete functionality
 function setupEventHandlers() {
-  console.log('Setting up event handlers...')
+    console.log('🔧 Setting up dental event handlers...');
 
-  // Layer toggle handlers
-  $('input[name="annotation-layer"]').on('change', function () {
-    currentAnnotationLayer = $(this).val()
-    // Update the global variable in jquery.odontogram.js
-    if (typeof CURRENT_ANNOTATION_LAYER !== 'undefined') {
-      CURRENT_ANNOTATION_LAYER = currentAnnotationLayer
-    }
-    updateLayerUI()
-    console.log('Annotation layer switched to:', currentAnnotationLayer)
-  })
+    // Layer toggle handlers for dual-layer system
+    $('input[name="annotation-layer"]').on('change', function() {
+        currentAnnotationLayer = $(this).val();
+        if (typeof CURRENT_ANNOTATION_LAYER !== 'undefined') {
+            CURRENT_ANNOTATION_LAYER = currentAnnotationLayer;
+        }
+        updateLayerUI();
+        console.log('🔄 Annotation layer switched to:', currentAnnotationLayer);
+    });
 
-  // Handle odontogram type change
-  $('#odontogramType').on('change', function () {
-    const selectedType = $(this).val()
-    if (selectedType !== currentOdontogramType) {
-      currentOdontogramType = selectedType
-      initializeOdontogram(selectedType)
-      updateTeethRangeDisplay(selectedType)
-      console.log(
-        'Switched to ' +
-          (selectedType === 'children' ? 'Primary' : 'Permanent') +
-          ' dentition'
-      )
-    }
-  })
+    // Handle dentition type change
+    $('#odontogramType').on('change', function () {
+        const selectedType = $(this).val();
+        if (selectedType !== currentOdontogramType) {
+            currentOdontogramType = selectedType;
+            initializeOdontogram(selectedType);
+            updateTeethRangeDisplay(selectedType);
+            console.log('🔄 Switched to ' + (selectedType === 'children' ? 'Primary' : 'Permanent') + ' dentition');
+        }
+    });
 
-  // Handle geometry changes
-  $('#odontogram').on('change', function (_, geometry) {
-    updateOdontogramData(geometry)
-    console.log(
-      'Geometry updated. Total treatments:',
-      Object.values(geometry).reduce(
-        (sum, treatments) => sum + (treatments?.length || 0),
-        0
-      )
-    )
-  })
+    // Handle geometry changes from odontogram
+    $('#odontogram').on('change', function (_, geometry) {
+        updateOdontogramData(geometry);
+        console.log('📊 Geometry updated. Total treatments:', 
+                   Object.values(geometry).reduce((sum, treatments) => sum + (treatments?.length || 0), 0));
+    });
 
-  // Control button active state management
-  $('.controls-panel button').click(function () {
-    $('.controls-panel button').removeClass('active')
-    $(this).addClass('active')
-    const buttonText = $(this).find('.name').text() || $(this).text()
-    console.log('Treatment mode selected:', buttonText)
-  })
+    // Control button active state management
+    $(".controls-panel button").click(function () {
+        $(".controls-panel button").removeClass("active");
+        $(this).addClass("active");
+        const buttonText = $(this).find('.name').text() || $(this).text();
+        console.log('🎯 Treatment mode selected:', buttonText);
+    });
 
-  // Mode button handlers for all available treatments
-  $("[id^='ODONTOGRAM_MODE_']").click(function () {
-    var modeName = $(this).attr('id')
-    var modeValue = window[modeName]
-    if (typeof modeValue !== 'undefined') {
-      $('#odontogram').odontogram('setMode', modeValue)
-      console.log('Mode set to:', modeName, 'Value:', modeValue)
-    } else {
-      console.warn('Mode not found:', modeName)
-    }
-  })
+    // Mode button handlers for all dental treatments
+    $("[id^='ODONTOGRAM_MODE_']").click(function () {
+        var modeName = $(this).attr('id');
+        var modeValue = window[modeName];
+        if (typeof modeValue !== 'undefined') {
+            $("#odontogram").odontogram('setMode', modeValue);
+            console.log('🔧 Mode set to:', modeName, 'Value:', modeValue);
+        } else {
+            console.warn('⚠️ Mode not found:', modeName);
+        }
+    });
 
-  // Download odontogram image
-  $('#download').click(function () {
-    const dentitionType =
-      currentOdontogramType === 'children' ? 'temporal' : 'permanente'
-    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-')
-    const link = document.createElement('a')
-    link.download = `odontograma_${dentitionType}_${timestamp}.png`
-    link.href = $('#odontogram').odontogram('getDataURL')
-    link.click()
-    console.log('Odontogram image downloaded:', link.download)
-  })
+    // Delete button (HAPUS) - enhanced with confirmation
+    $("#ODONTOGRAM_MODE_HAPUS").click(function () {
+        $(this).addClass("active");
+        $("#odontogram").odontogram('setMode', ODONTOGRAM_MODE_HAPUS);
+        console.log('🗑️ Delete mode activated - click on teeth to remove treatments');
+    });
 
-  // Export data button
-  $('#exportData').click(function () {
-    const treatmentCount = Object.values(currentGeometry).reduce(
-      (sum, treatments) => sum + (treatments?.length || 0),
-      0
-    )
+    // Clear all button (DEFAULT) - with confirmation dialog
+    $("#ODONTOGRAM_MODE_DEFAULT").click(function () {
+        const treatmentCount = Object.values(currentGeometry)
+            .reduce((sum, treatments) => sum + (treatments?.length || 0), 0);
+        
+        if (treatmentCount > 0) {
+            const confirmClear = confirm(
+                `⚠️ ¿Está seguro que desea borrar todos los tratamientos?\n\n` +
+                `Se eliminarán ${treatmentCount} tratamientos.\n\n` +
+                `Esta acción no se puede deshacer.`
+            );
+            
+            if (confirmClear) {
+                $("#odontogram").odontogram('clearAll');
+                $("#odontogram").odontogram('setMode', ODONTOGRAM_MODE_DEFAULT);
+                $(".controls-panel button").removeClass("active");
+                currentGeometry = {};
+                updateOdontogramData({});
+                
+                console.log('🧹 All treatments cleared by user confirmation');
+                alert('✅ Todos los tratamientos han sido eliminados exitosamente.');
+            } else {
+                console.log('❌ Clear all operation cancelled by user');
+            }
+        } else {
+            $("#odontogram").odontogram('setMode', ODONTOGRAM_MODE_DEFAULT);
+            $(".controls-panel button").removeClass("active");
+            console.log('📋 Default mode activated - odontogram already clean');
+        }
+    });
 
-    if (treatmentCount === 0) {
-      alert('No hay tratamientos registrados para exportar.')
-      return
-    }
+    // Download odontogram image
+    $("#download").click(function () {
+        const dentitionType = currentOdontogramType === 'children' ? 'temporal' : 'permanente';
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        const link = document.createElement('a');
+        link.download = `odontograma_${dentitionType}_${timestamp}.png`;
+        link.href = $("#odontogram").odontogram('getDataURL');
+        link.click();
+        console.log('📷 Odontogram image downloaded:', link.download);
+    });
 
-    exportOdontogramData()
-    alert(
-      `Datos con capas exportados exitosamente. ${treatmentCount} tratamientos incluidos.`
-    )
-  })
+    // Export dental data button
+    $("#exportData").click(function() {
+        const treatmentCount = Object.values(currentGeometry)
+            .reduce((sum, treatments) => sum + (treatments?.length || 0), 0);
+        
+        if (treatmentCount === 0) {
+            alert('No hay tratamientos registrados para exportar.');
+            return;
+        }
+        
+        exportOdontogramData();
+        alert(`Datos con capas exportados exitosamente. ${treatmentCount} tratamientos incluidos.`);
+    });
 
-  console.log('Event handlers setup completed')
+    console.log('✅ Dental event handlers setup completed');
 }
 
 /**

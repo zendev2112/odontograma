@@ -413,3 +413,34 @@ canvas {
         font-size: 10px;
     }
 }
+
+/* Add to style.css */
+.delete-btn {
+    background: linear-gradient(135deg, #ff4757, #ff3838);
+    color: white;
+    border: 2px solid #ff2d2d;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(135deg, #ff3838, #ff2d2d);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+.default-btn {
+    background: linear-gradient(135deg, #747d8c, #57606f);
+    color: white;
+    border: 2px solid #2f3542;
+}
+
+.default-btn:hover {
+    background: linear-gradient(135deg, #57606f, #2f3542);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(116, 125, 140, 0.3);
+}
+
+.delete-btn.active,
+.default-btn.active {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}

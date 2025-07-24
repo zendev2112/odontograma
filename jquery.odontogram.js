@@ -809,27 +809,48 @@ BRIDGE.prototype.render = function (ctx) {
   ctx.restore()
 }
 
-  // Class HAPUS
-  function HAPUS(vertices, options) {
-    this.name = 'HAPUS'
-    this.vertices = vertices
-    this.options = $.extend({ fillStyle: 'rgba(200, 200, 200, 0.8)' }, options)
-    return this
-  }
-  HAPUS.prototype.render = function (ctx) {
-    var x1 = parseFloat(this.vertices[0].x) + 1
-    var y1 = parseFloat(this.vertices[0].y) + 1
-    var x2 = parseFloat(this.vertices[1].x) + 1
-    var y2 = parseFloat(this.vertices[1].y) + 1
-    var x = x1
-    var y = y1
-    var size = x2 - x1
+// Update HAPUS class for better visual feedback
+function HAPUS(vertices, options) {
+  this.name = 'HAPUS'
+  this.vertices = vertices
+  this.options = $.extend({ 
+    fillStyle: 'rgba(255, 71, 87, 0.7)',
+    strokeStyle: '#ff2d2d',
+    lineWidth: 3
+  }, options)
+  return this
+}
 
-    ctx.beginPath()
-    ctx.fillStyle = this.options.fillStyle
-    ctx.rect(x, y, size, size)
-    ctx.fill()
-  }
+HAPUS.prototype.render = function (ctx) {
+  var x1 = parseFloat(this.vertices[0].x) + 1
+  var y1 = parseFloat(this.vertices[0].y) + 1
+  var x2 = parseFloat(this.vertices[1].x) + 1
+  var y2 = parseFloat(this.vertices[1].y) + 1
+  var x = x1
+  var y = y1
+  var size = x2 - x1
+
+  // Fill the tooth area to show deletion
+  ctx.beginPath()
+  ctx.fillStyle = this.options.fillStyle
+  ctx.rect(x, y, size, size)
+  ctx.fill()
+
+  // Draw X mark to indicate deletion
+  ctx.strokeStyle = this.options.strokeStyle
+  ctx.lineWidth = this.options.lineWidth
+  ctx.lineCap = 'round'
+  
+  // Draw X lines
+  ctx.beginPath()
+  ctx.moveTo(x + size * 0.2, y + size * 0.2)
+  ctx.lineTo(x + size * 0.8, y + size * 0.8)
+  ctx.moveTo(x + size * 0.8, y + size * 0.2)
+  ctx.lineTo(x + size * 0.2, y + size * 0.8)
+  ctx.stroke()
+}
+
+
   // ARROWS
   // Class ARROW_TOP_LEFT
   function ARROW_TOP_LEFT(vertices, options) {
@@ -1604,6 +1625,19 @@ BRIDGE.prototype.render = function (ctx) {
       },
     }
   }
+
+  // Add clearAll method to Odontogram prototype
+Odontogram.prototype.clearAll = function() {
+  this.geometry = {}
+  this.active_geometry = null
+  this.mode_bridge_coords = []
+  this.hoverGeoms = []
+  this.redraw()
+  console.log('🧹 Odontogram cleared - all treatments removed')
+  return this
+}
+
+
 
   Odontogram.prototype._drawBackground = function () {
     var canvas = this.canvas
@@ -3107,7 +3141,45 @@ case ODONTOGRAM_MODE_BRIDGE:
         case ODONTOGRAM_MODE_MIS:
         case ODONTOGRAM_MODE_IPX:
         case ODONTOGRAM_MODE_FRM_ACR:
-        case ODONTOGRAM_MODE_HAPUS:
+        // Update the _on_mouse_click function HAPUS case
+case ODONTOGRAM_MODE_HAPUS:
+  if (
+    isRectIntersect(coord, {
+      x1: mouse.x,
+      y1: mouse.y,
+      x2: mouse.x,
+      y2: mouse.y,
+    })
+  ) {
+    // Check if clicking on specific surface or whole tooth
+    var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
+    
+    if (hoverShapes.length > 0) {
+      // Delete specific surface treatments
+      for (var i = 0; i < hoverShapes.length; i++) {
+        var surfaceName = hoverShapes[i].name
+        var surfacePos = teeth.num + '-' + surfaceName.charAt(0).toUpperCase()
+        
+        // Remove treatments from this specific surface
+        if (instance.geometry[keyCoord]) {
+          instance.geometry[keyCoord] = instance.geometry[keyCoord].filter(function(treatment) {
+            return treatment.pos !== surfacePos
+          })
+          
+          // If no treatments left, remove the tooth entry
+          if (instance.geometry[keyCoord].length === 0) {
+            delete instance.geometry[keyCoord]
+          }
+        }
+      }
+    } else {
+      // Delete all treatments from entire tooth
+      delete instance.geometry[keyCoord]
+    }
+    
+    console.log('🗑️ Deleted treatments from tooth:', teeth.num)
+  }
+  break;
         case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
         case ODONTOGRAM_MODE_ARROW_TOP_RIGHT:
         case ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT:
