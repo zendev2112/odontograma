@@ -740,7 +740,7 @@ FRM_ACR.prototype.render = function (ctx) {
   ctx.fillText('P', x, y);
 };
 
-// Fix BRIDGE class to draw proper dental bridge pattern
+// Fix BRIDGE class - no colors, vertical drops outside teeth, no symbol
 function BRIDGE(startVert, endVert, options) {
   this.name = 'BRIDGE'
   this.startVert = startVert
@@ -768,12 +768,18 @@ BRIDGE.prototype.render = function (ctx) {
   // Determine if we're on upper or lower jaw
   var isUpperJaw = startCenterY < 200 // Assuming upper jaw is in upper half
   
-  // Calculate bridge line position (above upper teeth, below lower teeth)
+  // Calculate bridge line position - OUTSIDE the teeth
   var bridgeY
+  var startDropY, endDropY
+  
   if (isUpperJaw) {
-    bridgeY = Math.min(y1, yy1) - 15 // 15px above the highest tooth
+    bridgeY = Math.min(y1, yy1) - 25 // 25px above the teeth (outside)
+    startDropY = y1 - 5 // Start drop 5px above tooth
+    endDropY = yy1 - 5 // End drop 5px above tooth
   } else {
-    bridgeY = Math.max(y2, yy2) + 15 // 15px below the lowest tooth
+    bridgeY = Math.max(y2, yy2) + 25 // 25px below the teeth (outside)
+    startDropY = y2 + 5 // Start drop 5px below tooth
+    endDropY = yy2 + 5 // End drop 5px below tooth
   }
 
   ctx.save()
@@ -784,26 +790,19 @@ BRIDGE.prototype.render = function (ctx) {
 
   ctx.beginPath()
   
-  // Draw first vertical line (from start tooth center to bridge line)
-  ctx.moveTo(startCenterX, startCenterY)
+  // Draw first vertical line (from above/below tooth to bridge line)
+  ctx.moveTo(startCenterX, startDropY)
   ctx.lineTo(startCenterX, bridgeY)
   
   // Draw horizontal bridge line
   ctx.lineTo(endCenterX, bridgeY)
   
-  // Draw second vertical line (from bridge line to end tooth center)
-  ctx.lineTo(endCenterX, endCenterY)
+  // Draw second vertical line (from bridge line to above/below end tooth)
+  ctx.lineTo(endCenterX, endDropY)
   
   ctx.stroke()
 
-  // Draw bridge symbol (Π) at the midpoint of horizontal line
-  var midX = (startCenterX + endCenterX) / 2
-  
-  ctx.fillStyle = this.options.strokeStyle
-  ctx.font = 'bold 14px Arial'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText('Π', midX, bridgeY)
+  // NO BRIDGE SYMBOL - removed as requested
 
   ctx.restore()
 }
@@ -2994,7 +2993,7 @@ case 'BRIDGE':
             instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms)
           }
           break
-// Fix BRIDGE hover in _on_mouse_move function
+// Fix BRIDGE hover in _on_mouse_move function - remove blinking
 case ODONTOGRAM_MODE_BRIDGE:
   if (
     isRectIntersect(coord, {
@@ -3004,34 +3003,19 @@ case ODONTOGRAM_MODE_BRIDGE:
       y2: mouse.y,
     })
   ) {
-    if (instance.mode_bridge_coords.length > 0) {
-      // Show preview of bridge connection
-      var startCoord = instance.mode_bridge_coords[0]
-      hoverGeoms = [
-        {
-          vertices: [
-            { x: startCoord.x1, y: startCoord.y1 },
-            { x: startCoord.x2, y: startCoord.y2 },
-            { x: coord.x1, y: coord.y1 },
-            { x: coord.x2, y: coord.y2 }
-          ],
-        },
-      ];
-      instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms);
-    } else {
-      // Show hover on current tooth for bridge start
-      hoverGeoms = [
-        {
-          vertices: [
-            { x: coord.x1, y: coord.y1 },
-            { x: coord.x2, y: coord.y2 },
-          ],
-        },
-      ];
-      instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms);
-    }
+    // Simple hover - just highlight the current tooth, no preview lines
+    hoverGeoms = [
+      {
+        vertices: [
+          { x: coord.x1, y: coord.y1 },
+          { x: coord.x2, y: coord.y2 },
+        ],
+      },
+    ];
+    instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms);
   }
   break;
+
         case ODONTOGRAM_MODE_ORT:
           if (
             isRectIntersect(coord, {
