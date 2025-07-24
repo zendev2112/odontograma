@@ -96,190 +96,258 @@ function getColorForTreatment(treatmentName, layer) {
     ctx.closePath()
     ctx.fill()
   }
-// Update existing shape classes to support layers
-// Class AMF = Tambalan Amalgam
-function AMF(vertices, options) {
-  this.name = 'AMF';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 16px Arial', 
-    color: getColorForTreatment('AMF', this.layer)
-  }, options);
-  return this;
-}
+  // Update existing shape classes to support layers
+  // Class AMF = Tambalan Amalgam
+  function AMF(vertices, options) {
+    this.name = 'AMF'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('AMF', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-AMF.prototype.render = function (ctx) {
-  var xs = this.vertices.map((v) => v.x);
-  var ys = this.vertices.map((v) => v.y);
-  var centerX = xs.reduce((a, b) => a + b, 0) / xs.length;
-  var centerY = ys.reduce((a, b) => a + b, 0) / ys.length;
+  AMF.prototype.render = function (ctx) {
+    var xs = this.vertices.map((v) => v.x)
+    var ys = this.vertices.map((v) => v.y)
+    var centerX = xs.reduce((a, b) => a + b, 0) / xs.length
+    var centerY = ys.reduce((a, b) => a + b, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('/A', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('/A', centerX, centerY)
+    ctx.restore()
+  }
 
-function COF(vertices, options) {
-  this.name = 'COF';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 16px Arial', 
-    color: getColorForTreatment('COF', this.layer)
-  }, options);
-  return this;
-}
+  function COF(vertices, options) {
+    this.name = 'COF'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('COF', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-COF.prototype.render = function (ctx) {
-  var xs = this.vertices.map((v) => v.x);
-  var ys = this.vertices.map((v) => v.y);
-  var centerX = xs.reduce((a, b) => a + b, 0) / xs.length;
-  var centerY = ys.reduce((a, b) => a + b, 0) / ys.length;
+  COF.prototype.render = function (ctx) {
+    var xs = this.vertices.map((v) => v.x)
+    var ys = this.vertices.map((v) => v.y)
+    var centerX = xs.reduce((a, b) => a + b, 0) / xs.length
+    var centerY = ys.reduce((a, b) => a + b, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('/Ac', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('/Ac', centerX, centerY)
+    ctx.restore()
+  }
 
-function INC(vertices, options) {
-  this.name = 'INC';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 16px Arial', 
-    color: getColorForTreatment('INC', this.layer)
-  }, options);
-  return this;
-}
+  function INC(vertices, options) {
+    this.name = 'INC'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('INC', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-INC.prototype.render = function (ctx) {
-  var xs = this.vertices.map((v) => v.x);
-  var ys = this.vertices.map((v) => v.y);
-  var centerX = xs.reduce((a, b) => a + b, 0) / xs.length;
-  var centerY = ys.reduce((a, b) => a + b, 0) / ys.length;
+  INC.prototype.render = function (ctx) {
+    var xs = this.vertices.map((v) => v.x)
+    var ys = this.vertices.map((v) => v.y)
+    var centerX = xs.reduce((a, b) => a + b, 0) / xs.length
+    var centerY = ys.reduce((a, b) => a + b, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('I', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('I', centerX, centerY)
+    ctx.restore()
+  }
 
-function RES(vertices, options) {
-  this.name = 'RES';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 16px Arial', 
-    color: getColorForTreatment('RES', this.layer)
-  }, options);
-  return this;
-}
+  function RES(vertices, options) {
+    this.name = 'RES'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('RES', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-RES.prototype.render = function (ctx) {
-  var xs = this.vertices.map(function (v) { return v.x; });
-  var ys = this.vertices.map(function (v) { return v.y; });
-  var centerX = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length;
-  var centerY = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+  RES.prototype.render = function (ctx) {
+    var xs = this.vertices.map(function (v) {
+      return v.x
+    })
+    var ys = this.vertices.map(function (v) {
+      return v.y
+    })
+    var centerX =
+      xs.reduce(function (a, b) {
+        return a + b
+      }, 0) / xs.length
+    var centerY =
+      ys.reduce(function (a, b) {
+        return a + b
+      }, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('Δ', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('Δ', centerX, centerY)
+    ctx.restore()
+  }
 
-function REF(vertices, options) {
-  this.name = 'REF';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 16px Arial', 
-    color: getColorForTreatment('REF', this.layer)
-  }, options);
-  return this;
-}
+  function REF(vertices, options) {
+    this.name = 'REF'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('REF', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-REF.prototype.render = function (ctx) {
-  var xs = this.vertices.map(function (v) { return v.x; });
-  var ys = this.vertices.map(function (v) { return v.y; });
-  var centerX = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length;
-  var centerY = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+  REF.prototype.render = function (ctx) {
+    var xs = this.vertices.map(function (v) {
+      return v.x
+    })
+    var ys = this.vertices.map(function (v) {
+      return v.y
+    })
+    var centerX =
+      xs.reduce(function (a, b) {
+        return a + b
+      }, 0) / xs.length
+    var centerY =
+      ys.reduce(function (a, b) {
+        return a + b
+      }, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('/Rf', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('/Rf', centerX, centerY)
+    ctx.restore()
+  }
 
-// Update SIL class
-function SIL(vertices, options) {
-  this.name = 'SIL';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 16px Arial', 
-    color: getColorForTreatment('SIL', this.layer)
-  }, options);
-  return this;
-}
+  // Update SIL class
+  function SIL(vertices, options) {
+    this.name = 'SIL'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('SIL', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-SIL.prototype.render = function (ctx) {
-  var xs = this.vertices.map(function (v) { return v.x; });
-  var ys = this.vertices.map(function (v) { return v.y; });
-  var centerX = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length;
-  var centerY = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+  SIL.prototype.render = function (ctx) {
+    var xs = this.vertices.map(function (v) {
+      return v.x
+    })
+    var ys = this.vertices.map(function (v) {
+      return v.y
+    })
+    var centerX =
+      xs.reduce(function (a, b) {
+        return a + b
+      }, 0) / xs.length
+    var centerY =
+      ys.reduce(function (a, b) {
+        return a + b
+      }, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('/S', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('/S', centerX, centerY)
+    ctx.restore()
+  }
 
-function ORT(vertices, options) {
-  this.name = 'ORT';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    font: 'bold 28px Arial', 
-    color: getColorForTreatment('ORT', this.layer)
-  }, options);
-  return this;
-}
+  function ORT(vertices, options) {
+    this.name = 'ORT'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 28px Arial',
+        color: getColorForTreatment('ORT', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-ORT.prototype.render = function (ctx) {
-  var xs = this.vertices.map(function (v) { return v.x; });
-  var ys = this.vertices.map(function (v) { return v.y; });
-  var centerX = xs.reduce(function (a, b) { return a + b; }, 0) / xs.length;
-  var centerY = ys.reduce(function (a, b) { return a + b; }, 0) / ys.length;
+  ORT.prototype.render = function (ctx) {
+    var xs = this.vertices.map(function (v) {
+      return v.x
+    })
+    var ys = this.vertices.map(function (v) {
+      return v.y
+    })
+    var centerX =
+      xs.reduce(function (a, b) {
+        return a + b
+      }, 0) / xs.length
+    var centerY =
+      ys.reduce(function (a, b) {
+        return a + b
+      }, 0) / ys.length
 
-  ctx.save();
-  ctx.font = this.options.font;
-  ctx.fillStyle = this.options.color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('~', centerX, centerY);
-  ctx.restore();
-};
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('~', centerX, centerY)
+    ctx.restore()
+  }
 
   // Class FIS = pit dan fissure sealant
   function FIS(vertices, options) {
@@ -501,116 +569,126 @@ ORT.prototype.render = function (ctx) {
   }
   // Class CFR = fracture (cfr) (Tanda '#' di tengah" gigi)
 
-function CFR(vertices, options) {
-  this.name = 'CFR';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    fillStyle: getColorForTreatment('CFR', this.layer)
-  }, options);
-  return this;
-}
+  function CFR(vertices, options) {
+    this.name = 'CFR'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        fillStyle: getColorForTreatment('CFR', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-CFR.prototype.render = function (ctx) {
-  var x1 = parseFloat(this.vertices[0].x);
-  var y1 = parseFloat(this.vertices[0].y);
-  var x2 = parseFloat(this.vertices[1].x);
-  var y2 = parseFloat(this.vertices[1].y);
-  var boxSize = x2 - x1;
-  var fontsize = parseInt(boxSize);
+  CFR.prototype.render = function (ctx) {
+    var x1 = parseFloat(this.vertices[0].x)
+    var y1 = parseFloat(this.vertices[0].y)
+    var x2 = parseFloat(this.vertices[1].x)
+    var y2 = parseFloat(this.vertices[1].y)
+    var boxSize = x2 - x1
+    var fontsize = parseInt(boxSize)
 
-  var x = x1 + boxSize / 2;
-  var y = y1 + boxSize / 2;
+    var x = x1 + boxSize / 2
+    var y = y1 + boxSize / 2
 
-  ctx.fillStyle = this.options.fillStyle;
-  ctx.font = 'bold ' + fontsize + 'px Algerian';
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'center';
-  ctx.fillText('=', x, y);
-};
+    ctx.fillStyle = this.options.fillStyle
+    ctx.font = 'bold ' + fontsize + 'px Algerian'
+    ctx.textBaseline = 'middle'
+    ctx.textAlign = 'center'
+    ctx.fillText('=', x, y)
+  }
 
+  function FMC(vertices, options) {
+    this.name = 'FMC'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        strokeStyle: getColorForTreatment('FMC', this.layer),
+      },
+      options
+    )
+    return this
+  }
 
-function FMC(vertices, options) {
-  this.name = 'FMC';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    strokeStyle: getColorForTreatment('FMC', this.layer)
-  }, options);
-  return this;
-}
+  FMC.prototype.render = function (ctx) {
+    var x1 = parseFloat(this.vertices[0].x) + 1
+    var y1 = parseFloat(this.vertices[0].y) + 1
+    var x2 = parseFloat(this.vertices[1].x) + 1
+    var y2 = parseFloat(this.vertices[1].y) + 1
+    var vertices = [
+      { x: x1, y: y1 },
+      { x: x2, y: y1 },
+      { x: x2, y: y2 },
+      { x: x1, y: y2 },
+    ]
 
-FMC.prototype.render = function (ctx) {
-  var x1 = parseFloat(this.vertices[0].x) + 1;
-  var y1 = parseFloat(this.vertices[0].y) + 1;
-  var x2 = parseFloat(this.vertices[1].x) + 1;
-  var y2 = parseFloat(this.vertices[1].y) + 1;
-  var vertices = [
-    { x: x1, y: y1 },
-    { x: x2, y: y1 },
-    { x: x2, y: y2 },
-    { x: x1, y: y2 },
-  ];
+    ctx.strokeStyle = this.options.strokeStyle
+    ctx.lineWidth = 6
+    ctx.beginPath()
 
-  ctx.strokeStyle = this.options.strokeStyle;
-  ctx.lineWidth = 6;
-  ctx.beginPath();
+    var fpos = vertices.shift()
+    ctx.moveTo(fpos.x, fpos.y)
 
-  var fpos = vertices.shift();
-  ctx.moveTo(fpos.x, fpos.y);
-
-  var pos;
-  while (vertices.length > 0) {
-    pos = vertices.shift();
-    if (pos) {
-      ctx.lineTo(pos.x, pos.y);
+    var pos
+    while (vertices.length > 0) {
+      pos = vertices.shift()
+      if (pos) {
+        ctx.lineTo(pos.x, pos.y)
+      }
     }
-  }
-  ctx.lineTo(fpos.x, fpos.y);
-  ctx.closePath();
-  ctx.stroke();
-};
-
-
-function POC(vertices, options) {
-  this.name = 'POC';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    strokeStyle: getColorForTreatment('POC', this.layer), 
-    fillStyle: 'transparent', 
-    lineWidth: 3 
-  }, options);
-  return this;
-}
-
-POC.prototype.render = function (ctx) {
-  var x1 = parseFloat(this.vertices[0].x) + 1;
-  var y1 = parseFloat(this.vertices[0].y) + 1;
-  var x2 = parseFloat(this.vertices[1].x) + 1;
-  var y2 = parseFloat(this.vertices[1].y) + 1;
-
-  var centerX = (x1 + x2) / 2;
-  var centerY = (y1 + y2) / 2;
-  var toothWidth = x2 - x1;
-  var toothHeight = y2 - y1;
-  var radius = Math.min(toothWidth, toothHeight) / 3;
-
-  ctx.save();
-  ctx.strokeStyle = this.options.strokeStyle;
-  ctx.fillStyle = this.options.fillStyle;
-  ctx.lineWidth = this.options.lineWidth;
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  if (this.options.fillStyle !== 'transparent') {
-    ctx.fill();
+    ctx.lineTo(fpos.x, fpos.y)
+    ctx.closePath()
+    ctx.stroke()
   }
 
-  ctx.restore();
-};
+  function POC(vertices, options) {
+    this.name = 'POC'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        strokeStyle: getColorForTreatment('POC', this.layer),
+        fillStyle: 'transparent',
+        lineWidth: 3,
+      },
+      options
+    )
+    return this
+  }
+
+  POC.prototype.render = function (ctx) {
+    var x1 = parseFloat(this.vertices[0].x) + 1
+    var y1 = parseFloat(this.vertices[0].y) + 1
+    var x2 = parseFloat(this.vertices[1].x) + 1
+    var y2 = parseFloat(this.vertices[1].y) + 1
+
+    var centerX = (x1 + x2) / 2
+    var centerY = (y1 + y2) / 2
+    var toothWidth = x2 - x1
+    var toothHeight = y2 - y1
+    var radius = Math.min(toothWidth, toothHeight) / 3
+
+    ctx.save()
+    ctx.strokeStyle = this.options.strokeStyle
+    ctx.fillStyle = this.options.fillStyle
+    ctx.lineWidth = this.options.lineWidth
+
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+    ctx.stroke()
+
+    if (this.options.fillStyle !== 'transparent') {
+      ctx.fill()
+    }
+
+    ctx.restore()
+  }
   // Class RRX = Sisa Akar (rrx)
   function RRX(vertices, options) {
     this.name = 'RRX'
@@ -692,164 +770,183 @@ POC.prototype.render = function (ctx) {
     }
   }
 
-// Update IPX class
-function IPX(vertices, options) {
-  this.name = 'IPX';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    fillStyle: getColorForTreatment('IPX', this.layer), 
-    fontsize: 12 
-  }, options);
-  return this;
-}
-
-IPX.prototype.render = function (ctx) {
-  var x = parseFloat(this.vertices[0].x);
-  var y = parseFloat(this.vertices[1].y);
-  var fontsize = parseInt(this.options.fontsize);
-
-  ctx.fillStyle = this.options.fillStyle;
-  ctx.font = 'bold ' + fontsize + 'px Arial';
-  ctx.textBaseline = 'top';
-  ctx.textAlign = 'left';
-  ctx.fillText('IM', x, y);
-};
-
-// Update FRM_ACR class
-function FRM_ACR(vertices, options) {
-  this.name = 'FRM_ACR';
-  this.vertices = vertices;
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    fillStyle: getColorForTreatment('FRM_ACR', this.layer), 
-    fontsize: 16 
-  }, options);
-  return this;
-}
-
-FRM_ACR.prototype.render = function (ctx) {
-  var x = parseFloat(this.vertices[0].x) + (parseFloat(this.vertices[1].x) - parseFloat(this.vertices[0].x)) / 2;
-  var y = parseFloat(this.vertices[1].y) + (parseFloat(this.vertices[1].x) - parseFloat(this.vertices[0].x)) / 2 - (parseFloat(this.vertices[1].x) - parseFloat(this.vertices[0].x)) / 8;
-  var fontsize = parseInt(this.options.fontsize);
-
-  ctx.fillStyle = this.options.fillStyle;
-  ctx.font = 'bold ' + fontsize + 'px Arial';
-  ctx.textBaseline = 'top';
-  ctx.textAlign = 'center';
-  ctx.fillText('P', x, y);
-};
-
-// Fix BRIDGE class to support red/blue layer colors
-function BRIDGE(startVert, endVert, options) {
-  this.name = 'BRIDGE'
-  this.startVert = startVert
-  this.endVert = endVert
-  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
-  this.options = $.extend({ 
-    strokeStyle: getColorForTreatment('BRIDGE', this.layer),
-    lineWidth: 3 
-  }, options)
-  return this
-}
-
-BRIDGE.prototype.render = function (ctx) {
-  var x1 = parseFloat(this.startVert.x1)
-  var y1 = parseFloat(this.startVert.y1)
-  var x2 = parseFloat(this.startVert.x2)
-  var y2 = parseFloat(this.startVert.y2)
-  var xx1 = parseFloat(this.endVert.x1)
-  var yy1 = parseFloat(this.endVert.y1)
-  var xx2 = parseFloat(this.endVert.x2)
-  var yy2 = parseFloat(this.endVert.y2)
-
-  // Calculate tooth centers
-  var startCenterX = x1 + (x2 - x1) / 2
-  var startCenterY = y1 + (y2 - y1) / 2
-  var endCenterX = xx1 + (xx2 - xx1) / 2
-  var endCenterY = yy1 + (yy2 - yy1) / 2
-
-  // Determine if we're on upper or lower jaw
-  var isUpperJaw = startCenterY < 200 // Assuming upper jaw is in upper half
-  
-  // Calculate bridge line position - OUTSIDE the teeth
-  var bridgeY
-  var startDropY, endDropY
-  
-  if (isUpperJaw) {
-    bridgeY = Math.min(y1, yy1) - 25 // 25px above the teeth (outside)
-    startDropY = y1 - 5 // Start drop 5px above tooth
-    endDropY = yy1 - 5 // End drop 5px above tooth
-  } else {
-    bridgeY = Math.max(y2, yy2) + 25 // 25px below the teeth (outside)
-    startDropY = y2 + 5 // Start drop 5px below tooth
-    endDropY = yy2 + 5 // End drop 5px below tooth
+  // Update IPX class
+  function IPX(vertices, options) {
+    this.name = 'IPX'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        fillStyle: getColorForTreatment('IPX', this.layer),
+        fontsize: 12,
+      },
+      options
+    )
+    return this
   }
 
-  ctx.save()
-  ctx.strokeStyle = this.options.strokeStyle // Now uses red/blue based on layer
-  ctx.lineWidth = this.options.lineWidth
-  ctx.lineCap = 'round'
-  ctx.lineJoin = 'round'
+  IPX.prototype.render = function (ctx) {
+    var x = parseFloat(this.vertices[0].x)
+    var y = parseFloat(this.vertices[1].y)
+    var fontsize = parseInt(this.options.fontsize)
 
-  ctx.beginPath()
-  
-  // Draw first vertical line (from above/below tooth to bridge line)
-  ctx.moveTo(startCenterX, startDropY)
-  ctx.lineTo(startCenterX, bridgeY)
-  
-  // Draw horizontal bridge line
-  ctx.lineTo(endCenterX, bridgeY)
-  
-  // Draw second vertical line (from bridge line to above/below end tooth)
-  ctx.lineTo(endCenterX, endDropY)
-  
-  ctx.stroke()
+    ctx.fillStyle = this.options.fillStyle
+    ctx.font = 'bold ' + fontsize + 'px Arial'
+    ctx.textBaseline = 'top'
+    ctx.textAlign = 'left'
+    ctx.fillText('IM', x, y)
+  }
 
-  ctx.restore()
-}
+  // Update FRM_ACR class
+  function FRM_ACR(vertices, options) {
+    this.name = 'FRM_ACR'
+    this.vertices = vertices
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        fillStyle: getColorForTreatment('FRM_ACR', this.layer),
+        fontsize: 16,
+      },
+      options
+    )
+    return this
+  }
 
-// Update HAPUS class for better visual feedback
-function HAPUS(vertices, options) {
-  this.name = 'HAPUS'
-  this.vertices = vertices
-  this.options = $.extend({ 
-    fillStyle: 'rgba(255, 71, 87, 0.7)',
-    strokeStyle: '#ff2d2d',
-    lineWidth: 3
-  }, options)
-  return this
-}
+  FRM_ACR.prototype.render = function (ctx) {
+    var x =
+      parseFloat(this.vertices[0].x) +
+      (parseFloat(this.vertices[1].x) - parseFloat(this.vertices[0].x)) / 2
+    var y =
+      parseFloat(this.vertices[1].y) +
+      (parseFloat(this.vertices[1].x) - parseFloat(this.vertices[0].x)) / 2 -
+      (parseFloat(this.vertices[1].x) - parseFloat(this.vertices[0].x)) / 8
+    var fontsize = parseInt(this.options.fontsize)
 
-HAPUS.prototype.render = function (ctx) {
-  var x1 = parseFloat(this.vertices[0].x) + 1
-  var y1 = parseFloat(this.vertices[0].y) + 1
-  var x2 = parseFloat(this.vertices[1].x) + 1
-  var y2 = parseFloat(this.vertices[1].y) + 1
-  var x = x1
-  var y = y1
-  var size = x2 - x1
+    ctx.fillStyle = this.options.fillStyle
+    ctx.font = 'bold ' + fontsize + 'px Arial'
+    ctx.textBaseline = 'top'
+    ctx.textAlign = 'center'
+    ctx.fillText('P', x, y)
+  }
 
-  // Fill the tooth area to show deletion
-  ctx.beginPath()
-  ctx.fillStyle = this.options.fillStyle
-  ctx.rect(x, y, size, size)
-  ctx.fill()
+  // Fix BRIDGE class to support red/blue layer colors
+  function BRIDGE(startVert, endVert, options) {
+    this.name = 'BRIDGE'
+    this.startVert = startVert
+    this.endVert = endVert
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        strokeStyle: getColorForTreatment('BRIDGE', this.layer),
+        lineWidth: 3,
+      },
+      options
+    )
+    return this
+  }
 
-  // Draw X mark to indicate deletion
-  ctx.strokeStyle = this.options.strokeStyle
-  ctx.lineWidth = this.options.lineWidth
-  ctx.lineCap = 'round'
-  
-  // Draw X lines
-  ctx.beginPath()
-  ctx.moveTo(x + size * 0.2, y + size * 0.2)
-  ctx.lineTo(x + size * 0.8, y + size * 0.8)
-  ctx.moveTo(x + size * 0.8, y + size * 0.2)
-  ctx.lineTo(x + size * 0.2, y + size * 0.8)
-  ctx.stroke()
-}
+  BRIDGE.prototype.render = function (ctx) {
+    var x1 = parseFloat(this.startVert.x1)
+    var y1 = parseFloat(this.startVert.y1)
+    var x2 = parseFloat(this.startVert.x2)
+    var y2 = parseFloat(this.startVert.y2)
+    var xx1 = parseFloat(this.endVert.x1)
+    var yy1 = parseFloat(this.endVert.y1)
+    var xx2 = parseFloat(this.endVert.x2)
+    var yy2 = parseFloat(this.endVert.y2)
 
+    // Calculate tooth centers
+    var startCenterX = x1 + (x2 - x1) / 2
+    var startCenterY = y1 + (y2 - y1) / 2
+    var endCenterX = xx1 + (xx2 - xx1) / 2
+    var endCenterY = yy1 + (yy2 - yy1) / 2
+
+    // Determine if we're on upper or lower jaw
+    var isUpperJaw = startCenterY < 200 // Assuming upper jaw is in upper half
+
+    // Calculate bridge line position - OUTSIDE the teeth
+    var bridgeY
+    var startDropY, endDropY
+
+    if (isUpperJaw) {
+      bridgeY = Math.min(y1, yy1) - 25 // 25px above the teeth (outside)
+      startDropY = y1 - 5 // Start drop 5px above tooth
+      endDropY = yy1 - 5 // End drop 5px above tooth
+    } else {
+      bridgeY = Math.max(y2, yy2) + 25 // 25px below the teeth (outside)
+      startDropY = y2 + 5 // Start drop 5px below tooth
+      endDropY = yy2 + 5 // End drop 5px below tooth
+    }
+
+    ctx.save()
+    ctx.strokeStyle = this.options.strokeStyle // Now uses red/blue based on layer
+    ctx.lineWidth = this.options.lineWidth
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+
+    ctx.beginPath()
+
+    // Draw first vertical line (from above/below tooth to bridge line)
+    ctx.moveTo(startCenterX, startDropY)
+    ctx.lineTo(startCenterX, bridgeY)
+
+    // Draw horizontal bridge line
+    ctx.lineTo(endCenterX, bridgeY)
+
+    // Draw second vertical line (from bridge line to above/below end tooth)
+    ctx.lineTo(endCenterX, endDropY)
+
+    ctx.stroke()
+
+    ctx.restore()
+  }
+
+  // Update HAPUS class for better visual feedback
+  function HAPUS(vertices, options) {
+    this.name = 'HAPUS'
+    this.vertices = vertices
+    this.options = $.extend(
+      {
+        fillStyle: 'rgba(255, 71, 87, 0.7)',
+        strokeStyle: '#ff2d2d',
+        lineWidth: 3,
+      },
+      options
+    )
+    return this
+  }
+
+  HAPUS.prototype.render = function (ctx) {
+    var x1 = parseFloat(this.vertices[0].x) + 1
+    var y1 = parseFloat(this.vertices[0].y) + 1
+    var x2 = parseFloat(this.vertices[1].x) + 1
+    var y2 = parseFloat(this.vertices[1].y) + 1
+    var x = x1
+    var y = y1
+    var size = x2 - x1
+
+    // Fill the tooth area to show deletion
+    ctx.beginPath()
+    ctx.fillStyle = this.options.fillStyle
+    ctx.rect(x, y, size, size)
+    ctx.fill()
+
+    // Draw X mark to indicate deletion
+    ctx.strokeStyle = this.options.strokeStyle
+    ctx.lineWidth = this.options.lineWidth
+    ctx.lineCap = 'round'
+
+    // Draw X lines
+    ctx.beginPath()
+    ctx.moveTo(x + size * 0.2, y + size * 0.2)
+    ctx.lineTo(x + size * 0.8, y + size * 0.8)
+    ctx.moveTo(x + size * 0.8, y + size * 0.2)
+    ctx.lineTo(x + size * 0.2, y + size * 0.8)
+    ctx.stroke()
+  }
 
   // ARROWS
   // Class ARROW_TOP_LEFT
@@ -1359,7 +1456,7 @@ HAPUS.prototype.render = function (ctx) {
     this.hoverGeoms = []
     this.geometry = {}
     this.active_geometry = null // Selected Geometry
-    this.mode_bridge_coords = [] 
+    this.mode_bridge_coords = []
     this.teeth = {} // Menyimpan Coordinate Gigi dengan key: x1:y1;x2:y2;cx:cy
 
     this._drawBackground()
@@ -1627,17 +1724,15 @@ HAPUS.prototype.render = function (ctx) {
   }
 
   // Add clearAll method to Odontogram prototype
-Odontogram.prototype.clearAll = function() {
-  this.geometry = {}
-  this.active_geometry = null
-  this.mode_bridge_coords = []
-  this.hoverGeoms = []
-  this.redraw()
-  console.log('🧹 Odontogram cleared - all treatments removed')
-  return this
-}
-
-
+  Odontogram.prototype.clearAll = function () {
+    this.geometry = {}
+    this.active_geometry = null
+    this.mode_bridge_coords = []
+    this.hoverGeoms = []
+    this.redraw()
+    console.log('🧹 Odontogram cleared - all treatments removed')
+    return this
+  }
 
   Odontogram.prototype._drawBackground = function () {
     var canvas = this.canvas
@@ -2345,9 +2440,9 @@ Odontogram.prototype.clearAll = function() {
     return this.canvas.toDataURL()
   }
 
-// Add this case to the existing $.fn.odontogram method around line 1629
+  // Add this case to the existing $.fn.odontogram method around line 1629
 
-$.fn.odontogram = function (mode, arg1, arg2, arg3, arg4) {
+  $.fn.odontogram = function (mode, arg1, arg2, arg3, arg4) {
     var instance = this.data('odontogram')
     switch (mode) {
       case 'init': // Arg1 is options
@@ -2384,7 +2479,7 @@ $.fn.odontogram = function (mode, arg1, arg2, arg3, arg4) {
       case 'clearAll':
         checkOdontogram(this, mode)
         instance.clearAll()
-        break;
+        break
       // END OF ADDITION
     }
 
@@ -2438,262 +2533,315 @@ $.fn.odontogram = function (mode, arg1, arg2, arg3, arg4) {
     }
   }
 
-// Update convertGeom function to pass layer information
-function convertGeom(geometry, mode) {
-  var newGeometry;
-  var layerOptions = { layer: CURRENT_ANNOTATION_LAYER };
-  
-  switch (mode) {
-    case ODONTOGRAM_MODE_AMF:
-      newGeometry = new AMF(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_COF:
-      newGeometry = new COF(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_SIL:
-      newGeometry = new SIL(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_ORT:
-      newGeometry = new ORT(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_INC:
-      newGeometry = new INC(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_RES:
-      newGeometry = new RES(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_REF:
-      newGeometry = new REF(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_POC:
-      newGeometry = new POC(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_FMC:
-      newGeometry = new FMC(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_IPX:
-      newGeometry = new IPX(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_FRM_ACR:
-      newGeometry = new FRM_ACR(geometry.vertices, layerOptions);
-      break;
-    case ODONTOGRAM_MODE_CFR:
-      newGeometry = new CFR(geometry.vertices, layerOptions);
-      break;
-case ODONTOGRAM_MODE_BRIDGE:
-  var layerOptions = { layer: CURRENT_ANNOTATION_LAYER };
-  newGeometry = new BRIDGE(geometry.vertices[0], geometry.vertices[1], layerOptions);
-  break;
-    case ODONTOGRAM_MODE_FIS:
-      newGeometry = new FIS(geometry.vertices, layerOptions);
-      break;
-    
-    // Pathology treatments - don't use layer colors (keep original colors)
-    case ODONTOGRAM_MODE_RCT:
-      newGeometry = new RCT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_CARIES:
-      newGeometry = new CARIES(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_CARIES_UNTREATABLE:
-      newGeometry = new CARIES_UNTREATABLE(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_MIS:
-      newGeometry = new MIS(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_PRE:
-      newGeometry = new PRE(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_NVT:
-      newGeometry = new NVT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_UNE:
-      newGeometry = new UNE(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_NON:
-      newGeometry = new NON(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ANO:
-      newGeometry = new ANO(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_RRX:
-      newGeometry = new RRX(geometry.vertices);
-      break;
-    
-    // Arrow treatments
-    case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
-      newGeometry = new ARROW_TOP_LEFT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_TOP_RIGHT:
-      newGeometry = new ARROW_TOP_RIGHT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT:
-      newGeometry = new ARROW_TOP_TURN_LEFT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_TOP_TURN_RIGHT:
-      newGeometry = new ARROW_TOP_TURN_RIGHT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_BOTTOM_LEFT:
-      newGeometry = new ARROW_BOTTOM_LEFT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_BOTTOM_RIGHT:
-      newGeometry = new ARROW_BOTTOM_RIGHT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_LEFT:
-      newGeometry = new ARROW_BOTTOM_TURN_LEFT(geometry.vertices);
-      break;
-    case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_RIGHT:
-      newGeometry = new ARROW_BOTTOM_TURN_RIGHT(geometry.vertices);
-      break;
-    
-    // Special cases
-    case ODONTOGRAM_MODE_HAPUS:
-      newGeometry = new HAPUS(geometry.vertices);
-      break;
-    
-    default:
-      newGeometry = geometry;
-      break;
-  }
-  
-  // Preserve position information
-  if (newGeometry.pos === undefined) {
-    newGeometry.pos = geometry.pos;
-  }
-  
-  return newGeometry;
-}
+  // Update convertGeom function to pass layer information
+  function convertGeom(geometry, mode) {
+    var newGeometry
+    var layerOptions = { layer: CURRENT_ANNOTATION_LAYER }
 
-// Update convertGeomFromObject to preserve layer information
-function convertGeomFromObject(geometry) {
-  var newGeom = null;
-  var layerOptions = geometry.layer ? { layer: geometry.layer } : {};
-  
-  switch (geometry.name) {
-    case 'Polygon':
-      newGeom = new Polygon(geometry.vertices, geometry.options);
-      break;
-    
-    // Treatments that use layer colors
-    case 'AMF':
-      newGeom = new AMF(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'COF':
-      newGeom = new COF(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'SIL':
-      newGeom = new SIL(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'ORT':
-      newGeom = new ORT(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'INC':
-      newGeom = new INC(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'RES':
-      newGeom = new RES(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'REF':
-      newGeom = new REF(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'POC':
-      newGeom = new POC(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'FMC':
-      newGeom = new FMC(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'IPX':
-      newGeom = new IPX(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'FRM_ACR':
-      newGeom = new FRM_ACR(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    case 'CFR':
-      newGeom = new CFR(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-case 'BRIDGE':
-  var layerOptions = geometry.layer ? { layer: geometry.layer } : {};
-  newGeom = new BRIDGE(geometry.startVert, geometry.endVert, $.extend(layerOptions, geometry.options));
-  break;
-    case 'FIS':
-      newGeom = new FIS(geometry.vertices, $.extend(layerOptions, geometry.options));
-      break;
-    
-    // Pathology treatments - don't use layer colors
-    case 'RCT':
-      newGeom = new RCT(geometry.vertices, geometry.options);
-      break;
-    case 'CARIES':
-      newGeom = new CARIES(geometry.vertices, geometry.options);
-      break;
-    case 'CARIES_UNTREATABLE':
-      newGeom = new CARIES_UNTREATABLE(geometry.vertices, geometry.options);
-      break;
-    case 'MIS':
-      newGeom = new MIS(geometry.vertices, geometry.options);
-      break;
-    case 'PRE':
-      newGeom = new PRE(geometry.vertices, geometry.options);
-      break;
-    case 'NVT':
-      newGeom = new NVT(geometry.vertices, geometry.options);
-      break;
-    case 'UNE':
-      newGeom = new UNE(geometry.vertices, geometry.options);
-      break;
-    case 'NON':
-      newGeom = new NON(geometry.vertices, geometry.options);
-      break;
-    case 'ANO':
-      newGeom = new ANO(geometry.vertices, geometry.options);
-      break;
-    case 'RRX':
-      newGeom = new RRX(geometry.vertices, geometry.options);
-      break;
-    
-    // Arrow treatments
-    case 'ARROW_TOP_LEFT':
-      newGeom = new ARROW_TOP_LEFT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_TOP_RIGHT':
-      newGeom = new ARROW_TOP_RIGHT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_TOP_TURN_LEFT':
-      newGeom = new ARROW_TOP_TURN_LEFT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_TOP_TURN_RIGHT':
-      newGeom = new ARROW_TOP_TURN_RIGHT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_BOTTOM_LEFT':
-      newGeom = new ARROW_BOTTOM_LEFT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_BOTTOM_RIGHT':
-      newGeom = new ARROW_BOTTOM_RIGHT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_BOTTOM_TURN_LEFT':
-      newGeom = new ARROW_BOTTOM_TURN_LEFT(geometry.vertices, geometry.options);
-      break;
-    case 'ARROW_BOTTOM_TURN_RIGHT':
-      newGeom = new ARROW_BOTTOM_TURN_RIGHT(geometry.vertices, geometry.options);
-      break;
-    
-    // Special cases
-    case 'HAPUS':
-      newGeom = new HAPUS(geometry.vertices, geometry.options);
-      break;
-    
-    default:
-      console.warn('Unknown geometry type:', geometry.name);
-      break;
+    switch (mode) {
+      case ODONTOGRAM_MODE_AMF:
+        newGeometry = new AMF(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_COF:
+        newGeometry = new COF(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_SIL:
+        newGeometry = new SIL(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_ORT:
+        newGeometry = new ORT(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_INC:
+        newGeometry = new INC(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_RES:
+        newGeometry = new RES(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_REF:
+        newGeometry = new REF(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_POC:
+        newGeometry = new POC(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_FMC:
+        newGeometry = new FMC(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_IPX:
+        newGeometry = new IPX(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_FRM_ACR:
+        newGeometry = new FRM_ACR(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_CFR:
+        newGeometry = new CFR(geometry.vertices, layerOptions)
+        break
+      case ODONTOGRAM_MODE_BRIDGE:
+        var layerOptions = { layer: CURRENT_ANNOTATION_LAYER }
+        newGeometry = new BRIDGE(
+          geometry.vertices[0],
+          geometry.vertices[1],
+          layerOptions
+        )
+        break
+      case ODONTOGRAM_MODE_FIS:
+        newGeometry = new FIS(geometry.vertices, layerOptions)
+        break
+
+      // Pathology treatments - don't use layer colors (keep original colors)
+      case ODONTOGRAM_MODE_RCT:
+        newGeometry = new RCT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_CARIES:
+        newGeometry = new CARIES(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_CARIES_UNTREATABLE:
+        newGeometry = new CARIES_UNTREATABLE(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_MIS:
+        newGeometry = new MIS(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_PRE:
+        newGeometry = new PRE(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_NVT:
+        newGeometry = new NVT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_UNE:
+        newGeometry = new UNE(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_NON:
+        newGeometry = new NON(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ANO:
+        newGeometry = new ANO(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_RRX:
+        newGeometry = new RRX(geometry.vertices)
+        break
+
+      // Arrow treatments
+      case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
+        newGeometry = new ARROW_TOP_LEFT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_TOP_RIGHT:
+        newGeometry = new ARROW_TOP_RIGHT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT:
+        newGeometry = new ARROW_TOP_TURN_LEFT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_TOP_TURN_RIGHT:
+        newGeometry = new ARROW_TOP_TURN_RIGHT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_BOTTOM_LEFT:
+        newGeometry = new ARROW_BOTTOM_LEFT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_BOTTOM_RIGHT:
+        newGeometry = new ARROW_BOTTOM_RIGHT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_LEFT:
+        newGeometry = new ARROW_BOTTOM_TURN_LEFT(geometry.vertices)
+        break
+      case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_RIGHT:
+        newGeometry = new ARROW_BOTTOM_TURN_RIGHT(geometry.vertices)
+        break
+
+      // Special cases
+      case ODONTOGRAM_MODE_HAPUS:
+        newGeometry = new HAPUS(geometry.vertices)
+        break
+
+      default:
+        newGeometry = geometry
+        break
+    }
+
+    // Preserve position information
+    if (newGeometry.pos === undefined) {
+      newGeometry.pos = geometry.pos
+    }
+
+    return newGeometry
   }
-  
-  // Preserve position information
-  if (newGeom && geometry.pos !== undefined) {
-    newGeom.pos = geometry.pos;
+
+  // Update convertGeomFromObject to preserve layer information
+  function convertGeomFromObject(geometry) {
+    var newGeom = null
+    var layerOptions = geometry.layer ? { layer: geometry.layer } : {}
+
+    switch (geometry.name) {
+      case 'Polygon':
+        newGeom = new Polygon(geometry.vertices, geometry.options)
+        break
+
+      // Treatments that use layer colors
+      case 'AMF':
+        newGeom = new AMF(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'COF':
+        newGeom = new COF(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'SIL':
+        newGeom = new SIL(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'ORT':
+        newGeom = new ORT(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'INC':
+        newGeom = new INC(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'RES':
+        newGeom = new RES(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'REF':
+        newGeom = new REF(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'POC':
+        newGeom = new POC(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'FMC':
+        newGeom = new FMC(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'IPX':
+        newGeom = new IPX(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'FRM_ACR':
+        newGeom = new FRM_ACR(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'CFR':
+        newGeom = new CFR(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'BRIDGE':
+        var layerOptions = geometry.layer ? { layer: geometry.layer } : {}
+        newGeom = new BRIDGE(
+          geometry.startVert,
+          geometry.endVert,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+      case 'FIS':
+        newGeom = new FIS(
+          geometry.vertices,
+          $.extend(layerOptions, geometry.options)
+        )
+        break
+
+      // Pathology treatments - don't use layer colors
+      case 'RCT':
+        newGeom = new RCT(geometry.vertices, geometry.options)
+        break
+      case 'CARIES':
+        newGeom = new CARIES(geometry.vertices, geometry.options)
+        break
+      case 'CARIES_UNTREATABLE':
+        newGeom = new CARIES_UNTREATABLE(geometry.vertices, geometry.options)
+        break
+      case 'MIS':
+        newGeom = new MIS(geometry.vertices, geometry.options)
+        break
+      case 'PRE':
+        newGeom = new PRE(geometry.vertices, geometry.options)
+        break
+      case 'NVT':
+        newGeom = new NVT(geometry.vertices, geometry.options)
+        break
+      case 'UNE':
+        newGeom = new UNE(geometry.vertices, geometry.options)
+        break
+      case 'NON':
+        newGeom = new NON(geometry.vertices, geometry.options)
+        break
+      case 'ANO':
+        newGeom = new ANO(geometry.vertices, geometry.options)
+        break
+      case 'RRX':
+        newGeom = new RRX(geometry.vertices, geometry.options)
+        break
+
+      // Arrow treatments
+      case 'ARROW_TOP_LEFT':
+        newGeom = new ARROW_TOP_LEFT(geometry.vertices, geometry.options)
+        break
+      case 'ARROW_TOP_RIGHT':
+        newGeom = new ARROW_TOP_RIGHT(geometry.vertices, geometry.options)
+        break
+      case 'ARROW_TOP_TURN_LEFT':
+        newGeom = new ARROW_TOP_TURN_LEFT(geometry.vertices, geometry.options)
+        break
+      case 'ARROW_TOP_TURN_RIGHT':
+        newGeom = new ARROW_TOP_TURN_RIGHT(geometry.vertices, geometry.options)
+        break
+      case 'ARROW_BOTTOM_LEFT':
+        newGeom = new ARROW_BOTTOM_LEFT(geometry.vertices, geometry.options)
+        break
+      case 'ARROW_BOTTOM_RIGHT':
+        newGeom = new ARROW_BOTTOM_RIGHT(geometry.vertices, geometry.options)
+        break
+      case 'ARROW_BOTTOM_TURN_LEFT':
+        newGeom = new ARROW_BOTTOM_TURN_LEFT(
+          geometry.vertices,
+          geometry.options
+        )
+        break
+      case 'ARROW_BOTTOM_TURN_RIGHT':
+        newGeom = new ARROW_BOTTOM_TURN_RIGHT(
+          geometry.vertices,
+          geometry.options
+        )
+        break
+
+      // Special cases
+      case 'HAPUS':
+        newGeom = new HAPUS(geometry.vertices, geometry.options)
+        break
+
+      default:
+        console.warn('Unknown geometry type:', geometry.name)
+        break
+    }
+
+    // Preserve position information
+    if (newGeom && geometry.pos !== undefined) {
+      newGeom.pos = geometry.pos
+    }
+
+    return newGeom
   }
-  
-  return newGeom;
-}
 
   //// Check Hover On Teeth (return Geom)
   function getHoverShapeOnTeeth(mouse, teeth) {
@@ -3038,32 +3186,32 @@ case 'BRIDGE':
             instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms)
           }
           break
-// Fix BRIDGE hover in _on_mouse_move function - STOP THE BLINKING
-case ODONTOGRAM_MODE_BRIDGE:
-  if (
-    isRectIntersect(coord, {
-      x1: mouse.x,
-      y1: mouse.y,
-      x2: mouse.x,
-      y2: mouse.y,
-    })
-  ) {
-    // ONLY show hover when no bridge is being created
-    if (instance.mode_bridge_coords.length === 0) {
-      // Simple hover - just highlight the current tooth
-      hoverGeoms = [
-        {
-          vertices: [
-            { x: coord.x1, y: coord.y1 },
-            { x: coord.x2, y: coord.y2 },
-          ],
-        },
-      ];
-      instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms);
-    }
-    // NO HOVER when bridge creation is in progress - prevents blinking
-  }
-  break;
+        // Fix BRIDGE hover in _on_mouse_move function - STOP THE BLINKING
+        case ODONTOGRAM_MODE_BRIDGE:
+          if (
+            isRectIntersect(coord, {
+              x1: mouse.x,
+              y1: mouse.y,
+              x2: mouse.x,
+              y2: mouse.y,
+            })
+          ) {
+            // ONLY show hover when no bridge is being created
+            if (instance.mode_bridge_coords.length === 0) {
+              // Simple hover - just highlight the current tooth
+              hoverGeoms = [
+                {
+                  vertices: [
+                    { x: coord.x1, y: coord.y1 },
+                    { x: coord.x2, y: coord.y2 },
+                  ],
+                },
+              ]
+              instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms)
+            }
+            // NO HOVER when bridge creation is in progress - prevents blinking
+          }
+          break
 
         case ODONTOGRAM_MODE_ORT:
           if (
@@ -3149,44 +3297,47 @@ case ODONTOGRAM_MODE_BRIDGE:
         case ODONTOGRAM_MODE_IPX:
         case ODONTOGRAM_MODE_FRM_ACR:
         // Update the _on_mouse_click function HAPUS case
-case ODONTOGRAM_MODE_HAPUS:
-  if (
-    isRectIntersect(coord, {
-      x1: mouse.x,
-      y1: mouse.y,
-      x2: mouse.x,
-      y2: mouse.y,
-    })
-  ) {
-    // Check if clicking on specific surface or whole tooth
-    var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
-    
-    if (hoverShapes.length > 0) {
-      // Delete specific surface treatments
-      for (var i = 0; i < hoverShapes.length; i++) {
-        var surfaceName = hoverShapes[i].name
-        var surfacePos = teeth.num + '-' + surfaceName.charAt(0).toUpperCase()
-        
-        // Remove treatments from this specific surface
-        if (instance.geometry[keyCoord]) {
-          instance.geometry[keyCoord] = instance.geometry[keyCoord].filter(function(treatment) {
-            return treatment.pos !== surfacePos
-          })
-          
-          // If no treatments left, remove the tooth entry
-          if (instance.geometry[keyCoord].length === 0) {
-            delete instance.geometry[keyCoord]
+        case ODONTOGRAM_MODE_HAPUS:
+          if (
+            isRectIntersect(coord, {
+              x1: mouse.x,
+              y1: mouse.y,
+              x2: mouse.x,
+              y2: mouse.y,
+            })
+          ) {
+            // Check if clicking on specific surface or whole tooth
+            var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
+
+            if (hoverShapes.length > 0) {
+              // Delete specific surface treatments
+              for (var i = 0; i < hoverShapes.length; i++) {
+                var surfaceName = hoverShapes[i].name
+                var surfacePos =
+                  teeth.num + '-' + surfaceName.charAt(0).toUpperCase()
+
+                // Remove treatments from this specific surface
+                if (instance.geometry[keyCoord]) {
+                  instance.geometry[keyCoord] = instance.geometry[
+                    keyCoord
+                  ].filter(function (treatment) {
+                    return treatment.pos !== surfacePos
+                  })
+
+                  // If no treatments left, remove the tooth entry
+                  if (instance.geometry[keyCoord].length === 0) {
+                    delete instance.geometry[keyCoord]
+                  }
+                }
+              }
+            } else {
+              // Delete all treatments from entire tooth
+              delete instance.geometry[keyCoord]
+            }
+
+            console.log('🗑️ Deleted treatments from tooth:', teeth.num)
           }
-        }
-      }
-    } else {
-      // Delete all treatments from entire tooth
-      delete instance.geometry[keyCoord]
-    }
-    
-    console.log('🗑️ Deleted treatments from tooth:', teeth.num)
-  }
-  break;
+          break
         case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
         case ODONTOGRAM_MODE_ARROW_TOP_RIGHT:
         case ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT:
@@ -3217,39 +3368,39 @@ case ODONTOGRAM_MODE_HAPUS:
             ]
           }
           break
-// Fix BRIDGE click handler to use layer colors
-case ODONTOGRAM_MODE_BRIDGE:
-  if (
-    isRectIntersect(coord, {
-      x1: mouse.x,
-      y1: mouse.y,
-      x2: mouse.x,
-      y2: mouse.y,
-    })
-  ) {
-    if (instance.mode_bridge_coords.length == 0) {
-      instance.mode_bridge_coords = [coord]
-      console.log('Bridge start tooth selected:', teeth.num)
-    } else {
-      instance.mode_bridge_coords.push(coord)
-      
-      // Create bridge with layer support
-      var layerOptions = { layer: CURRENT_ANNOTATION_LAYER };
-      var bridgeGeom = {
-        vertices: instance.mode_bridge_coords,
-        pos: 'bridge-' + CURRENT_ANNOTATION_LAYER
-      };
-      
-      tempGeoms[keyCoord] = [
-        convertGeom(bridgeGeom, instance.mode),
-      ]
-      
-      console.log('Bridge completed with layer:', CURRENT_ANNOTATION_LAYER)
-      instance.mode_bridge_coords = []
-    }
-  }
-  break;
-      
+        // Fix BRIDGE click handler to use layer colors
+        case ODONTOGRAM_MODE_BRIDGE:
+          if (
+            isRectIntersect(coord, {
+              x1: mouse.x,
+              y1: mouse.y,
+              x2: mouse.x,
+              y2: mouse.y,
+            })
+          ) {
+            if (instance.mode_bridge_coords.length == 0) {
+              instance.mode_bridge_coords = [coord]
+              console.log('Bridge start tooth selected:', teeth.num)
+            } else {
+              instance.mode_bridge_coords.push(coord)
+
+              // Create bridge with layer support
+              var layerOptions = { layer: CURRENT_ANNOTATION_LAYER }
+              var bridgeGeom = {
+                vertices: instance.mode_bridge_coords,
+                pos: 'bridge-' + CURRENT_ANNOTATION_LAYER,
+              }
+
+              tempGeoms[keyCoord] = [convertGeom(bridgeGeom, instance.mode)]
+
+              console.log(
+                'Bridge completed with layer:',
+                CURRENT_ANNOTATION_LAYER
+              )
+              instance.mode_bridge_coords = []
+            }
+          }
+          break
 
         // In the _on_mouse_click function, add ORT case with surface restriction:
         case ODONTOGRAM_MODE_ORT:
