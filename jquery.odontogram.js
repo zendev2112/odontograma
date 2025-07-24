@@ -740,12 +740,16 @@ FRM_ACR.prototype.render = function (ctx) {
   ctx.fillText('P', x, y);
 };
 
-// Fix BRIDGE class - no colors, vertical drops outside teeth, no symbol
+// Fix BRIDGE class to support red/blue layer colors
 function BRIDGE(startVert, endVert, options) {
   this.name = 'BRIDGE'
   this.startVert = startVert
   this.endVert = endVert
-  this.options = $.extend({ strokeStyle: '#333', lineWidth: 3 }, options)
+  this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER;
+  this.options = $.extend({ 
+    strokeStyle: getColorForTreatment('BRIDGE', this.layer),
+    lineWidth: 3 
+  }, options)
   return this
 }
 
@@ -783,7 +787,7 @@ BRIDGE.prototype.render = function (ctx) {
   }
 
   ctx.save()
-  ctx.strokeStyle = this.options.strokeStyle
+  ctx.strokeStyle = this.options.strokeStyle // Now uses red/blue based on layer
   ctx.lineWidth = this.options.lineWidth
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
@@ -801,8 +805,6 @@ BRIDGE.prototype.render = function (ctx) {
   ctx.lineTo(endCenterX, endDropY)
   
   ctx.stroke()
-
-  // NO BRIDGE SYMBOL - removed as requested
 
   ctx.restore()
 }
@@ -2438,7 +2440,8 @@ function convertGeom(geometry, mode) {
       newGeometry = new CFR(geometry.vertices, layerOptions);
       break;
 case ODONTOGRAM_MODE_BRIDGE:
-  newGeometry = new BRIDGE(geometry[0], geometry[1]);
+  var layerOptions = { layer: CURRENT_ANNOTATION_LAYER };
+  newGeometry = new BRIDGE(geometry.vertices[0], geometry.vertices[1], layerOptions);
   break;
     case ODONTOGRAM_MODE_FIS:
       newGeometry = new FIS(geometry.vertices, layerOptions);
@@ -2568,7 +2571,8 @@ function convertGeomFromObject(geometry) {
       newGeom = new CFR(geometry.vertices, $.extend(layerOptions, geometry.options));
       break;
 case 'BRIDGE':
-  newGeom = new BRIDGE(geometry.startVert, geometry.endVert, geometry.options);
+  var layerOptions = geometry.layer ? { layer: geometry.layer } : {};
+  newGeom = new BRIDGE(geometry.startVert, geometry.endVert, $.extend(layerOptions, geometry.options));
   break;
     case 'FIS':
       newGeom = new FIS(geometry.vertices, $.extend(layerOptions, geometry.options));
@@ -2993,7 +2997,7 @@ case 'BRIDGE':
             instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms)
           }
           break
-// Fix BRIDGE hover in _on_mouse_move function - remove blinking
+// Fix BRIDGE hover in _on_mouse_move function - STOP THE BLINKING
 case ODONTOGRAM_MODE_BRIDGE:
   if (
     isRectIntersect(coord, {
@@ -3003,16 +3007,20 @@ case ODONTOGRAM_MODE_BRIDGE:
       y2: mouse.y,
     })
   ) {
-    // Simple hover - just highlight the current tooth, no preview lines
-    hoverGeoms = [
-      {
-        vertices: [
-          { x: coord.x1, y: coord.y1 },
-          { x: coord.x2, y: coord.y2 },
-        ],
-      },
-    ];
-    instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms);
+    // ONLY show hover when no bridge is being created
+    if (instance.mode_bridge_coords.length === 0) {
+      // Simple hover - just highlight the current tooth
+      hoverGeoms = [
+        {
+          vertices: [
+            { x: coord.x1, y: coord.y1 },
+            { x: coord.x2, y: coord.y2 },
+          ],
+        },
+      ];
+      instance.hoverGeoms = instance.hoverGeoms.concat(hoverGeoms);
+    }
+    // NO HOVER when bridge creation is in progress - prevents blinking
   }
   break;
 
@@ -3130,7 +3138,7 @@ case ODONTOGRAM_MODE_BRIDGE:
             ]
           }
           break
-// Fix BRIDGE click handler in the _on_mouse_click function
+// Fix BRIDGE click handler to use layer colors
 case ODONTOGRAM_MODE_BRIDGE:
   if (
     isRectIntersect(coord, {
@@ -3145,12 +3153,19 @@ case ODONTOGRAM_MODE_BRIDGE:
       console.log('Bridge start tooth selected:', teeth.num)
     } else {
       instance.mode_bridge_coords.push(coord)
+      
+      // Create bridge with layer support
+      var layerOptions = { layer: CURRENT_ANNOTATION_LAYER };
+      var bridgeGeom = {
+        vertices: instance.mode_bridge_coords,
+        pos: 'bridge-' + CURRENT_ANNOTATION_LAYER
+      };
+      
       tempGeoms[keyCoord] = [
-        convertGeom(instance.mode_bridge_coords, instance.mode),
+        convertGeom(bridgeGeom, instance.mode),
       ]
-      console.log('Bridge completed between teeth:', 
-        instance.teeth[Object.keys(instance.teeth).find(k => parseKeyCoord(k).x1 == instance.mode_bridge_coords[0].x1)].num,
-        'and', teeth.num)
+      
+      console.log('Bridge completed with layer:', CURRENT_ANNOTATION_LAYER)
       instance.mode_bridge_coords = []
     }
   }
