@@ -3324,6 +3324,8 @@ function getColorForTreatment(treatmentName, layer) {
 
       // Fix HAPUS (delete) functionality in _on_mouse_click function
 
+// Fix HAPUS (delete) functionality to handle both surface and whole-tooth treatments
+
 case ODONTOGRAM_MODE_HAPUS:
   if (
     isRectIntersect(coord, {
@@ -3335,18 +3337,24 @@ case ODONTOGRAM_MODE_HAPUS:
   ) {
     // Check if clicking on specific surface or whole tooth
     var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
+    var deletedSomething = false
 
     if (hoverShapes.length > 0) {
-      // Delete specific surface treatments
+      // Delete specific surface treatments (AMF, COF, SIL, INC, RES, REF, etc.)
       for (var i = 0; i < hoverShapes.length; i++) {
         var surfaceName = hoverShapes[i].name
         var surfacePos = teeth.num + '-' + surfaceName.charAt(0).toUpperCase()
 
         // Remove treatments from this specific surface
         if (instance.geometry[keyCoord]) {
+          var originalLength = instance.geometry[keyCoord].length
           instance.geometry[keyCoord] = instance.geometry[keyCoord].filter(function (treatment) {
             return treatment.pos !== surfacePos
           })
+          
+          if (instance.geometry[keyCoord].length < originalLength) {
+            deletedSomething = true
+          }
 
           // If no treatments left, remove the tooth entry
           if (instance.geometry[keyCoord].length === 0) {
@@ -3354,21 +3362,44 @@ case ODONTOGRAM_MODE_HAPUS:
           }
         }
       }
-      console.log('🗑️ Deleted surface treatments from tooth:', teeth.num)
-    } else {
-      // Delete all treatments from entire tooth
-      if (instance.geometry[keyCoord]) {
+    }
+
+    // ALSO check for whole-tooth treatments (PRE, CFR, POC, FMC, IPX, NVT, UNE, RCT, MIS, etc.)
+    if (instance.geometry[keyCoord]) {
+      var originalLength = instance.geometry[keyCoord].length
+      
+      // Remove whole-tooth treatments (treatments with pos = teeth.num)
+      instance.geometry[keyCoord] = instance.geometry[keyCoord].filter(function (treatment) {
+        // Keep treatments that are NOT whole-tooth treatments for this tooth
+        return treatment.pos !== teeth.num && 
+               treatment.pos !== teeth.num.toString() &&
+               !treatment.pos.startsWith('bridge-')
+      })
+      
+      if (instance.geometry[keyCoord].length < originalLength) {
+        deletedSomething = true
+      }
+
+      // If no treatments left, remove the tooth entry completely
+      if (instance.geometry[keyCoord].length === 0) {
         delete instance.geometry[keyCoord]
-        console.log('🗑️ Deleted all treatments from tooth:', teeth.num)
+        deletedSomething = true
       }
     }
 
-    // IMPORTANT: Trigger change event immediately for HAPUS
-    $this.trigger('change', [instance.geometry])
-    instance.redraw()
+    if (deletedSomething) {
+      console.log('🗑️ Deleted treatments from tooth:', teeth.num)
+      
+      // IMPORTANT: Trigger change event immediately for HAPUS
+      $this.trigger('change', [instance.geometry])
+      instance.redraw()
+    } else {
+      console.log('⚠️ No treatments found to delete on tooth:', teeth.num)
+    }
+    
     return // Exit early, don't process further
   }
-  break  
+  break
 
        // Arrow treatments - whole tooth placement
        case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
