@@ -3271,233 +3271,250 @@ function getColorForTreatment(treatmentName, layer) {
 
 
  function _on_mouse_click(e) {
-  var mouse = getMouse(e)
-  var $this = $(e.target)
-  var instance = $this.data('odontogram')
+   var mouse = getMouse(e)
+   var $this = $(e.target)
+   var instance = $this.data('odontogram')
 
-  if (instance.mode == ODONTOGRAM_MODE_DEFAULT) return
+   if (instance.mode == ODONTOGRAM_MODE_DEFAULT) return
 
-  var teeth, coord
-  var tempGeoms = {}
-  var temp
-  for (var keyCoord in instance.teeth) {
-    teeth = instance.teeth[keyCoord]
-    coord = parseKeyCoord(keyCoord)
+   var teeth, coord
+   var tempGeoms = {}
+   var temp
+   for (var keyCoord in instance.teeth) {
+     teeth = instance.teeth[keyCoord]
+     coord = parseKeyCoord(keyCoord)
 
-    switch (instance.mode) {
-      // Whole tooth treatments - these apply to the entire tooth
-      case ODONTOGRAM_MODE_NVT: // Surco Profundo
-      case ODONTOGRAM_MODE_RCT: // Tratamiento de Conducto
-      case ODONTOGRAM_MODE_NON: // No existe
-      case ODONTOGRAM_MODE_UNE: // No Erupcionado
-      case ODONTOGRAM_MODE_PRE: // Paradentosis
-      case ODONTOGRAM_MODE_ANO: // Anomalía
-      case ODONTOGRAM_MODE_CFR: // Fractura
-      case ODONTOGRAM_MODE_FMC: // Corona Metálica
-      case ODONTOGRAM_MODE_POC: // Corona de Porcelana
-      case ODONTOGRAM_MODE_RRX: // Resto Radicular
-      case ODONTOGRAM_MODE_MIS: // Diente Ausente
-      case ODONTOGRAM_MODE_IPX: // Implante
-      case ODONTOGRAM_MODE_FRM_ACR: // Pivot
-        if (
-          isRectIntersect(coord, {
-            x1: mouse.x,
-            y1: mouse.y,
-            x2: mouse.x,
-            y2: mouse.y,
-          })
-        ) {
-          tempGeoms[keyCoord] = [
-            convertGeom(
-              {
-                vertices: [
-                  { x: coord.x1, y: coord.y1 },
-                  { x: coord.x2, y: coord.y2 },
-                ],
-                pos: teeth.num,
-              },
-              instance.mode
-            ),
-          ]
+     switch (instance.mode) {
+       // Whole tooth treatments - these apply to the entire tooth
+       case ODONTOGRAM_MODE_NVT: // Surco Profundo
+       case ODONTOGRAM_MODE_RCT: // Tratamiento de Conducto
+       case ODONTOGRAM_MODE_NON: // No existe
+       case ODONTOGRAM_MODE_UNE: // No Erupcionado
+       case ODONTOGRAM_MODE_PRE: // Paradentosis
+       case ODONTOGRAM_MODE_ANO: // Anomalía
+       case ODONTOGRAM_MODE_CFR: // Fractura
+       case ODONTOGRAM_MODE_FMC: // Corona Metálica
+       case ODONTOGRAM_MODE_POC: // Corona de Porcelana
+       case ODONTOGRAM_MODE_RRX: // Resto Radicular
+       case ODONTOGRAM_MODE_MIS: // Diente Ausente
+       case ODONTOGRAM_MODE_IPX: // Implante
+       case ODONTOGRAM_MODE_FRM_ACR: // Pivot
+         if (
+           isRectIntersect(coord, {
+             x1: mouse.x,
+             y1: mouse.y,
+             x2: mouse.x,
+             y2: mouse.y,
+           })
+         ) {
+           tempGeoms[keyCoord] = [
+             convertGeom(
+               {
+                 vertices: [
+                   { x: coord.x1, y: coord.y1 },
+                   { x: coord.x2, y: coord.y2 },
+                 ],
+                 pos: teeth.num,
+               },
+               instance.mode
+             ),
+           ]
+         }
+         break
+
+       // Delete functionality (HAPUS)
+       case ODONTOGRAM_MODE_HAPUS:
+         if (
+           isRectIntersect(coord, {
+             x1: mouse.x,
+             y1: mouse.y,
+             x2: mouse.x,
+             y2: mouse.y,
+           })
+         ) {
+           // Check if clicking on specific surface or whole tooth
+           var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
+
+           if (hoverShapes.length > 0) {
+             // Delete specific surface treatments
+             for (var i = 0; i < hoverShapes.length; i++) {
+               var surfaceName = hoverShapes[i].name
+               var surfacePos =
+                 teeth.num + '-' + surfaceName.charAt(0).toUpperCase()
+
+               // Remove treatments from this specific surface
+               if (instance.geometry[keyCoord]) {
+                 instance.geometry[keyCoord] = instance.geometry[
+                   keyCoord
+                 ].filter(function (treatment) {
+                   return treatment.pos !== surfacePos
+                 })
+
+                 // If no treatments left, remove the tooth entry
+                 if (instance.geometry[keyCoord].length === 0) {
+                   delete instance.geometry[keyCoord]
+                 }
+               }
+             }
+           } else {
+             // Delete all treatments from entire tooth
+             delete instance.geometry[keyCoord]
+           }
+
+           console.log('🗑️ Deleted treatments from tooth:', teeth.num)
+         }
+         break
+
+       // Arrow treatments - whole tooth placement
+       case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
+       case ODONTOGRAM_MODE_ARROW_TOP_RIGHT:
+       case ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT:
+       case ODONTOGRAM_MODE_ARROW_TOP_TURN_RIGHT:
+       case ODONTOGRAM_MODE_ARROW_BOTTOM_LEFT:
+       case ODONTOGRAM_MODE_ARROW_BOTTOM_RIGHT:
+       case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_LEFT:
+       case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_RIGHT:
+         if (
+           isRectIntersect(coord, {
+             x1: mouse.x,
+             y1: mouse.y,
+             x2: mouse.x,
+             y2: mouse.y,
+           })
+         ) {
+           tempGeoms[keyCoord] = [
+             convertGeom(
+               {
+                 vertices: [
+                   { x: coord.x1, y: coord.y1 },
+                   { x: coord.x2, y: coord.y2 },
+                 ],
+                 pos: teeth.num,
+               },
+               instance.mode
+             ),
+           ]
+         }
+         break
+
+     // Fix BRIDGE click handler - add bridge to BOTH teeth
+case ODONTOGRAM_MODE_BRIDGE:
+  if (
+    isRectIntersect(coord, {
+      x1: mouse.x,
+      y1: mouse.y,
+      x2: mouse.x,
+      y2: mouse.y,
+    })
+  ) {
+    if (instance.mode_bridge_coords.length == 0) {
+      instance.mode_bridge_coords = [coord]
+      console.log('Bridge start tooth selected:', teeth.num)
+    } else {
+      instance.mode_bridge_coords.push(coord)
+
+      // Create bridge with layer support
+      var layerOptions = { layer: CURRENT_ANNOTATION_LAYER }
+      var bridgeGeom = {
+        vertices: instance.mode_bridge_coords,
+        pos: 'bridge-' + CURRENT_ANNOTATION_LAYER,
+      }
+
+      // ADD BRIDGE TO BOTH TEETH - this was missing!
+      var bridgeObject = convertGeom(bridgeGeom, instance.mode)
+      
+      // Find the first tooth's keyCoord
+      var startKeyCoord = null;
+      for (var searchKey in instance.teeth) {
+        var searchCoord = parseKeyCoord(searchKey);
+        if (searchCoord.x1 == instance.mode_bridge_coords[0].x1 && 
+            searchCoord.y1 == instance.mode_bridge_coords[0].y1) {
+          startKeyCoord = searchKey;
+          break;
         }
-        break
+      }
+      
+      // Add bridge to first tooth
+      if (startKeyCoord) {
+        tempGeoms[startKeyCoord] = [bridgeObject];
+      }
+      
+      // Add bridge to second tooth
+      tempGeoms[keyCoord] = [bridgeObject];
 
-      // Delete functionality (HAPUS)
-      case ODONTOGRAM_MODE_HAPUS:
-        if (
-          isRectIntersect(coord, {
-            x1: mouse.x,
-            y1: mouse.y,
-            x2: mouse.x,
-            y2: mouse.y,
-          })
-        ) {
-          // Check if clicking on specific surface or whole tooth
-          var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
-
-          if (hoverShapes.length > 0) {
-            // Delete specific surface treatments
-            for (var i = 0; i < hoverShapes.length; i++) {
-              var surfaceName = hoverShapes[i].name
-              var surfacePos =
-                teeth.num + '-' + surfaceName.charAt(0).toUpperCase()
-
-              // Remove treatments from this specific surface
-              if (instance.geometry[keyCoord]) {
-                instance.geometry[keyCoord] = instance.geometry[
-                  keyCoord
-                ].filter(function (treatment) {
-                  return treatment.pos !== surfacePos
-                })
-
-                // If no treatments left, remove the tooth entry
-                if (instance.geometry[keyCoord].length === 0) {
-                  delete instance.geometry[keyCoord]
-                }
-              }
-            }
-          } else {
-            // Delete all treatments from entire tooth
-            delete instance.geometry[keyCoord]
-          }
-
-          console.log('🗑️ Deleted treatments from tooth:', teeth.num)
-        }
-        break
-
-      // Arrow treatments - whole tooth placement
-      case ODONTOGRAM_MODE_ARROW_TOP_LEFT:
-      case ODONTOGRAM_MODE_ARROW_TOP_RIGHT:
-      case ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT:
-      case ODONTOGRAM_MODE_ARROW_TOP_TURN_RIGHT:
-      case ODONTOGRAM_MODE_ARROW_BOTTOM_LEFT:
-      case ODONTOGRAM_MODE_ARROW_BOTTOM_RIGHT:
-      case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_LEFT:
-      case ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_RIGHT:
-        if (
-          isRectIntersect(coord, {
-            x1: mouse.x,
-            y1: mouse.y,
-            x2: mouse.x,
-            y2: mouse.y,
-          })
-        ) {
-          tempGeoms[keyCoord] = [
-            convertGeom(
-              {
-                vertices: [
-                  { x: coord.x1, y: coord.y1 },
-                  { x: coord.x2, y: coord.y2 },
-                ],
-                pos: teeth.num,
-              },
-              instance.mode
-            ),
-          ]
-        }
-        break
-
-      // Bridge functionality - connects two teeth
-      case ODONTOGRAM_MODE_BRIDGE:
-        if (
-          isRectIntersect(coord, {
-            x1: mouse.x,
-            y1: mouse.y,
-            x2: mouse.x,
-            y2: mouse.y,
-          })
-        ) {
-          if (instance.mode_bridge_coords.length == 0) {
-            instance.mode_bridge_coords = [coord]
-            console.log('Bridge start tooth selected:', teeth.num)
-          } else {
-            instance.mode_bridge_coords.push(coord)
-
-            // Create bridge with layer support
-            var layerOptions = { layer: CURRENT_ANNOTATION_LAYER }
-            var bridgeGeom = {
-              vertices: instance.mode_bridge_coords,
-              pos: 'bridge-' + CURRENT_ANNOTATION_LAYER,
-            }
-
-            tempGeoms[keyCoord] = [convertGeom(bridgeGeom, instance.mode)]
-
-            console.log(
-              'Bridge completed with layer:',
-              CURRENT_ANNOTATION_LAYER
-            )
-            instance.mode_bridge_coords = []
-          }
-        }
-        break
-
-      // Orthodontics - only applies to top and bottom surfaces
-      case ODONTOGRAM_MODE_ORT:
-        if (
-          isRectIntersect(coord, {
-            x1: mouse.x,
-            y1: mouse.y,
-            x2: mouse.x,
-            y2: mouse.y,
-          })
-        ) {
-          // Get hover shapes and filter for only top and bottom surfaces
-          var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
-          var validShapes = []
-
-          for (var i = 0; i < hoverShapes.length; i++) {
-            if (
-              hoverShapes[i].name === 'top' ||
-              hoverShapes[i].name === 'bottom'
-            ) {
-              hoverShapes[i].pos =
-                teeth.num + '-' + hoverShapes[i].name.charAt(0).toUpperCase()
-              validShapes.push(convertGeom(hoverShapes[i], instance.mode))
-            }
-          }
-
-          if (validShapes.length > 0) {
-            tempGeoms[keyCoord] = validShapes
-          }
-        }
-        break
-
-      // Surface-based treatments - can be applied to individual tooth surfaces
-      // AMF, COF, SIL, INC, RES, REF, FIS, CARIES, CARIES_UNTREATABLE
-      default: // Setiap Bagian (Surface-based treatments)
-        if (
-          isRectIntersect(coord, {
-            x1: mouse.x,
-            y1: mouse.y,
-            x2: mouse.x,
-            y2: mouse.y,
-          })
-        ) {
-          tempGeoms[keyCoord] = []
-          temp = getHoverShapeOnTeeth(mouse, teeth)
-          for (var i = 0; i < temp.length; i++) {
-            temp[i].pos =
-              teeth.num + '-' + temp[i].name.charAt(0).toUpperCase()
-            tempGeoms[keyCoord].push(convertGeom(temp[i], instance.mode))
-          }
-        }
-        break
+      console.log('Bridge completed with layer:', CURRENT_ANNOTATION_LAYER)
+      instance.mode_bridge_coords = []
     }
   }
+  break
 
-  // Apply geometry changes based on mode
-  if (instance.mode == ODONTOGRAM_MODE_HAPUS) {
-    // HAPUS mode - deletion handled above, no geometry addition needed
-    // The deletion logic is already applied directly to instance.geometry
-  } else {
-    // All other modes - add new treatments
-    instance.geometry = joinShapeTeeth(instance.geometry, tempGeoms)
-  }
+       // Orthodontics - only applies to top and bottom surfaces
+       case ODONTOGRAM_MODE_ORT:
+         if (
+           isRectIntersect(coord, {
+             x1: mouse.x,
+             y1: mouse.y,
+             x2: mouse.x,
+             y2: mouse.y,
+           })
+         ) {
+           // Get hover shapes and filter for only top and bottom surfaces
+           var hoverShapes = getHoverShapeOnTeeth(mouse, teeth)
+           var validShapes = []
 
-  // Trigger change event and redraw
-  $this.trigger('change', [instance.geometry])
-  instance.redraw()
-}
+           for (var i = 0; i < hoverShapes.length; i++) {
+             if (
+               hoverShapes[i].name === 'top' ||
+               hoverShapes[i].name === 'bottom'
+             ) {
+               hoverShapes[i].pos =
+                 teeth.num + '-' + hoverShapes[i].name.charAt(0).toUpperCase()
+               validShapes.push(convertGeom(hoverShapes[i], instance.mode))
+             }
+           }
+
+           if (validShapes.length > 0) {
+             tempGeoms[keyCoord] = validShapes
+           }
+         }
+         break
+
+       // Surface-based treatments - can be applied to individual tooth surfaces
+       // AMF, COF, SIL, INC, RES, REF, FIS, CARIES, CARIES_UNTREATABLE
+       default: // Setiap Bagian (Surface-based treatments)
+         if (
+           isRectIntersect(coord, {
+             x1: mouse.x,
+             y1: mouse.y,
+             x2: mouse.x,
+             y2: mouse.y,
+           })
+         ) {
+           tempGeoms[keyCoord] = []
+           temp = getHoverShapeOnTeeth(mouse, teeth)
+           for (var i = 0; i < temp.length; i++) {
+             temp[i].pos =
+               teeth.num + '-' + temp[i].name.charAt(0).toUpperCase()
+             tempGeoms[keyCoord].push(convertGeom(temp[i], instance.mode))
+           }
+         }
+         break
+     }
+   }
+
+   // Apply geometry changes based on mode
+   if (instance.mode == ODONTOGRAM_MODE_HAPUS) {
+     // HAPUS mode - deletion handled above, no geometry addition needed
+     // The deletion logic is already applied directly to instance.geometry
+   } else {
+     // All other modes - add new treatments
+     instance.geometry = joinShapeTeeth(instance.geometry, tempGeoms)
+   }
+
+   // Trigger change event and redraw
+   $this.trigger('change', [instance.geometry])
+   instance.redraw()
+ }
   $.fn.odontogram.defaults = {
     width: '800px',
     height: '480px',
