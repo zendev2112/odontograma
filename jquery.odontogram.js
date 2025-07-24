@@ -2345,7 +2345,9 @@ Odontogram.prototype.clearAll = function() {
     return this.canvas.toDataURL()
   }
 
-  $.fn.odontogram = function (mode, arg1, arg2, arg3, arg4) {
+// Add this case to the existing $.fn.odontogram method around line 1629
+
+$.fn.odontogram = function (mode, arg1, arg2, arg3, arg4) {
     var instance = this.data('odontogram')
     switch (mode) {
       case 'init': // Arg1 is options
@@ -2378,7 +2380,12 @@ Odontogram.prototype.clearAll = function() {
         checkOdontogram(this, mode)
         instance.setGeometryByPos(arg1)
         break
-      // DLL
+      // ADD THIS CASE HERE:
+      case 'clearAll':
+        checkOdontogram(this, mode)
+        instance.clearAll()
+        break;
+      // END OF ADDITION
     }
 
     return this
