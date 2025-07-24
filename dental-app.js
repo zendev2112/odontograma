@@ -393,20 +393,446 @@ function exportOdontogramData() {
 }
 
 /**
- * Initialize the entire application
+ * Generate and print patient dental report
  */
-async function initApp() {
-  console.log('Starting app initialization...')
+function generatePatientReport() {
+  const reportData = {
+    paciente: {
+      nombre: "PACIENTE - [A obtener de Airtable]", // Placeholder for Airtable data
+      fecha: new Date().toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    },
+    piezas: [],
+    resumen: {
+      total_piezas_afectadas: 0,
+      condiciones_encontradas: {}
+    }
+  }
 
-  await loadDentalData()
-  initializeOdontogram(currentOdontogramType)
-  updateTeethRangeDisplay(currentOdontogramType)
-  updateLayerUI()
+  // Process current odontogram geometry
+  const odontogramInstance = $('#odontogram').data('odontogram')
+  if (odontogramInstance && odontogramInstance.geometry) {
+    currentGeometry = odontogramInstance.geometry
+  }
 
-  console.log('App initialization completed')
+  // Extract relevant conditions based on your specifications
+  const relevantConditions = ['PRE', 'MIS', 'NVT', 'UNE', 'CARIES', 'CARIES_UNTREATABLE']
+
+  for (const [toothKey, treatments] of Object.entries(currentGeometry)) {
+    if (treatments && treatments.length > 0) {
+      const toothNumber = parseInt(toothKey.split('-')[0])
+      const toothInfo = getToothInfoByFDI(toothNumber)
+      
+      if (toothInfo) {
+        const piezaData = {
+          fdi: toothInfo.fdi,
+          nombre: toothInfo.nombre,
+          condiciones: []
+        }
+
+        // Filter treatments for relevant conditions only
+        treatments.forEach(treatment => {
+          const treatmentCode = treatment.name || treatment.mode || 'UNKNOWN'
+          
+          if (relevantConditions.includes(treatmentCode)) {
+            const conditionName = getTreatmentName(treatmentCode)
+            piezaData.condiciones.push({
+              codigo: treatmentCode,
+              nombre: conditionName,
+              superficie: getSurfaceFromTreatment(treatment, toothInfo)
+            })
+
+            // Update summary
+            if (!reportData.resumen.condiciones_encontradas[treatmentCode]) {
+              reportData.resumen.condiciones_encontradas[treatmentCode] = 0
+            }
+            reportData.resumen.condiciones_encontradas[treatmentCode]++
+          }
+        })
+
+        // Only include teeth with relevant conditions
+        if (piezaData.condiciones.length > 0) {
+          reportData.piezas.push(piezaData)
+          reportData.resumen.total_piezas_afectadas++
+        }
+      }
+    }
+  }
+
+  // Generate and print the report
+  printDentalReport(reportData)
+  
+  return reportData
 }
 
-// Update setupEventHandlers function to include delete functionality
+/**
+ * Get tooth information by FDI number
+ */
+function getToothInfoByFDI(fdiNumber) {
+  if (!dentalData.dientes) return null
+  return dentalData.dientes.find(tooth => tooth.fdi === fdiNumber)
+}
+
+/**
+ * Get surface information from treatment
+ */
+function getSurfaceFromTreatment(treatment, toothInfo) {
+  if (treatment.pos && treatment.pos.includes('-')) {
+    const [toothNum, surfaceCode] = treatment.pos.split('-')
+    const anatomicalSurface = getAnatomicalSurface(surfaceCode, toothInfo)
+    return {
+      codigo: surfaceCode,
+      anatomica: anatomicalSurface
+    }
+  }
+  return {
+    codigo: 'whole',
+    anatomica: 'Diente completo'
+  }
+}
+
+/**
+ * Print the dental report
+ */
+function printDentalReport(reportData) {
+  // Create print window
+  const printWindow = window.open('', '_blank', 'width=800,height=600')
+  
+  const reportHTML = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Reporte Dental - ${reportData.paciente.nombre}</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background: white;
+                color: #333;
+                line-height: 1.6;
+            }
+            
+            .header {
+                text-align: center;
+                border-bottom: 3px solid #2c3e50;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+            
+            .header h1 {
+                color: #2c3e50;
+                margin: 0 0 10px 0;
+                font-size: 28px;
+            }
+            
+            .patient-info {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border-left: 5px solid #3498db;
+            }
+            
+            .patient-info h2 {
+                color: #2c3e50;
+                margin: 0 0 15px 0;
+                font-size: 20px;
+            }
+            
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                font-size: 16px;
+            }
+            
+            .info-label {
+                font-weight: 600;
+                color: #555;
+                min-width: 120px;
+            }
+            
+            .info-value {
+                color: #2c3e50;
+                font-weight: 500;
+            }
+            
+            .summary {
+                background: #e8f4fd;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border-left: 5px solid #3498db;
+            }
+            
+            .summary h3 {
+                color: #2c3e50;
+                margin: 0 0 15px 0;
+                font-size: 18px;
+            }
+            
+            .condition-summary {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+                margin-top: 15px;
+            }
+            
+            .condition-item {
+                background: white;
+                padding: 10px;
+                border-radius: 6px;
+                border: 1px solid #ddd;
+                text-align: center;
+            }
+            
+            .condition-count {
+                font-size: 24px;
+                font-weight: bold;
+                color: #e74c3c;
+                display: block;
+            }
+            
+            .condition-name {
+                font-size: 12px;
+                color: #666;
+                text-transform: uppercase;
+                margin-top: 5px;
+            }
+            
+            .teeth-details {
+                margin-top: 25px;
+            }
+            
+            .teeth-details h3 {
+                color: #2c3e50;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+                font-size: 18px;
+            }
+            
+            .tooth-card {
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .tooth-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .tooth-fdi {
+                font-size: 24px;
+                font-weight: bold;
+                color: #3498db;
+                background: #f8f9fa;
+                padding: 5px 15px;
+                border-radius: 20px;
+                border: 2px solid #3498db;
+            }
+            
+            .tooth-name {
+                font-size: 16px;
+                color: #2c3e50;
+                font-weight: 600;
+                flex: 1;
+                text-align: right;
+            }
+            
+            .conditions-list {
+                margin-top: 10px;
+            }
+            
+            .conditions-title {
+                font-weight: 600;
+                color: #555;
+                margin-bottom: 10px;
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            
+            .condition {
+                background: #fff5f5;
+                border: 1px solid #fed7d7;
+                border-radius: 6px;
+                padding: 10px;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .condition-info {
+                flex: 1;
+            }
+            
+            .condition-code {
+                font-family: 'Courier New', monospace;
+                background: #e74c3c;
+                color: white;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                display: inline-block;
+                margin-right: 10px;
+            }
+            
+            .condition-description {
+                color: #2c3e50;
+                font-weight: 500;
+            }
+            
+            .surface-info {
+                color: #666;
+                font-size: 12px;
+                background: #f8f9fa;
+                padding: 2px 6px;
+                border-radius: 3px;
+                border: 1px solid #ddd;
+            }
+            
+            .footer {
+                margin-top: 40px;
+                text-align: center;
+                padding-top: 20px;
+                border-top: 1px solid #ddd;
+                color: #666;
+                font-size: 12px;
+            }
+            
+            @media print {
+                body { margin: 0; padding: 15px; }
+                .tooth-card { break-inside: avoid; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>📋 Reporte Dental Odontograma</h1>
+            <p>Sistema de Diagnóstico Dental Profesional</p>
+        </div>
+
+        <div class="patient-info">
+            <h2>👤 Información del Paciente</h2>
+            <div class="info-row">
+                <span class="info-label">Nombre:</span>
+                <span class="info-value">${reportData.paciente.nombre}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Fecha del Reporte:</span>
+                <span class="info-value">${reportData.paciente.fecha}</span>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h3>📊 Resumen Ejecutivo</h3>
+            <div class="info-row">
+                <span class="info-label">Total de Piezas Afectadas:</span>
+                <span class="info-value">${reportData.resumen.total_piezas_afectadas}</span>
+            </div>
+            
+            <div class="condition-summary">
+                ${Object.entries(reportData.resumen.condiciones_encontradas)
+                  .map(([code, count]) => `
+                    <div class="condition-item">
+                        <span class="condition-count">${count}</span>
+                        <div class="condition-name">${getTreatmentName(code)}</div>
+                    </div>
+                  `).join('')}
+            </div>
+        </div>
+
+        <div class="teeth-details">
+            <h3>🦷 Detalle por Pieza Dental</h3>
+            
+            ${reportData.piezas.length === 0 ? 
+              '<p style="text-align: center; color: #666; font-style: italic; padding: 40px;">No se encontraron condiciones relevantes en el odontograma.</p>' :
+              reportData.piezas.map(pieza => `
+                <div class="tooth-card">
+                    <div class="tooth-header">
+                        <div class="tooth-fdi">${pieza.fdi}</div>
+                        <div class="tooth-name">${pieza.nombre}</div>
+                    </div>
+                    
+                    <div class="conditions-list">
+                        <div class="conditions-title">Condiciones Encontradas:</div>
+                        ${pieza.condiciones.map(condicion => `
+                            <div class="condition">
+                                <div class="condition-info">
+                                    <span class="condition-code">${condicion.codigo}</span>
+                                    <span class="condition-description">${condicion.nombre}</span>
+                                </div>
+                                <div class="surface-info">${condicion.superficie.anatomica}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+              `).join('')}
+        </div>
+
+        <div class="footer">
+            <p>Reporte generado el ${new Date().toLocaleString('es-ES')} | Sistema de Odontograma Dental</p>
+            <p>Basado en Sistema FDI de Numeración Dental Internacional</p>
+        </div>
+        
+        <script>
+            // Auto-print when window loads
+            window.onload = function() {
+                setTimeout(function() {
+                    window.print();
+                }, 500);
+            };
+        </script>
+    </body>
+    </html>
+  `
+
+  printWindow.document.write(reportHTML)
+  printWindow.document.close()
+}
+
+/**
+ * Export patient report as JSON
+ */
+function exportPatientReport() {
+  const reportData = generatePatientReport()
+  
+  // Create and download JSON file
+  const blob = new Blob([JSON.stringify(reportData, null, 2)], {
+    type: 'application/json'
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `reporte_dental_${new Date().toISOString().split('T')[0]}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+// ...existing code...
+
+// Update setupEventHandlers to include print functionality
 function setupEventHandlers() {
     console.log('🔧 Setting up dental event handlers...');
 
@@ -520,6 +946,16 @@ function setupEventHandlers() {
         exportOdontogramData();
         alert(`Datos con capas exportados exitosamente. ${treatmentCount} tratamientos incluidos.`);
     });
+
+    // Add print report handler
+    $('#printReport').on('click', function() {
+      generatePatientReport()
+    })
+
+    // Add export report handler  
+    $('#exportReport').on('click', function() {
+      exportPatientReport()
+    })
 
     console.log('✅ Dental event handlers setup completed');
 }

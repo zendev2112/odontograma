@@ -1,7 +1,13 @@
 {
+  "metadatos": {
+    "version": "2.1",
+    "sistema_numeracion": "FDI",
+    "idioma": "español",
+    "fecha_actualizacion": "2024-12-19"
+  },
   "dientes": [
     {
-      "fdi": "11",
+      "fdi": 11,
       "cuadrante": 1,
       "posicion": 1,
       "arco": "superior",
@@ -9,16 +15,18 @@
       "denticion": "permanente",
       "tipo": "incisivo central",
       "nombre": "Superior derecha incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "11"
     },
     {
-      "fdi": "12",
+      "fdi": 12,
       "cuadrante": 1,
       "posicion": 2,
       "arco": "superior",
@@ -26,16 +34,18 @@
       "denticion": "permanente",
       "tipo": "incisivo lateral",
       "nombre": "Superior derecha incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "12"
     },
     {
-      "fdi": "13",
+      "fdi": 13,
       "cuadrante": 1,
       "posicion": 3,
       "arco": "superior",
@@ -43,16 +53,18 @@
       "denticion": "permanente",
       "tipo": "canino",
       "nombre": "Superior derecha canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "13"
     },
     {
-      "fdi": "14",
+      "fdi": 14,
       "cuadrante": 1,
       "posicion": 4,
       "arco": "superior",
@@ -60,16 +72,18 @@
       "denticion": "permanente",
       "tipo": "primer premolar",
       "nombre": "Superior derecha primer premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "14"
     },
     {
-      "fdi": "15",
+      "fdi": 15,
       "cuadrante": 1,
       "posicion": 5,
       "arco": "superior",
@@ -77,16 +91,18 @@
       "denticion": "permanente",
       "tipo": "segundo premolar",
       "nombre": "Superior derecha segundo premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "15"
     },
     {
-      "fdi": "16",
+      "fdi": 16,
       "cuadrante": 1,
       "posicion": 6,
       "arco": "superior",
@@ -94,16 +110,18 @@
       "denticion": "permanente",
       "tipo": "primer molar",
       "nombre": "Superior derecha primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "16"
     },
     {
-      "fdi": "17",
+      "fdi": 17,
       "cuadrante": 1,
       "posicion": 7,
       "arco": "superior",
@@ -111,16 +129,18 @@
       "denticion": "permanente",
       "tipo": "segundo molar",
       "nombre": "Superior derecha segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "17"
     },
     {
-      "fdi": "18",
+      "fdi": 18,
       "cuadrante": 1,
       "posicion": 8,
       "arco": "superior",
@@ -128,16 +148,18 @@
       "denticion": "permanente",
       "tipo": "tercer molar",
       "nombre": "Superior derecha tercer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "18"
     },
     {
-      "fdi": "21",
+      "fdi": 21,
       "cuadrante": 2,
       "posicion": 1,
       "arco": "superior",
@@ -145,16 +167,18 @@
       "denticion": "permanente",
       "tipo": "incisivo central",
       "nombre": "Superior izquierda incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "21"
     },
     {
-      "fdi": "22",
+      "fdi": 22,
       "cuadrante": 2,
       "posicion": 2,
       "arco": "superior",
@@ -162,16 +186,18 @@
       "denticion": "permanente",
       "tipo": "incisivo lateral",
       "nombre": "Superior izquierda incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "22"
     },
     {
-      "fdi": "23",
+      "fdi": 23,
       "cuadrante": 2,
       "posicion": 3,
       "arco": "superior",
@@ -179,16 +205,18 @@
       "denticion": "permanente",
       "tipo": "canino",
       "nombre": "Superior izquierda canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "23"
     },
     {
-      "fdi": "24",
+      "fdi": 24,
       "cuadrante": 2,
       "posicion": 4,
       "arco": "superior",
@@ -196,16 +224,18 @@
       "denticion": "permanente",
       "tipo": "primer premolar",
       "nombre": "Superior izquierda primer premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "24"
     },
     {
-      "fdi": "25",
+      "fdi": 25,
       "cuadrante": 2,
       "posicion": 5,
       "arco": "superior",
@@ -213,16 +243,18 @@
       "denticion": "permanente",
       "tipo": "segundo premolar",
       "nombre": "Superior izquierda segundo premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "25"
     },
     {
-      "fdi": "26",
+      "fdi": 26,
       "cuadrante": 2,
       "posicion": 6,
       "arco": "superior",
@@ -230,16 +262,18 @@
       "denticion": "permanente",
       "tipo": "primer molar",
       "nombre": "Superior izquierda primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "26"
     },
     {
-      "fdi": "27",
+      "fdi": 27,
       "cuadrante": 2,
       "posicion": 7,
       "arco": "superior",
@@ -247,16 +281,18 @@
       "denticion": "permanente",
       "tipo": "segundo molar",
       "nombre": "Superior izquierda segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "27"
     },
     {
-      "fdi": "28",
+      "fdi": 28,
       "cuadrante": 2,
       "posicion": 8,
       "arco": "superior",
@@ -264,16 +300,18 @@
       "denticion": "permanente",
       "tipo": "tercer molar",
       "nombre": "Superior izquierda tercer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "28"
     },
     {
-      "fdi": "31",
+      "fdi": 31,
       "cuadrante": 3,
       "posicion": 1,
       "arco": "inferior",
@@ -281,16 +319,18 @@
       "denticion": "permanente",
       "tipo": "incisivo central",
       "nombre": "Inferior izquierda incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "31"
     },
     {
-      "fdi": "32",
+      "fdi": 32,
       "cuadrante": 3,
       "posicion": 2,
       "arco": "inferior",
@@ -298,16 +338,18 @@
       "denticion": "permanente",
       "tipo": "incisivo lateral",
       "nombre": "Inferior izquierda incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "32"
     },
     {
-      "fdi": "33",
+      "fdi": 33,
       "cuadrante": 3,
       "posicion": 3,
       "arco": "inferior",
@@ -315,16 +357,18 @@
       "denticion": "permanente",
       "tipo": "canino",
       "nombre": "Inferior izquierda canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "33"
     },
     {
-      "fdi": "34",
+      "fdi": 34,
       "cuadrante": 3,
       "posicion": 4,
       "arco": "inferior",
@@ -332,16 +376,18 @@
       "denticion": "permanente",
       "tipo": "primer premolar",
       "nombre": "Inferior izquierda primer premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "34"
     },
     {
-      "fdi": "35",
+      "fdi": 35,
       "cuadrante": 3,
       "posicion": 5,
       "arco": "inferior",
@@ -349,16 +395,18 @@
       "denticion": "permanente",
       "tipo": "segundo premolar",
       "nombre": "Inferior izquierda segundo premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "35"
     },
     {
-      "fdi": "36",
+      "fdi": 36,
       "cuadrante": 3,
       "posicion": 6,
       "arco": "inferior",
@@ -366,16 +414,18 @@
       "denticion": "permanente",
       "tipo": "primer molar",
       "nombre": "Inferior izquierda primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "36"
     },
     {
-      "fdi": "37",
+      "fdi": 37,
       "cuadrante": 3,
       "posicion": 7,
       "arco": "inferior",
@@ -383,16 +433,18 @@
       "denticion": "permanente",
       "tipo": "segundo molar",
       "nombre": "Inferior izquierda segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "37"
     },
     {
-      "fdi": "38",
+      "fdi": 38,
       "cuadrante": 3,
       "posicion": 8,
       "arco": "inferior",
@@ -400,16 +452,18 @@
       "denticion": "permanente",
       "tipo": "tercer molar",
       "nombre": "Inferior izquierda tercer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "38"
     },
     {
-      "fdi": "41",
+      "fdi": 41,
       "cuadrante": 4,
       "posicion": 1,
       "arco": "inferior",
@@ -417,16 +471,18 @@
       "denticion": "permanente",
       "tipo": "incisivo central",
       "nombre": "Inferior derecha incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "41"
     },
     {
-      "fdi": "42",
+      "fdi": 42,
       "cuadrante": 4,
       "posicion": 2,
       "arco": "inferior",
@@ -434,16 +490,18 @@
       "denticion": "permanente",
       "tipo": "incisivo lateral",
       "nombre": "Inferior derecha incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "42"
     },
     {
-      "fdi": "43",
+      "fdi": 43,
       "cuadrante": 4,
       "posicion": 3,
       "arco": "inferior",
@@ -451,16 +509,18 @@
       "denticion": "permanente",
       "tipo": "canino",
       "nombre": "Inferior derecha canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "43"
     },
     {
-      "fdi": "44",
+      "fdi": 44,
       "cuadrante": 4,
       "posicion": 4,
       "arco": "inferior",
@@ -468,16 +528,18 @@
       "denticion": "permanente",
       "tipo": "primer premolar",
       "nombre": "Inferior derecha primer premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "44"
     },
     {
-      "fdi": "45",
+      "fdi": 45,
       "cuadrante": 4,
       "posicion": 5,
       "arco": "inferior",
@@ -485,16 +547,18 @@
       "denticion": "permanente",
       "tipo": "segundo premolar",
       "nombre": "Inferior derecha segundo premolar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "45"
     },
     {
-      "fdi": "46",
+      "fdi": 46,
       "cuadrante": 4,
       "posicion": 6,
       "arco": "inferior",
@@ -502,16 +566,18 @@
       "denticion": "permanente",
       "tipo": "primer molar",
       "nombre": "Inferior derecha primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "46"
     },
     {
-      "fdi": "47",
+      "fdi": 47,
       "cuadrante": 4,
       "posicion": 7,
       "arco": "inferior",
@@ -519,16 +585,18 @@
       "denticion": "permanente",
       "tipo": "segundo molar",
       "nombre": "Inferior derecha segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "47"
     },
     {
-      "fdi": "48",
+      "fdi": 48,
       "cuadrante": 4,
       "posicion": 8,
       "arco": "inferior",
@@ -536,16 +604,18 @@
       "denticion": "permanente",
       "tipo": "tercer molar",
       "nombre": "Inferior derecha tercer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "48"
     },
     {
-      "fdi": "51",
+      "fdi": 51,
       "cuadrante": 5,
       "posicion": 1,
       "arco": "superior",
@@ -553,16 +623,18 @@
       "denticion": "temporal",
       "tipo": "incisivo central",
       "nombre": "Superior derecha incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "51"
     },
     {
-      "fdi": "52",
+      "fdi": 52,
       "cuadrante": 5,
       "posicion": 2,
       "arco": "superior",
@@ -570,16 +642,18 @@
       "denticion": "temporal",
       "tipo": "incisivo lateral",
       "nombre": "Superior derecha incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "52"
     },
     {
-      "fdi": "53",
+      "fdi": 53,
       "cuadrante": 5,
       "posicion": 3,
       "arco": "superior",
@@ -587,16 +661,18 @@
       "denticion": "temporal",
       "tipo": "canino",
       "nombre": "Superior derecha canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "53"
     },
     {
-      "fdi": "54",
+      "fdi": 54,
       "cuadrante": 5,
       "posicion": 4,
       "arco": "superior",
@@ -604,16 +680,18 @@
       "denticion": "temporal",
       "tipo": "primer molar",
       "nombre": "Superior derecha primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "54"
     },
     {
-      "fdi": "55",
+      "fdi": 55,
       "cuadrante": 5,
       "posicion": 5,
       "arco": "superior",
@@ -621,16 +699,18 @@
       "denticion": "temporal",
       "tipo": "segundo molar",
       "nombre": "Superior derecha segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "distal",
+        "bottom": "palatina",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "55"
     },
     {
-      "fdi": "61",
+      "fdi": 61,
       "cuadrante": 6,
       "posicion": 1,
       "arco": "superior",
@@ -638,16 +718,18 @@
       "denticion": "temporal",
       "tipo": "incisivo central",
       "nombre": "Superior izquierda incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "61"
     },
     {
-      "fdi": "62",
+      "fdi": 62,
       "cuadrante": 6,
       "posicion": 2,
       "arco": "superior",
@@ -655,16 +737,18 @@
       "denticion": "temporal",
       "tipo": "incisivo lateral",
       "nombre": "Superior izquierda incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "62"
     },
     {
-      "fdi": "63",
+      "fdi": 63,
       "cuadrante": 6,
       "posicion": 3,
       "arco": "superior",
@@ -672,16 +756,18 @@
       "denticion": "temporal",
       "tipo": "canino",
       "nombre": "Superior izquierda canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "63"
     },
     {
-      "fdi": "64",
+      "fdi": 64,
       "cuadrante": 6,
       "posicion": 4,
       "arco": "superior",
@@ -689,16 +775,18 @@
       "denticion": "temporal",
       "tipo": "primer molar",
       "nombre": "Superior izquierda primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "64"
     },
     {
-      "fdi": "65",
+      "fdi": 65,
       "cuadrante": 6,
       "posicion": 5,
       "arco": "superior",
@@ -706,16 +794,18 @@
       "denticion": "temporal",
       "tipo": "segundo molar",
       "nombre": "Superior izquierda segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "palatina", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "vestibular",
+        "right": "mesial",
+        "bottom": "palatina",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "65"
     },
     {
-      "fdi": "71",
+      "fdi": 71,
       "cuadrante": 7,
       "posicion": 1,
       "arco": "inferior",
@@ -723,16 +813,18 @@
       "denticion": "temporal",
       "tipo": "incisivo central",
       "nombre": "Inferior izquierda incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "71"
     },
     {
-      "fdi": "72",
+      "fdi": 72,
       "cuadrante": 7,
       "posicion": 2,
       "arco": "inferior",
@@ -740,16 +832,18 @@
       "denticion": "temporal",
       "tipo": "incisivo lateral",
       "nombre": "Inferior izquierda incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "72"
     },
     {
-      "fdi": "73",
+      "fdi": 73,
       "cuadrante": 7,
       "posicion": 3,
       "arco": "inferior",
@@ -757,16 +851,18 @@
       "denticion": "temporal",
       "tipo": "canino",
       "nombre": "Inferior izquierda canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "incisal"
+      },
+      "export_key": "73"
     },
     {
-      "fdi": "74",
+      "fdi": 74,
       "cuadrante": 7,
       "posicion": 4,
       "arco": "inferior",
@@ -774,16 +870,18 @@
       "denticion": "temporal",
       "tipo": "primer molar",
       "nombre": "Inferior izquierda primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "74"
     },
     {
-      "fdi": "75",
+      "fdi": 75,
       "cuadrante": 7,
       "posicion": 5,
       "arco": "inferior",
@@ -791,16 +889,18 @@
       "denticion": "temporal",
       "tipo": "segundo molar",
       "nombre": "Inferior izquierda segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "mesial",
+        "bottom": "vestibular",
+        "left": "distal",
+        "middle": "oclusal"
+      },
+      "export_key": "75"
     },
     {
-      "fdi": "81",
+      "fdi": 81,
       "cuadrante": 8,
       "posicion": 1,
       "arco": "inferior",
@@ -808,16 +908,18 @@
       "denticion": "temporal",
       "tipo": "incisivo central",
       "nombre": "Inferior derecha incisivo central",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "81"
     },
     {
-      "fdi": "82",
+      "fdi": 82,
       "cuadrante": 8,
       "posicion": 2,
       "arco": "inferior",
@@ -825,16 +927,18 @@
       "denticion": "temporal",
       "tipo": "incisivo lateral",
       "nombre": "Inferior derecha incisivo lateral",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "82"
     },
     {
-      "fdi": "83",
+      "fdi": 83,
       "cuadrante": 8,
       "posicion": 3,
       "arco": "inferior",
@@ -842,16 +946,18 @@
       "denticion": "temporal",
       "tipo": "canino",
       "nombre": "Inferior derecha canino",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "incisal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "incisal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "incisal"
+      },
+      "export_key": "83"
     },
     {
-      "fdi": "84",
+      "fdi": 84,
       "cuadrante": 8,
       "posicion": 4,
       "arco": "inferior",
@@ -859,16 +965,18 @@
       "denticion": "temporal",
       "tipo": "primer molar",
       "nombre": "Inferior derecha primer molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "84"
     },
     {
-      "fdi": "85",
+      "fdi": 85,
       "cuadrante": 8,
       "posicion": 5,
       "arco": "inferior",
@@ -876,13 +984,37 @@
       "denticion": "temporal",
       "tipo": "segundo molar",
       "nombre": "Inferior derecha segundo molar",
-      "caras": [
-        "vestibular",
-        "palatina",
-        "mesial",
-        "distal",
-        "oclusal"
-      ]
+      "caras": ["vestibular", "lingual", "mesial", "distal", "oclusal"],
+      "mapeo_canvas": {
+        "top": "lingual",
+        "right": "distal",
+        "bottom": "vestibular",
+        "left": "mesial",
+        "middle": "oclusal"
+      },
+      "export_key": "85"
     }
-  ]
+  ],
+  "codigos_tratamiento": {
+    "RCT": "Tratamiento de Conducto",
+    "CARIES_UNTREATABLE": "Caries Incurable",
+    "MIS": "Diente Ausente",
+    "SIL": "Obturación Silicato",
+    "PRE": "Paradentosis",
+    "FRM_ACR": "Pivot",
+    "BRIDGE": "Puente",
+    "ORT": "Ortodoncia",
+    "RES": "Restauración",
+    "REF": "Restauración Filtrada",
+    "CARIES": "Caries Curable",
+    "CFR": "Extracción",
+    "AMF": "Obturación Amalgama",
+    "COF": "Obturación Acrílico/Composite",
+    "POC": "Corona",
+    "INC": "Incrustación",
+    "FMC": "Prot. Removible",
+    "IPX": "Implante",
+    "NVT": "Surco Profundo",
+    "UNE": "Pieza No Erupcionada"
+  }
 }
