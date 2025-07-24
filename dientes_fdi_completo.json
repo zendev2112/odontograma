@@ -1,0 +1,888 @@
+{
+  "dientes": [
+    {
+      "fdi": "11",
+      "cuadrante": 1,
+      "posicion": 1,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "incisivo central",
+      "nombre": "Superior derecha incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "12",
+      "cuadrante": 1,
+      "posicion": 2,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "incisivo lateral",
+      "nombre": "Superior derecha incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "13",
+      "cuadrante": 1,
+      "posicion": 3,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "canino",
+      "nombre": "Superior derecha canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "14",
+      "cuadrante": 1,
+      "posicion": 4,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "primer premolar",
+      "nombre": "Superior derecha primer premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "15",
+      "cuadrante": 1,
+      "posicion": 5,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "segundo premolar",
+      "nombre": "Superior derecha segundo premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "16",
+      "cuadrante": 1,
+      "posicion": 6,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "primer molar",
+      "nombre": "Superior derecha primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "17",
+      "cuadrante": 1,
+      "posicion": 7,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "segundo molar",
+      "nombre": "Superior derecha segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "18",
+      "cuadrante": 1,
+      "posicion": 8,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "tercer molar",
+      "nombre": "Superior derecha tercer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "21",
+      "cuadrante": 2,
+      "posicion": 1,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "incisivo central",
+      "nombre": "Superior izquierda incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "22",
+      "cuadrante": 2,
+      "posicion": 2,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "incisivo lateral",
+      "nombre": "Superior izquierda incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "23",
+      "cuadrante": 2,
+      "posicion": 3,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "canino",
+      "nombre": "Superior izquierda canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "24",
+      "cuadrante": 2,
+      "posicion": 4,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "primer premolar",
+      "nombre": "Superior izquierda primer premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "25",
+      "cuadrante": 2,
+      "posicion": 5,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "segundo premolar",
+      "nombre": "Superior izquierda segundo premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "26",
+      "cuadrante": 2,
+      "posicion": 6,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "primer molar",
+      "nombre": "Superior izquierda primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "27",
+      "cuadrante": 2,
+      "posicion": 7,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "segundo molar",
+      "nombre": "Superior izquierda segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "28",
+      "cuadrante": 2,
+      "posicion": 8,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "tercer molar",
+      "nombre": "Superior izquierda tercer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "31",
+      "cuadrante": 3,
+      "posicion": 1,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "incisivo central",
+      "nombre": "Inferior izquierda incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "32",
+      "cuadrante": 3,
+      "posicion": 2,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "incisivo lateral",
+      "nombre": "Inferior izquierda incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "33",
+      "cuadrante": 3,
+      "posicion": 3,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "canino",
+      "nombre": "Inferior izquierda canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "34",
+      "cuadrante": 3,
+      "posicion": 4,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "primer premolar",
+      "nombre": "Inferior izquierda primer premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "35",
+      "cuadrante": 3,
+      "posicion": 5,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "segundo premolar",
+      "nombre": "Inferior izquierda segundo premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "36",
+      "cuadrante": 3,
+      "posicion": 6,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "primer molar",
+      "nombre": "Inferior izquierda primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "37",
+      "cuadrante": 3,
+      "posicion": 7,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "segundo molar",
+      "nombre": "Inferior izquierda segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "38",
+      "cuadrante": 3,
+      "posicion": 8,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "permanente",
+      "tipo": "tercer molar",
+      "nombre": "Inferior izquierda tercer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "41",
+      "cuadrante": 4,
+      "posicion": 1,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "incisivo central",
+      "nombre": "Inferior derecha incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "42",
+      "cuadrante": 4,
+      "posicion": 2,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "incisivo lateral",
+      "nombre": "Inferior derecha incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "43",
+      "cuadrante": 4,
+      "posicion": 3,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "canino",
+      "nombre": "Inferior derecha canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "44",
+      "cuadrante": 4,
+      "posicion": 4,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "primer premolar",
+      "nombre": "Inferior derecha primer premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "45",
+      "cuadrante": 4,
+      "posicion": 5,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "segundo premolar",
+      "nombre": "Inferior derecha segundo premolar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "46",
+      "cuadrante": 4,
+      "posicion": 6,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "primer molar",
+      "nombre": "Inferior derecha primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "47",
+      "cuadrante": 4,
+      "posicion": 7,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "segundo molar",
+      "nombre": "Inferior derecha segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "48",
+      "cuadrante": 4,
+      "posicion": 8,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "permanente",
+      "tipo": "tercer molar",
+      "nombre": "Inferior derecha tercer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "51",
+      "cuadrante": 5,
+      "posicion": 1,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "incisivo central",
+      "nombre": "Superior derecha incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "52",
+      "cuadrante": 5,
+      "posicion": 2,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "incisivo lateral",
+      "nombre": "Superior derecha incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "53",
+      "cuadrante": 5,
+      "posicion": 3,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "canino",
+      "nombre": "Superior derecha canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "54",
+      "cuadrante": 5,
+      "posicion": 4,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "primer molar",
+      "nombre": "Superior derecha primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "55",
+      "cuadrante": 5,
+      "posicion": 5,
+      "arco": "superior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "segundo molar",
+      "nombre": "Superior derecha segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "61",
+      "cuadrante": 6,
+      "posicion": 1,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "incisivo central",
+      "nombre": "Superior izquierda incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "62",
+      "cuadrante": 6,
+      "posicion": 2,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "incisivo lateral",
+      "nombre": "Superior izquierda incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "63",
+      "cuadrante": 6,
+      "posicion": 3,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "canino",
+      "nombre": "Superior izquierda canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "64",
+      "cuadrante": 6,
+      "posicion": 4,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "primer molar",
+      "nombre": "Superior izquierda primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "65",
+      "cuadrante": 6,
+      "posicion": 5,
+      "arco": "superior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "segundo molar",
+      "nombre": "Superior izquierda segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "71",
+      "cuadrante": 7,
+      "posicion": 1,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "incisivo central",
+      "nombre": "Inferior izquierda incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "72",
+      "cuadrante": 7,
+      "posicion": 2,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "incisivo lateral",
+      "nombre": "Inferior izquierda incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "73",
+      "cuadrante": 7,
+      "posicion": 3,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "canino",
+      "nombre": "Inferior izquierda canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "74",
+      "cuadrante": 7,
+      "posicion": 4,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "primer molar",
+      "nombre": "Inferior izquierda primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "75",
+      "cuadrante": 7,
+      "posicion": 5,
+      "arco": "inferior",
+      "lado": "izquierda",
+      "denticion": "temporal",
+      "tipo": "segundo molar",
+      "nombre": "Inferior izquierda segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "81",
+      "cuadrante": 8,
+      "posicion": 1,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "incisivo central",
+      "nombre": "Inferior derecha incisivo central",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "82",
+      "cuadrante": 8,
+      "posicion": 2,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "incisivo lateral",
+      "nombre": "Inferior derecha incisivo lateral",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "83",
+      "cuadrante": 8,
+      "posicion": 3,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "canino",
+      "nombre": "Inferior derecha canino",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "incisal"
+      ]
+    },
+    {
+      "fdi": "84",
+      "cuadrante": 8,
+      "posicion": 4,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "primer molar",
+      "nombre": "Inferior derecha primer molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    },
+    {
+      "fdi": "85",
+      "cuadrante": 8,
+      "posicion": 5,
+      "arco": "inferior",
+      "lado": "derecha",
+      "denticion": "temporal",
+      "tipo": "segundo molar",
+      "nombre": "Inferior derecha segundo molar",
+      "caras": [
+        "vestibular",
+        "palatina",
+        "mesial",
+        "distal",
+        "oclusal"
+      ]
+    }
+  ]
+}

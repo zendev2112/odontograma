@@ -1,0 +1,415 @@
+/* RESET AND BASE STYLES */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f4f7f9;
+    color: #333;
+}
+
+h1 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+/* MAIN CONTAINER */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ODONTOGRAM SELECTOR */
+.odontogram-selector {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.odontogram-selector label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+#odontogramType {
+    padding: 8px 12px;
+    border: 2px solid #3498db;
+    border-radius: 6px;
+    background: white;
+    color: #2c3e50;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.teeth-range {
+    font-size: 12px;
+    color: #7f8c8d;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+/* LAYER TOGGLE PANEL */
+.layer-toggle-panel {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #e74c3c;
+}
+
+.layer-toggle-panel h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    border-bottom: 2px solid #e74c3c;
+    padding-bottom: 8px;
+}
+
+.toggle-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.radio-group input[type="radio"] {
+    display: none;
+}
+
+.layer-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.layer-label:hover {
+    border-color: #bbb;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.layer-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.layer-indicator.pre {
+    color: #e74c3c;
+    background: #e74c3c;
+}
+
+.layer-indicator.req {
+    color: #3498db;
+    background: #3498db;
+}
+
+/* Active state for layer labels */
+input[type="radio"]:checked+.layer-label.pre-existing {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+input[type="radio"]:checked+.layer-label.required {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+.layer-description {
+    background: rgba(52, 152, 219, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #3498db;
+}
+
+.layer-description p {
+    margin: 0;
+    font-size: 13px;
+    color: #555;
+}
+
+/* CONTROLS PANEL - COMPACT BUTTONS */
+.controls-panel {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* BUTTON GRID - TWO COLUMNS */
+.button-grid {
+    display: flex;
+    gap: 15px;
+}
+
+.column-left,
+.column-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* BUTTON STYLING - COMPACT WITH SYMBOL LEFT, NAME RIGHT */
+.column-left button,
+.column-right button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 6px 10px;
+    height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    color: #333;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+}
+
+/* SYMBOL - ALWAYS LEFT */
+.symbol {
+    font-weight: bold;
+    font-size: 12px;
+    min-width: 20px;
+    max-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    color: #333;
+}
+
+/* BIG SYMBOLS */
+.symbol.big {
+    font-size: 14px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+}
+
+/* NAME - ALWAYS RIGHT */
+.name {
+    flex: 1;
+    font-size: 11px;
+    line-height: 1.2;
+    color: #333;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* CARIES BUTTON COLORS ONLY */
+.btn-caries-curable {
+    background: #4CAF50 !important;
+    color: white !important;
+    border-color: #45a049 !important;
+}
+
+.btn-caries-curable .symbol,
+.btn-caries-curable .name {
+    color: white !important;
+}
+
+.btn-caries-incurable {
+    background: #FFC107 !important;
+    color: #000 !important;
+    border-color: #ffb300 !important;
+}
+
+.btn-caries-incurable .symbol,
+.btn-caries-incurable .name {
+    color: #000 !important;
+}
+
+/* HOVER EFFECTS */
+.column-left button:hover:not(.btn-caries-curable):not(.btn-caries-incurable),
+.column-right button:hover:not(.btn-caries-curable):not(.btn-caries-incurable) {
+    background: #f8f9fa;
+    border-color: #bbb;
+}
+
+.btn-caries-curable:hover {
+    background: #45a049 !important;
+}
+
+.btn-caries-incurable:hover {
+    background: #ffb300 !important;
+}
+
+/* ACTIVE STATE */
+.column-left button:active,
+.column-right button:active,
+.column-left button.active,
+.column-right button.active {
+    transform: scale(0.98);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ODONTOGRAM CONTAINER */
+.odontogram-container {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+canvas {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: white;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* DOWNLOAD SECTION */
+.download-section {
+    text-align: center;
+}
+
+#download {
+    background: #16a085;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#download:hover {
+    background: #138d75;
+}
+
+/* DENTAL INFO PANEL */
+.dental-info-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.tooth-details,
+.odontogram-data {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tooth-details h3,
+.odontogram-data h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+.tooth-info-content,
+.odontogram-data-content {
+    min-height: 150px;
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.export-btn {
+    width: 100%;
+    margin-top: 15px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    transition: background 0.2s;
+}
+
+.export-btn:hover {
+    background: #229954;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .button-grid {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dental-info-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .odontogram-selector {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .column-left button,
+    .column-right button {
+        height: 30px;
+        padding: 5px 8px;
+        gap: 6px;
+    }
+
+    .symbol {
+        min-width: 18px;
+        max-width: 18px;
+        font-size: 11px;
+    }
+
+    .name {
+        font-size: 10px;
+    }
+}
