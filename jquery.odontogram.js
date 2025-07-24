@@ -3331,8 +3331,18 @@ function getColorForTreatment(treatmentName, layer) {
                 }
               }
             } else {
-              // Delete all treatments from entire tooth
-              delete instance.geometry[keyCoord]
+                  tempGeoms[keyCoord] = [
+        convertGeom(
+          {
+            vertices: [
+              { x: coord.x1, y: coord.y1 },
+              { x: coord.x2, y: coord.y2 },
+            ],
+            pos: teeth.num, // THIS WAS MISSING!
+          },
+          instance.mode
+        ),
+      ]
             }
 
             console.log('🗑️ Deleted treatments from tooth:', teeth.num)
