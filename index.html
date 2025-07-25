@@ -24,42 +24,9 @@
 
         </div>
 
-        <!-- Layer Toggle Control -->
-        <div class="layer-toggle-panel">
-            <h3>Tipo de Prestación</h3>
-            <div class="toggle-container">
-                <div class="radio-group">
-                    <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
-                    <label for="layer-pre" class="layer-label pre-existing">
-                        <span class="layer-indicator pre"></span>
-                        Prestación Preexistente
-                    </label>
 
-                    <input type="radio" id="layer-req" name="annotation-layer" value="req">
-                    <label for="layer-req" class="layer-label required">
-                        <span class="layer-indicator req"></span>
-                        Prestación Requerida
-                    </label>
-                </div>
-                <div class="layer-description">
-                    <p id="layer-description-text">Nuevas anotaciones se marcarán como <strong>pre-existentes</strong>
-                        en rojo</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="control-group">
 
-            <button id="ODONTOGRAM_MODE_HAPUS" class="treatment-btn delete-btn"
-                title="Borrar tratamientos seleccionados">
-                <span class="icon">🗑️</span>
-                <span class="name">Borrar</span>
-            </button>
-            <button id="ODONTOGRAM_MODE_DEFAULT" class="treatment-btn default-btn" title="Limpiar todo el odontograma">
-                <span class="icon">🧹</span>
-                <span class="name">Limpiar Todo</span>
-            </button>
-        </div>
 
         <div class="controls-panel">
             <div class="button-grid">
@@ -168,6 +135,39 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Layer Toggle Control -->
+        <div class="layer-toggle-panel">
+            <h3>Tipo de Prestación</h3>
+            <div class="toggle-container">
+                <div class="radio-group">
+                    <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
+                    <label for="layer-pre" class="layer-label pre-existing">
+                        <span class="layer-indicator pre"></span>
+                        Prestación Preexistente
+                    </label>
+
+                    <input type="radio" id="layer-req" name="annotation-layer" value="req">
+                    <label for="layer-req" class="layer-label required">
+                        <span class="layer-indicator req"></span>
+                        Prestación Requerida
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-group">
+
+            <button id="ODONTOGRAM_MODE_HAPUS" class="treatment-btn delete-btn"
+                title="Borrar tratamientos seleccionados">
+                <span class="icon">🗑️</span>
+                <span class="name">Borrar</span>
+            </button>
+            <button id="ODONTOGRAM_MODE_DEFAULT" class="treatment-btn default-btn" title="Limpiar todo el odontograma">
+                <span class="icon">🧹</span>
+                <span class="name">Limpiar Todo</span>
+            </button>
         </div>
 
         <div class="odontogram-container">
