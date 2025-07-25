@@ -291,58 +291,50 @@ function updateOdontogramData(geometry) {
           html += `<div class="conditions-section">`
           html += `<h5>Condiciones:</h5>`
 
-          conditionTreatments.forEach((treatment) => {
-            const treatmentName = getTreatmentName(treatment.name)
-            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
-            let sideLabel = ''
+        conditionTreatments.forEach((treatment) => {
+          const treatmentName = getTreatmentName(treatment.name)
+          const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
+          let sideLabel = ''
 
-            // Proper surface mapping using FDI-linked tooth data
-            if (
-              withSides.includes(treatment.name) &&
-              treatment.pos &&
-              treatment.pos.includes('-') &&
-              toothInfo &&
-              toothInfo.mapeo_canvas
-            ) {
-              // Extract canvas surface code from treatment position
-              const surfaceCode = treatment.pos.split('-')[1]
+          // Proper surface mapping using FDI-linked tooth data
+          if (
+            withSides.includes(treatment.name) &&
+            treatment.pos &&
+            treatment.pos.includes('-') &&
+            toothInfo &&
+            toothInfo.mapeo_canvas
+          ) {
+            // Extract canvas surface code from treatment position
+            const surfaceCode = treatment.pos.split('-')[1]
 
-              // Map canvas position to anatomical surface using tooth-specific mapping
-              const anatomical = toothInfo.mapeo_canvas[surfaceCode]
+            // Map canvas position to anatomical surface using tooth-specific mapping
+            const anatomical = toothInfo.mapeo_canvas[surfaceCode]
 
-              // Use anatomical name if found, otherwise use surface code
-              sideLabel = anatomical ? ` ${anatomical}` : ` ${surfaceCode}`
-            }
+            // Use anatomical name if found, otherwise use surface code
+            sideLabel = anatomical ? ` ${anatomical}` : ` ${surfaceCode}`
+          }
 
-            totalTreatments++
+          totalTreatments++
 
-            // Determine layer and styling
-            let layerBadge = ''
-            let layerClass = ''
+          // Determine layer count without displaying badges
+          if (
+            typeof shouldUseLayerColor !== 'undefined' &&
+            shouldUseLayerColor(treatment.name)
+          ) {
+            const layer = treatment.layer || 'pre'
+            treatmentsByLayer[layer]++
+          } else {
+            treatmentsByLayer.condiciones++
+          }
 
-            if (
-              typeof shouldUseLayerColor !== 'undefined' &&
-              shouldUseLayerColor(treatment.name)
-            ) {
-              const layer = treatment.layer || 'pre'
-              const layerInfo = getLayerInfo(layer)
-              layerBadge = `<span class="layer-badge" style="background-color: ${layerInfo.color}">${layerInfo.badge}</span>`
-              layerClass = `layer-${layer}`
-              treatmentsByLayer[layer]++
-            } else {
-              layerBadge = `<span class="layer-badge condiciones">CON</span>`
-              layerClass = 'condiciones'
-              treatmentsByLayer.condiciones++
-            }
-
-            html += `
-              <div class="treatment-item ${layerClass}">
-                <div class="treatment-details">
-                  <span class="treatment-name">${treatmentName}${sideLabel} ${layerBadge}</span>
-                </div>
-              </div>
-            `
-          })
+          html += `
+    <div class="treatment-item">
+      <div class="treatment-details">
+        <span class="treatment-name">${treatmentName}${sideLabel}</span>
+      </div>
+    </div>
+  `
+        })  
 
           html += `</div>`
         }
