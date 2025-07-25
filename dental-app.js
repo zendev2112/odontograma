@@ -499,94 +499,27 @@ function updateOdontogramData(geometry) {
     }
   }
 
-  // ADD THE MISSING SUMMARY HTML GENERATION
-  let summaryHtml = `<div class="data-summary">`
-  summaryHtml += `<h4>📊 Resumen de Tratamientos (${totalTreatments} total)</h4>`
 
-  // Layer summary following dental standards
-  summaryHtml += `<div class="layer-summary">`
-  summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
-  summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
-  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
-  summaryHtml += `</div>`
-  summaryHtml += `</div>`
 
   html = summaryHtml + html + '</div>'
   dataElement.innerHTML = html
 }
 
-/**
- * Export odontogram data with layer information
- */
 function exportOdontogramData() {
   const now = new Date()
   const instance = $('#odontogram').data('odontogram')
   
-  // Comprehensive dental data export following odontogram standards
+  // SIMPLIFIED JSON - ONLY THE EXACT FIELDS REQUESTED
   const exportData = {
-    metadatos: {
-      fecha_creacion: now.toISOString().split('T')[0],
-      hora_creacion: now.toTimeString().split(' ')[0],
-      tipo_denticion: currentOdontogramType === 'children' ? 'temporal' : 'permanente',
-      version_aplicacion: '2.1',
-      sistema_numeracion: 'FDI',
-      capa_activa: currentAnnotationLayer,
-      total_tratamientos: 0,
-      total_dientes_afectados: 0,
-      exportado_por: 'Sistema Odontograma Dental'
-    },
-    
-    // Patient information (placeholder for future Airtable integration)
-    paciente: {
-      nombre: 'PACIENTE - [A obtener de Airtable]',
-      fecha_examen: now.toISOString().split('T')[0],
-      denticion: currentOdontogramType === 'children' ? 'Temporal' : 'Permanente'
-    },
-    
-    // Layer-based treatment summary
-    resumen_por_capa: { pre: 0, req: 0, condiciones: 0 },
-    
-    // Detailed treatment data
-    tratamientos: currentGeometry,
-    
-    // Clinical notes per tooth
-    notas_clinicas: toothNotes,
-    
-    // Detailed breakdown by dental categories
-    analisis_dental: {
-      condiciones: {},
-      prestaciones_preexistentes: {},
-      prestaciones_requeridas: {},
-      dientes_con_notas: Object.keys(toothNotes).length
-    },
-    
-    // FDI tooth mapping for reference
-    mapa_fdi: {},
-    
-    // Export statistics
-    estadisticas: {
-      total_tratamientos_por_tipo: {},
-      total_superficies_afectadas: 0,
-      distribucion_por_cuadrante: {
-        cuadrante_1: 0, // 18-11
-        cuadrante_2: 0, // 21-28  
-        cuadrante_3: 0, // 31-38
-        cuadrante_4: 0  // 41-48
-      }
-    }
+    fecha: now.toISOString().split('T')[0],
+    nombre: 'PACIENTE - [A obtener de Airtable]',
+    piezas: []
   }
 
-  // Count treatments by layer and analyze dental data
-  let totalTreatments = 0
-  let affectedTeeth = 0
-  const layerCount = { pre: 0, req: 0, condiciones: 0 }
-  const treatmentTypeCount = {}
-
+  // Process each tooth with treatments
   for (const [key, treatments] of Object.entries(currentGeometry)) {
     if (treatments && treatments.length > 0) {
-      affectedTeeth++
-      
-      // Get tooth number for FDI mapping
+      // Get tooth number for FDI identification
       let toothNum = null
       if (instance && instance.teeth) {
         for (const [teethKey, teethData] of Object.entries(instance.teeth)) {
@@ -597,70 +530,140 @@ function exportOdontogramData() {
         }
       }
       
-      // Add to FDI mapping
       if (toothNum) {
+        // Get tooth information from JSON data
         const toothInfo = getToothInfo(toothNum)
-        exportData.mapa_fdi[toothNum] = {
-          posicion_canvas: key,
-          informacion_dental: toothInfo || { fdi: toothNum, nombre: `Diente ${toothNum}` }
-        }
         
-        // Count by quadrant for statistics
-        const fdiNum = parseInt(toothNum)
-        if (fdiNum >= 11 && fdiNum <= 18) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_1++
-        else if (fdiNum >= 21 && fdiNum <= 28) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_2++
-        else if (fdiNum >= 31 && fdiNum <= 38) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_3++
-        else if (fdiNum >= 41 && fdiNum <= 48) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_4++
-      }
+        // Initialize tooth data structure with ONLY the requested fields
+        const toothData = {
+          pieza: toothNum,
+          condiciones: [],
+          prestacion_requerida: [],
+          prestacion_preexistente: [],
+          notas: toothNotes[toothNum] || ''
+        }
 
-      treatments.forEach((treatment) => {
-        totalTreatments++
-        
-        // Count by treatment type
-        const treatmentCode = treatment.name
-        treatmentTypeCount[treatmentCode] = (treatmentTypeCount[treatmentCode] || 0) + 1
-        
-        // Count surfaces
-        if (treatment.pos && treatment.pos.includes('-')) {
-          exportData.estadisticas.total_superficies_afectadas++
+        // Group treatments by surface for proper display
+        function groupTreatmentsBySurface(treatmentList) {
+          const grouped = {}
+          
+          treatmentList.forEach((treatment) => {
+            const treatmentName = getTreatmentName(treatment.name)
+            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+            
+            if (!grouped[treatment.name]) {
+              grouped[treatment.name] = {
+                nombre: treatmentName,
+                superficies: [],
+                usa_superficies: withSides.includes(treatment.name)
+              }
+            }
+
+            // Collect surface information for treatments that use surfaces
+            if (withSides.includes(treatment.name) && treatment.pos && toothInfo) {
+              let surfaceCode = null
+
+              if (treatment.pos.includes('-')) {
+                const parts = treatment.pos.split('-')
+                surfaceCode = parts[1]
+              } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
+                surfaceCode = treatment.pos
+              }
+
+              const canvasPositionMap = {
+                T: 'top', B: 'bottom', L: 'left', R: 'right', M: 'middle',
+                top: 'top', bottom: 'bottom', left: 'left', right: 'right', middle: 'middle',
+              }
+
+              const fullCanvasPosition = canvasPositionMap[surfaceCode]
+
+              if (fullCanvasPosition) {
+                const correctMapping = getCorrectSurfaceMapping(toothNum)
+                const anatomical = correctMapping[fullCanvasPosition]
+                
+                if (anatomical && !grouped[treatment.name].superficies.includes(anatomical)) {
+                  grouped[treatment.name].superficies.push(anatomical)
+                }
+              }
+            }
+          })
+
+          return grouped
         }
-        
-        // Categorize treatments following dental standards
-        const condiciones = ['PRE', 'MIS', 'NVT', 'UNE', 'CARIES', 'CARIES_UNTREATABLE', 'REF']
-        const prestacionesSurface = ['SIL', 'RES', 'AMF', 'COF', 'INC']
-        const prestacionesWhole = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX', 'RCT']
-        
-        if (condiciones.includes(treatmentCode)) {
-          exportData.analisis_dental.condiciones[treatmentCode] = 
-            (exportData.analisis_dental.condiciones[treatmentCode] || 0) + 1
-          layerCount.condiciones++
-        } else if (prestacionesSurface.includes(treatmentCode) || prestacionesWhole.includes(treatmentCode)) {
-          if (treatment.layer === 'pre') {
-            exportData.analisis_dental.prestaciones_preexistentes[treatmentCode] = 
-              (exportData.analisis_dental.prestaciones_preexistentes[treatmentCode] || 0) + 1
-            layerCount.pre++
-          } else {
-            exportData.analisis_dental.prestaciones_requeridas[treatmentCode] = 
-              (exportData.analisis_dental.prestaciones_requeridas[treatmentCode] || 0) + 1
-            layerCount.req++
+
+        // Categorize treatments
+        const condicionTreatments = treatments.filter((treatment) => {
+          const treatmentCode = treatment.name
+          const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
+          const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
+          return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
+        })
+
+        const prestacionTreatments = treatments.filter((treatment) => {
+          const treatmentCode = treatment.name
+          const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX', 'RCT']
+          const withSides = ['SIL', 'RES', 'AMF', 'COF', 'INC']
+          return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
+        })
+
+        // Process Condiciones
+        if (condicionTreatments.length > 0) {
+          const groupedConditions = groupTreatmentsBySurface(condicionTreatments)
+          
+          Object.values(groupedConditions).forEach((condition) => {
+            let conditionText = condition.nombre
+            if (condition.usa_superficies && condition.superficies.length > 0) {
+              conditionText += ` - Cara/s: ${condition.superficies.join(', ')}`
+            }
+            toothData.condiciones.push(conditionText)
+          })
+        }
+
+        // Process Prestaciones by layer
+        if (prestacionTreatments.length > 0) {
+          const preExistentes = prestacionTreatments.filter(t => t.layer === 'pre')
+          const requeridas = prestacionTreatments.filter(t => t.layer === 'req' || !t.layer)
+
+          // Prestaciones Preexistentes
+          if (preExistentes.length > 0) {
+            const groupedPreExistentes = groupTreatmentsBySurface(preExistentes)
+            
+            Object.values(groupedPreExistentes).forEach((prestacion) => {
+              let prestacionText = prestacion.nombre
+              if (prestacion.usa_superficies && prestacion.superficies.length > 0) {
+                prestacionText += ` - Cara/s: ${prestacion.superficies.join(', ')}`
+              }
+              toothData.prestacion_preexistente.push(prestacionText)
+            })
+          }
+
+          // Prestaciones Requeridas
+          if (requeridas.length > 0) {
+            const groupedRequeridas = groupTreatmentsBySurface(requeridas)
+            
+            Object.values(groupedRequeridas).forEach((prestacion) => {
+              let prestacionText = prestacion.nombre
+              if (prestacion.usa_superficies && prestacion.superficies.length > 0) {
+                prestacionText += ` - Cara/s: ${prestacion.superficies.join(', ')}`
+              }
+              toothData.prestacion_requerida.push(prestacionText)
+            })
           }
         }
-        
-        // Use the global shouldUseLayerColor function from jquery.odontogram.js
-        if (typeof shouldUseLayerColor !== 'undefined' && shouldUseLayerColor(treatment.name)) {
-          const layer = treatment.layer || 'pre'
-          layerCount[layer] = layerCount[layer] || 0
-          layerCount[layer]++
+
+        // Only add tooth data if there are treatments or notes
+        if (toothData.condiciones.length > 0 || 
+            toothData.prestacion_requerida.length > 0 || 
+            toothData.prestacion_preexistente.length > 0 || 
+            toothData.notas.trim() !== '') {
+          exportData.piezas.push(toothData)
         }
-      })
+      }
     }
   }
 
-  // Update metadata with calculated values
-  exportData.metadatos.total_tratamientos = totalTreatments
-  exportData.metadatos.total_dientes_afectados = affectedTeeth
-  exportData.resumen_por_capa = layerCount
-  exportData.estadisticas.total_tratamientos_por_tipo = treatmentTypeCount
+  // Sort teeth by FDI number
+  exportData.piezas.sort((a, b) => parseInt(a.pieza) - parseInt(b.pieza))
 
   // Create and download JSON file
   const blob = new Blob([JSON.stringify(exportData, null, 2)], {
@@ -669,11 +672,11 @@ function exportOdontogramData() {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `odontograma_completo_${exportData.metadatos.fecha_creacion}_${exportData.metadatos.hora_creacion.replace(/:/g, '-')}.json`
+  a.download = `odontograma_${exportData.fecha}.json`
   a.click()
   URL.revokeObjectURL(url)
 
-  console.log('📋 Complete dental data exported:', exportData)
+  console.log('📋 Simple odontogram data exported:', exportData)
   return exportData
 }
 
