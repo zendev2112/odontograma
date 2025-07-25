@@ -296,29 +296,66 @@ conditionTreatments.forEach((treatment) => {
   const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
   let sideLabel = ''
 
+  // Debug: Let's see what we're actually getting
+  console.log('Debug treatment:', {
+    name: treatment.name,
+    pos: treatment.pos,
+    toothNum: toothNum,
+    hasToothInfo: !!toothInfo,
+    hasMapping: !!(toothInfo && toothInfo.mapeo_canvas)
+  })
+
   // Proper surface mapping using FDI-linked tooth data
   if (
     withSides.includes(treatment.name) &&
     treatment.pos &&
-    treatment.pos.includes('-') &&
     toothInfo &&
     toothInfo.mapeo_canvas
   ) {
-    // Extract canvas surface code from treatment position (e.g., "13-top" -> "top")
-    const parts = treatment.pos.split('-')
-    const surfaceCode = parts[1] // This should be 'top', 'bottom', 'left', 'right', 'middle'
+    let surfaceCode = null
+    
+    // Handle different position formats from the odontogram plugin
+    if (treatment.pos.includes('-')) {
+      // Format: "13-top" or "13-T"
+      const parts = treatment.pos.split('-')
+      surfaceCode = parts[1]
+    } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
+      // Format: "T", "B", "L", "R", "M"
+      surfaceCode = treatment.pos
+    }
+
+    // Map single letter codes to full canvas position names
+    const canvasPositionMap = {
+      'T': 'top',
+      'B': 'bottom', 
+      'L': 'left',
+      'R': 'right',
+      'M': 'middle',
+      'top': 'top',
+      'bottom': 'bottom',
+      'left': 'left', 
+      'right': 'right',
+      'middle': 'middle'
+    }
+
+    const fullCanvasPosition = canvasPositionMap[surfaceCode]
+    
+    console.log('Surface mapping:', {
+      rawSurfaceCode: surfaceCode,
+      fullCanvasPosition: fullCanvasPosition,
+      mapeoCanvas: toothInfo.mapeo_canvas,
+      anatomical: toothInfo.mapeo_canvas[fullCanvasPosition]
+    })
 
     // Map canvas position to anatomical surface using tooth-specific mapping
-    const anatomical = toothInfo.mapeo_canvas[surfaceCode]
-
-    // Use anatomical name if found in the mapping
-    if (anatomical) {
+    if (fullCanvasPosition && toothInfo.mapeo_canvas[fullCanvasPosition]) {
+      const anatomical = toothInfo.mapeo_canvas[fullCanvasPosition]
       sideLabel = ` ${anatomical}`
     } else {
       console.warn(
-        `Surface mapping not found for tooth ${toothNum}, surface: ${surfaceCode}`
+        `Surface mapping failed for tooth ${toothNum}, surface: ${surfaceCode}, fullPosition: ${fullCanvasPosition}`
       )
-      sideLabel = ` ${surfaceCode}`
+      sideLabel = ` superficie desconocida`
     }
   }
 
