@@ -12,6 +12,9 @@ let currentAnnotationLayer = 'pre'
 // NOTE: LAYER_COLORS and PATHOLOGY_TREATMENTS are already declared in jquery.odontogram.js
 // Don't redeclare them here to avoid "already declared" error
 
+// Global variable for storing notes
+let toothNotes = {}
+
 /**
  * Load dental data from JSON file
  */
@@ -275,6 +278,20 @@ function updateOdontogramData(geometry) {
 
         html += `<div class="tooth-data-group">`
         html += `<h4>Pieza: ${toothNum} - ${toothName}</h4>`
+        
+        // Add notes input for each tooth
+        html += `
+          <div class="tooth-notes-section">
+            <label for="notes-${toothNum}">Notas:</label>
+            <textarea 
+              id="notes-${toothNum}" 
+              class="tooth-notes" 
+              placeholder="Agregar notas para diente ${toothNum}..."
+              rows="2"
+              data-tooth="${toothNum}">
+            </textarea>
+          </div>
+        `
 
         // Group treatments by type and collect surfaces
         function groupTreatmentsBySurface(treatmentList) {
@@ -370,7 +387,7 @@ function updateOdontogramData(geometry) {
         // Add Prestaciones sections
         const prestacionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
-          const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX']
+          const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX','RCT']
           const withSides = ['SIL', 'RES', 'AMF', 'COF', 'INC']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
@@ -499,6 +516,9 @@ function exportOdontogramData() {
 
   data.metadatos.total_tratamientos = totalTreatments
   data.resumen_por_capa = layerCount
+
+  // Add notes to export data
+  data.notas = toothNotes
 
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: 'application/json',
@@ -641,6 +661,22 @@ function setupEventHandlers() {
         exportOdontogramData();
         alert(`Datos con capas exportados exitosamente. ${treatmentCount} tratamientos incluidos.`);
     });
+
+    // Notes handling
+    $(document).on('input', '.tooth-notes', function() {
+        const toothNum = $(this).data('tooth')
+        const noteText = $(this).val()
+        toothNotes[toothNum] = noteText
+        console.log(`Note saved for tooth ${toothNum}:`, noteText)
+    })
+
+    // Load saved notes when displaying tooth data
+    $(document).on('focus', '.tooth-notes', function() {
+        const toothNum = $(this).data('tooth')
+        if (toothNotes[toothNum]) {
+            $(this).val(toothNotes[toothNum])
+        }
+    })
 
     console.log('✅ Dental event handlers setup completed');
 }
