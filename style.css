@@ -527,3 +527,108 @@ canvas {
     color: #6c757d;
     font-style: italic;
 }
+
+/* Add to style.css */
+
+.tooth-notes-section {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #17a2b8;
+    border: 1px solid #dee2e6;
+}
+
+.notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.notes-header label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.notes-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.save-note-btn,
+.clear-note-btn {
+    background: transparent;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.save-note-btn:hover {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.clear-note-btn:hover {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.tooth-notes {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    background: white;
+    transition: all 0.15s ease-in-out;
+    line-height: 1.4;
+}
+
+.tooth-notes:focus {
+    outline: none;
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+.tooth-notes.note-saved {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.tooth-notes::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.note-status {
+    margin-top: 5px;
+    font-size: 11px;
+    min-height: 16px;
+    transition: all 0.3s ease;
+}
+
+.note-status.auto-saved {
+    color: #28a745;
+}
+
+.note-status.manual-saved {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.note-status.note-deleted {
+    color: #dc3545;
+}

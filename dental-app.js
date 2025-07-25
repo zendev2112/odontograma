@@ -242,6 +242,33 @@ function updateLayerUI() {
   }
 }
 
+/**
+ * Save note for specific tooth
+ */
+function saveToothNote(toothNum, noteText) {
+  toothNotes[toothNum] = noteText
+  
+  // Visual feedback for save
+  const noteElement = $(`#notes-${toothNum}`)
+  noteElement.addClass('note-saved')
+  
+  setTimeout(() => {
+    noteElement.removeClass('note-saved')
+  }, 1000)
+  
+  console.log(`📝 Note saved for tooth ${toothNum}:`, noteText)
+}
+
+/**
+ * Load note for specific tooth
+ */
+function loadToothNote(toothNum) {
+  return toothNotes[toothNum] || ''
+}
+
+/**
+ * Enhanced updateOdontogramData with proper note loading
+ */
 function updateOdontogramData(geometry) {
   currentGeometry = geometry
   const dataElement = document.getElementById('odontogramData')
@@ -443,16 +470,27 @@ function updateOdontogramData(geometry) {
         }
 
         // ADD NOTES SECTION AT THE END - BELOW ALL TOOTH DATA
+        const existingNote = loadToothNote(toothNum)
         html += `
           <div class="tooth-notes-section">
-            <label for="notes-${toothNum}">Notas:</label>
+            <div class="notes-header">
+              <label for="notes-${toothNum}">Notas:</label>
+              <div class="notes-controls">
+                <button type="button" class="save-note-btn" data-tooth="${toothNum}" title="Guardar nota">
+                  💾
+                </button>
+                <button type="button" class="clear-note-btn" data-tooth="${toothNum}" title="Limpiar nota">
+                  🗑️
+                </button>
+              </div>
+            </div>
             <textarea 
               id="notes-${toothNum}" 
               class="tooth-notes" 
-              placeholder="Agregar notas para diente ${toothNum}..."
-              rows="2"
-              data-tooth="${toothNum}">
-            </textarea>
+              placeholder="Agregar notas clínicas para diente ${toothNum}..."
+              rows="3"
+              data-tooth="${toothNum}">${existingNote}</textarea>
+            <div class="note-status" id="status-${toothNum}"></div>
           </div>
         `
 
@@ -484,59 +522,161 @@ function updateOdontogramData(geometry) {
  */
 function exportOdontogramData() {
   const now = new Date()
-  const data = {
+  const instance = $('#odontogram').data('odontogram')
+  
+  // Comprehensive dental data export following odontogram standards
+  const exportData = {
     metadatos: {
       fecha_creacion: now.toISOString().split('T')[0],
       hora_creacion: now.toTimeString().split(' ')[0],
-      tipo_denticion:
-        currentOdontogramType === 'children' ? 'temporal' : 'permanente',
+      tipo_denticion: currentOdontogramType === 'children' ? 'temporal' : 'permanente',
       version_aplicacion: '2.1',
+      sistema_numeracion: 'FDI',
       capa_activa: currentAnnotationLayer,
       total_tratamientos: 0,
+      total_dientes_afectados: 0,
+      exportado_por: 'Sistema Odontograma Dental'
     },
-    resumen_por_capa: { pre: 0, req: 0, pathology: 0 },
+    
+    // Patient information (placeholder for future Airtable integration)
+    paciente: {
+      nombre: 'PACIENTE - [A obtener de Airtable]',
+      fecha_examen: now.toISOString().split('T')[0],
+      denticion: currentOdontogramType === 'children' ? 'Temporal' : 'Permanente'
+    },
+    
+    // Layer-based treatment summary
+    resumen_por_capa: { pre: 0, req: 0, condiciones: 0 },
+    
+    // Detailed treatment data
     tratamientos: currentGeometry,
+    
+    // Clinical notes per tooth
+    notas_clinicas: toothNotes,
+    
+    // Detailed breakdown by dental categories
+    analisis_dental: {
+      condiciones: {},
+      prestaciones_preexistentes: {},
+      prestaciones_requeridas: {},
+      dientes_con_notas: Object.keys(toothNotes).length
+    },
+    
+    // FDI tooth mapping for reference
+    mapa_fdi: {},
+    
+    // Export statistics
+    estadisticas: {
+      total_tratamientos_por_tipo: {},
+      total_superficies_afectadas: 0,
+      distribucion_por_cuadrante: {
+        cuadrante_1: 0, // 18-11
+        cuadrante_2: 0, // 21-28  
+        cuadrante_3: 0, // 31-38
+        cuadrante_4: 0  // 41-48
+      }
+    }
   }
 
-  // Count treatments by layer
+  // Count treatments by layer and analyze dental data
   let totalTreatments = 0
-  const layerCount = { pre: 0, req: 0, pathology: 0 }
+  let affectedTeeth = 0
+  const layerCount = { pre: 0, req: 0, condiciones: 0 }
+  const treatmentTypeCount = {}
 
   for (const [key, treatments] of Object.entries(currentGeometry)) {
     if (treatments && treatments.length > 0) {
+      affectedTeeth++
+      
+      // Get tooth number for FDI mapping
+      let toothNum = null
+      if (instance && instance.teeth) {
+        for (const [teethKey, teethData] of Object.entries(instance.teeth)) {
+          if (teethKey === key) {
+            toothNum = teethData.num
+            break
+          }
+        }
+      }
+      
+      // Add to FDI mapping
+      if (toothNum) {
+        const toothInfo = getToothInfo(toothNum)
+        exportData.mapa_fdi[toothNum] = {
+          posicion_canvas: key,
+          informacion_dental: toothInfo || { fdi: toothNum, nombre: `Diente ${toothNum}` }
+        }
+        
+        // Count by quadrant for statistics
+        const fdiNum = parseInt(toothNum)
+        if (fdiNum >= 11 && fdiNum <= 18) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_1++
+        else if (fdiNum >= 21 && fdiNum <= 28) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_2++
+        else if (fdiNum >= 31 && fdiNum <= 38) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_3++
+        else if (fdiNum >= 41 && fdiNum <= 48) exportData.estadisticas.distribucion_por_cuadrante.cuadrante_4++
+      }
+
       treatments.forEach((treatment) => {
         totalTreatments++
+        
+        // Count by treatment type
+        const treatmentCode = treatment.name
+        treatmentTypeCount[treatmentCode] = (treatmentTypeCount[treatmentCode] || 0) + 1
+        
+        // Count surfaces
+        if (treatment.pos && treatment.pos.includes('-')) {
+          exportData.estadisticas.total_superficies_afectadas++
+        }
+        
+        // Categorize treatments following dental standards
+        const condiciones = ['PRE', 'MIS', 'NVT', 'UNE', 'CARIES', 'CARIES_UNTREATABLE', 'REF']
+        const prestacionesSurface = ['SIL', 'RES', 'AMF', 'COF', 'INC']
+        const prestacionesWhole = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX', 'RCT']
+        
+        if (condiciones.includes(treatmentCode)) {
+          exportData.analisis_dental.condiciones[treatmentCode] = 
+            (exportData.analisis_dental.condiciones[treatmentCode] || 0) + 1
+          layerCount.condiciones++
+        } else if (prestacionesSurface.includes(treatmentCode) || prestacionesWhole.includes(treatmentCode)) {
+          if (treatment.layer === 'pre') {
+            exportData.analisis_dental.prestaciones_preexistentes[treatmentCode] = 
+              (exportData.analisis_dental.prestaciones_preexistentes[treatmentCode] || 0) + 1
+            layerCount.pre++
+          } else {
+            exportData.analisis_dental.prestaciones_requeridas[treatmentCode] = 
+              (exportData.analisis_dental.prestaciones_requeridas[treatmentCode] || 0) + 1
+            layerCount.req++
+          }
+        }
+        
         // Use the global shouldUseLayerColor function from jquery.odontogram.js
-        if (
-          typeof shouldUseLayerColor !== 'undefined' &&
-          shouldUseLayerColor(treatment.name)
-        ) {
+        if (typeof shouldUseLayerColor !== 'undefined' && shouldUseLayerColor(treatment.name)) {
           const layer = treatment.layer || 'pre'
+          layerCount[layer] = layerCount[layer] || 0
           layerCount[layer]++
-        } else {
-          layerCount.pathology++
         }
       })
     }
   }
 
-  data.metadatos.total_tratamientos = totalTreatments
-  data.resumen_por_capa = layerCount
+  // Update metadata with calculated values
+  exportData.metadatos.total_tratamientos = totalTreatments
+  exportData.metadatos.total_dientes_afectados = affectedTeeth
+  exportData.resumen_por_capa = layerCount
+  exportData.estadisticas.total_tratamientos_por_tipo = treatmentTypeCount
 
-  // Add notes to export data
-  data.notas = toothNotes
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
+  // Create and download JSON file
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
     type: 'application/json',
   })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `odontograma_capas_${data.metadatos.fecha_creacion}.json`
+  a.download = `odontograma_completo_${exportData.metadatos.fecha_creacion}_${exportData.metadatos.hora_creacion.replace(/:/g, '-')}.json`
   a.click()
   URL.revokeObjectURL(url)
 
-  console.log('Layered odontogram data exported:', data)
+  console.log('📋 Complete dental data exported:', exportData)
+  return exportData
 }
 
 /**
@@ -654,35 +794,74 @@ function setupEventHandlers() {
         console.log('📷 Odontogram image downloaded:', link.download);
     });
 
-    // Export dental data button
-    $("#exportData").click(function() {
-        const treatmentCount = Object.values(currentGeometry)
-            .reduce((sum, treatments) => sum + (treatments?.length || 0), 0);
-        
-        if (treatmentCount === 0) {
-            alert('No hay tratamientos registrados para exportar.');
-            return;
-        }
-        
-        exportOdontogramData();
-        alert(`Datos con capas exportados exitosamente. ${treatmentCount} tratamientos incluidos.`);
-    });
-
-    // Notes handling
+    // Enhanced notes handling with save functionality
     $(document).on('input', '.tooth-notes', function() {
         const toothNum = $(this).data('tooth')
         const noteText = $(this).val()
-        toothNotes[toothNum] = noteText
-        console.log(`Note saved for tooth ${toothNum}:`, noteText)
+        
+        // Auto-save after 2 seconds of no typing
+        clearTimeout($(this).data('saveTimeout'))
+        const saveTimeout = setTimeout(() => {
+            saveToothNote(toothNum, noteText)
+            $(`#status-${toothNum}`).text('✅ Guardado automáticamente').addClass('auto-saved')
+            setTimeout(() => {
+                $(`#status-${toothNum}`).removeClass('auto-saved').text('')
+            }, 2000)
+        }, 2000)
+        
+        $(this).data('saveTimeout', saveTimeout)
+        $(`#status-${toothNum}`).text('✏️ Editando...').removeClass('auto-saved')
     })
 
-    // Load saved notes when displaying tooth data
-    $(document).on('focus', '.tooth-notes', function() {
+    // Manual save button for notes
+    $(document).on('click', '.save-note-btn', function() {
         const toothNum = $(this).data('tooth')
-        if (toothNotes[toothNum]) {
-            $(this).val(toothNotes[toothNum])
+        const noteText = $(`#notes-${toothNum}`).val()
+        
+        saveToothNote(toothNum, noteText)
+        $(`#status-${toothNum}`).text('💾 Nota guardada manualmente').addClass('manual-saved')
+        
+        setTimeout(() => {
+            $(`#status-${toothNum}`).removeClass('manual-saved').text('')
+        }, 3000)
+    })
+
+    // Clear note button
+    $(document).on('click', '.clear-note-btn', function() {
+        const toothNum = $(this).data('tooth')
+        
+        if (confirm(`¿Está seguro que desea eliminar la nota del diente ${toothNum}?`)) {
+            $(`#notes-${toothNum}`).val('')
+            delete toothNotes[toothNum]
+            $(`#status-${toothNum}`).text('🗑️ Nota eliminada').addClass('note-deleted')
+            
+            setTimeout(() => {
+                $(`#status-${toothNum}`).removeClass('note-deleted').text('')
+            }, 2000)
+            
+            console.log(`🗑️ Note cleared for tooth ${toothNum}`)
         }
     })
+
+    // Enhanced export dental data button
+    $("#exportData").click(function() {
+        const treatmentCount = Object.values(currentGeometry)
+            .reduce((sum, treatments) => sum + (treatments?.length || 0), 0);
+        const notesCount = Object.keys(toothNotes).length;
+        
+        if (treatmentCount === 0 && notesCount === 0) {
+            alert('❌ No hay tratamientos ni notas registradas para exportar.');
+            return;
+        }
+        
+        try {
+            const exportedData = exportOdontogramData();
+            alert(`✅ Datos exportados exitosamente!\n\n📊 Resumen:\n• ${treatmentCount} tratamientos\n• ${notesCount} notas clínicas\n• ${exportedData.metadatos.total_dientes_afectados} dientes afectados`);
+        } catch (error) {
+            console.error('Error exporting data:', error);
+            alert('❌ Error al exportar los datos. Verifique la consola para más detalles.');
+        }
+    });
 
     console.log('✅ Dental event handlers setup completed');
 }
