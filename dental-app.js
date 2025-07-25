@@ -501,7 +501,7 @@ function updateOdontogramData(geometry) {
 
 
 
-  html = summaryHtml + html + '</div>'
+  html += '</div>'
   dataElement.innerHTML = html
 }
 
