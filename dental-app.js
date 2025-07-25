@@ -264,9 +264,12 @@ function updateOdontogramData(geometry) {
         }
       }
 
+      const toothInfo = getToothInfo(toothNum)
+
       if (toothNum) {
+        const toothName = toothInfo ? toothInfo.nombre : `Diente ${toothNum}`
         html += `<div class="tooth-data-group">`
-        html += `<h4>Pieza: ${toothNum}</h4>`
+        html += `<h4>Pieza: ${toothNum} - ${toothName}</h4>`
 
         // Filter treatments for conditions only
         const conditionTreatments = treatments.filter((treatment) => {
@@ -283,9 +286,6 @@ function updateOdontogramData(geometry) {
           html += `<div class="conditions-section">`
           html += `<h5>Condiciones:</h5>`
 
-          // Get tooth info from JSON for side mapping
-          const toothInfo = getToothInfo(toothNum)
-
           conditionTreatments.forEach((treatment) => {
             const treatmentName = getTreatmentName(treatment.name)
             const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
@@ -297,7 +297,7 @@ function updateOdontogramData(geometry) {
               // Map canvas code to anatomical name using mapeo_canvas
               const anatomical = toothInfo.mapeo_canvas[surfaceCode]
               // If not found, fallback to code
-              sideLabel = anatomical ? ` (${anatomical})` : ` (${surfaceCode})`
+              sideLabel = anatomical ? ` ${anatomical}` : ` ${surfaceCode}`
             }
 
             totalTreatments++
@@ -322,12 +322,12 @@ function updateOdontogramData(geometry) {
             }
 
             html += `
-              <div class="treatment-item ${layerClass}">
-                <div class="treatment-details">
-                  <span class="treatment-name">${treatmentName}${sideLabel} ${layerBadge}</span>
-                </div>
-              </div>
-            `
+    <div class="treatment-item ${layerClass}">
+      <div class="treatment-details">
+        <span class="treatment-name">${treatmentName}${sideLabel} ${layerBadge}</span>
+      </div>
+    </div>
+  `
           })
 
           html += `</div>`
@@ -346,7 +346,13 @@ function updateOdontogramData(geometry) {
   summaryHtml += `<div class="layer-summary">`
   summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
   summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
-  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>
+  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
+  summaryHtml += `</div>`
+  summaryHtml += `</div>`
+
+  html = summaryHtml + html + '</div>'
+  dataElement.innerHTML = html
+}
 
 /**
  * Export odontogram data with layer information
