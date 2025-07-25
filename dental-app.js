@@ -463,6 +463,18 @@ function updateOdontogramData(geometry) {
 
 
 
+  // Add enhanced summary with layer breakdown
+  let summaryHtml = `<div class="data-summary">`
+  summaryHtml += `<h4>📊 Resumen de Tratamientos (${totalTreatments} total)</h4>`
+
+  // Layer summary
+  summaryHtml += `<div class="layer-summary">`
+  summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
+  summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
+  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
+  summaryHtml += `</div>`
+  summaryHtml += `</div>`
+
   html = summaryHtml + html + '</div>'
   dataElement.innerHTML = html
 }
@@ -683,3 +695,71 @@ $(document).ready(function () {
   initApp()
   setupEventHandlers()
 })
+
+/**
+ * Get correct surface mapping based on FDI quadrant rules
+ * Following international dental standards for surface orientation
+ */
+function getCorrectSurfaceMapping(fdi) {
+  const fdiNumber = parseInt(fdi)
+  
+  // Determine if upper or lower tooth for vestibular/lingual mapping
+  const isUpperTooth = (fdiNumber >= 11 && fdiNumber <= 18) || 
+                       (fdiNumber >= 21 && fdiNumber <= 28) ||
+                       (fdiNumber >= 51 && fdiNumber <= 55) ||
+                       (fdiNumber >= 61 && fdiNumber <= 65)
+  
+  const isLowerTooth = (fdiNumber >= 31 && fdiNumber <= 38) || 
+                       (fdiNumber >= 41 && fdiNumber <= 48) ||
+                       (fdiNumber >= 71 && fdiNumber <= 75) ||
+                       (fdiNumber >= 81 && fdiNumber <= 85)
+  
+  // Base mapping for upper/lower according to dental anatomy
+  const baseMapping = {
+    top: isUpperTooth ? 'vestibular' : 'lingual',
+    bottom: isUpperTooth ? 'palatina' : 'vestibular',
+    middle: 'oclusal' // Will be adjusted for incisors/canines
+  }
+  
+  // Determine mesial/distal based on FDI quadrant rules
+  // Following dental coding instructions for surface orientation
+  let mesialSide, distalSide
+  
+  if (
+    // Adult teeth: 11-18 and 41-48 (right quadrants)
+    (fdiNumber >= 11 && fdiNumber <= 18) ||
+    (fdiNumber >= 41 && fdiNumber <= 48) ||
+    // Primary teeth: 55-51 and 85-81 (right quadrants)  
+    (fdiNumber >= 51 && fdiNumber <= 55) ||
+    (fdiNumber >= 81 && fdiNumber <= 85)
+  ) {
+    // RIGHT QUADRANTS: mesial = right, distal = left
+    mesialSide = 'right'
+    distalSide = 'left'
+  } else if (
+    // Adult teeth: 21-28 and 31-38 (left quadrants)
+    (fdiNumber >= 21 && fdiNumber <= 28) ||
+    (fdiNumber >= 31 && fdiNumber <= 38) ||
+    // Primary teeth: 61-65 and 71-75 (left quadrants)
+    (fdiNumber >= 61 && fdiNumber <= 65) ||
+    (fdiNumber >= 71 && fdiNumber <= 75)
+  ) {
+    // LEFT QUADRANTS: mesial = left, distal = right
+    mesialSide = 'left'
+    distalSide = 'right'
+  }
+  
+  // Assign mesial/distal to correct sides
+  if (mesialSide && distalSide) {
+    baseMapping[mesialSide] = 'mesial'
+    baseMapping[distalSide] = 'distal'
+  }
+  
+  // Adjust middle surface for incisors and canines (incisal instead of oclusal)
+  const toothInfo = getToothInfo(fdiNumber)
+  if (toothInfo && (toothInfo.tipo.includes('incisivo') || toothInfo.tipo.includes('canino'))) {
+    baseMapping.middle = 'incisal'
+  }
+  
+  return baseMapping
+}
