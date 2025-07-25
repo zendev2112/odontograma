@@ -501,17 +501,7 @@ function updateOdontogramData(geometry) {
 
 
 
-  // Add enhanced summary with layer breakdown
-  let summaryHtml = `<div class="data-summary">`
-  summaryHtml += `<h4>📊 Resumen de Tratamientos (${totalTreatments} total)</h4>`
 
-  // Layer summary
-  summaryHtml += `<div class="layer-summary">`
-  summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
-  summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
-  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
-  summaryHtml += `</div>`
-  summaryHtml += `</div>`
 
   html = summaryHtml + html + '</div>'
   dataElement.innerHTML = html
@@ -856,7 +846,7 @@ function setupEventHandlers() {
         
         try {
             const exportedData = exportOdontogramData();
-            alert(`✅ Datos exportados exitosamente!\n\n📊 Resumen:\n• ${treatmentCount} tratamientos\n• ${notesCount} notas clínicas\n• ${exportedData.metadatos.total_dientes_afectados} dientes afectados`);
+            alert(`✅ Datos exportados exitosamente!`);
         } catch (error) {
             console.error('Error exporting data:', error);
             alert('❌ Error al exportar los datos. Verifique la consola para más detalles.');
