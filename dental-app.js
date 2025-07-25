@@ -305,7 +305,7 @@ function updateOdontogramData(geometry) {
 
         html += `<div class="tooth-data-group">`
         html += `<h4>Pieza: ${toothNum} - ${toothName}</h4>`
-        
+
         // Remove notes from here - will add below after all treatment sections
 
         // Group treatments by type and collect surfaces
@@ -499,9 +499,17 @@ function updateOdontogramData(geometry) {
     }
   }
 
+  // ADD THE MISSING SUMMARY HTML GENERATION
+  let summaryHtml = `<div class="data-summary">`
+  summaryHtml += `<h4>📊 Resumen de Tratamientos (${totalTreatments} total)</h4>`
 
-
-
+  // Layer summary following dental standards
+  summaryHtml += `<div class="layer-summary">`
+  summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
+  summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
+  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
+  summaryHtml += `</div>`
+  summaryHtml += `</div>`
 
   html = summaryHtml + html + '</div>'
   dataElement.innerHTML = html
