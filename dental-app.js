@@ -238,9 +238,6 @@ function updateLayerUI() {
   }
 }
 
-/**
- * Update odontogram data display with layer information
- */
 function updateOdontogramData(geometry) {
   currentGeometry = geometry
   const dataElement = document.getElementById('odontogramData')
@@ -250,7 +247,7 @@ function updateOdontogramData(geometry) {
     return
   }
 
-  const treatmentsByLayer = { pre: 0, req: 0, pathology: 0 }
+  const treatmentsByLayer = { pre: 0, req: 0, condiciones: 0 }
   let totalTreatments = 0
 
   let html = '<div class="odontogram-data-summary">'
@@ -269,50 +266,74 @@ function updateOdontogramData(geometry) {
 
       if (toothNum) {
         html += `<div class="tooth-data-group">`
-        html += `<h4>🦷 Diente ${toothNum}</h4>`
+        html += `<h4>Pieza: ${toothNum}</h4>`
 
-        treatments.forEach((treatment) => {
-          const treatmentName = getTreatmentName(treatment.name)
-          const icon = getTreatmentIcon(treatment.name)
-          let location = 'Diente completo'
+        // Filter treatments for conditions only
+        const conditionTreatments = treatments.filter((treatment) => {
+          const treatmentCode = treatment.name
+          const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
+          const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
+          return (
+            wholeTooth.includes(treatmentCode) ||
+            withSides.includes(treatmentCode)
+          )
+        })
 
-          if (treatment.pos && treatment.pos.includes('-')) {
-            const surface = treatment.pos.split('-')[1]
-            location = `Superficie ${surface}`
-          }
+        if (conditionTreatments.length > 0) {
+          html += `<div class="conditions-section">`
+          html += `<h5>Condiciones:</h5>`
 
-          totalTreatments++
+          conditionTreatments.forEach((treatment) => {
+            const treatmentName = getTreatmentName(treatment.name)
+            const icon = getTreatmentIcon(treatment.name)
 
-          // Determine layer and styling
-          let layerBadge = ''
-          let layerClass = ''
+            // Determine if treatment uses sides
+            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
+            let location = ''
 
-          // Use the global shouldUseLayerColor function from jquery.odontogram.js
-          if (
-            typeof shouldUseLayerColor !== 'undefined' &&
-            shouldUseLayerColor(treatment.name)
-          ) {
-            const layer = treatment.layer || 'pre'
-            const layerInfo = getLayerInfo(layer)
-            layerBadge = `<span class="layer-badge" style="background-color: ${layerInfo.color}">${layerInfo.badge}</span>`
-            layerClass = `layer-${layer}`
-            treatmentsByLayer[layer]++
-          } else {
-            layerBadge = `<span class="layer-badge pathology">PAT</span>`
-            layerClass = 'pathology'
-            treatmentsByLayer.pathology++
-          }
+            if (withSides.includes(treatment.name)) {
+              if (treatment.pos && treatment.pos.includes('-')) {
+                const surface = treatment.pos.split('-')[1]
+                location = ` - Superficie ${surface}`
+              } else {
+                location = ' - Diente completo'
+              }
+            }
 
-          html += `
+            totalTreatments++
+
+            // Determine layer and styling
+            let layerBadge = ''
+            let layerClass = ''
+
+            // Use the global shouldUseLayerColor function from jquery.odontogram.js
+            if (
+              typeof shouldUseLayerColor !== 'undefined' &&
+              shouldUseLayerColor(treatment.name)
+            ) {
+              const layer = treatment.layer || 'pre'
+              const layerInfo = getLayerInfo(layer)
+              layerBadge = `<span class="layer-badge" style="background-color: ${layerInfo.color}">${layerInfo.badge}</span>`
+              layerClass = `layer-${layer}`
+              treatmentsByLayer[layer]++
+            } else {
+              layerBadge = `<span class="layer-badge condiciones">CON</span>`
+              layerClass = 'condiciones'
+              treatmentsByLayer.condiciones++
+            }
+
+            html += `
                         <div class="treatment-item ${layerClass}">
                             <span class="treatment-icon">${icon}</span>
                             <div class="treatment-details">
-                                <span class="treatment-name">${treatmentName} ${layerBadge}</span>
-                                <span class="treatment-location">${location}</span>
+                                <span class="treatment-name">${treatmentName}${location} ${layerBadge}</span>
                             </div>
                         </div>
                     `
-        })
+          })
+
+          html += `</div>`
+        }
 
         html += `</div>`
       }
@@ -327,7 +348,7 @@ function updateOdontogramData(geometry) {
   summaryHtml += `<div class="layer-summary">`
   summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
   summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
-  summaryHtml += `<span class="layer-count pathology">Patologías: ${treatmentsByLayer.pathology}</span>`
+  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
   summaryHtml += `</div>`
   summaryHtml += `</div>`
 
