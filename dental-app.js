@@ -276,98 +276,81 @@ function updateOdontogramData(geometry) {
         html += `<div class="tooth-data-group">`
         html += `<h4>Pieza: ${toothNum} - ${toothName}</h4>`
 
+        // Group treatments by type and collect surfaces
+        function groupTreatmentsBySurface(treatmentList) {
+          const grouped = {}
+          
+          treatmentList.forEach((treatment) => {
+            const treatmentName = getTreatmentName(treatment.name)
+            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+            
+            if (!grouped[treatment.name]) {
+              grouped[treatment.name] = {
+                name: treatmentName,
+                surfaces: [],
+                layer: treatment.layer || 'pre',
+                usesSides: withSides.includes(treatment.name)
+              }
+            }
+
+            // Only collect surface info for treatments that use sides
+            if (withSides.includes(treatment.name) && treatment.pos && toothInfo && toothInfo.mapeo_canvas) {
+              let surfaceCode = null
+
+              // Handle different position formats from the odontogram plugin
+              if (treatment.pos.includes('-')) {
+                const parts = treatment.pos.split('-')
+                surfaceCode = parts[1]
+              } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
+                surfaceCode = treatment.pos
+              }
+
+              // Map single letter codes to full canvas position names
+              const canvasPositionMap = {
+                T: 'top', B: 'bottom', L: 'left', R: 'right', M: 'middle',
+                top: 'top', bottom: 'bottom', left: 'left', right: 'right', middle: 'middle',
+              }
+
+              const fullCanvasPosition = canvasPositionMap[surfaceCode]
+
+              // Map canvas position to anatomical surface using tooth-specific mapping
+              if (fullCanvasPosition && toothInfo.mapeo_canvas[fullCanvasPosition]) {
+                const anatomical = toothInfo.mapeo_canvas[fullCanvasPosition]
+                if (!grouped[treatment.name].surfaces.includes(anatomical)) {
+                  grouped[treatment.name].surfaces.push(anatomical)
+                }
+              }
+            }
+
+            totalTreatments++
+          })
+
+          return grouped
+        }
+
         // Filter treatments for conditions only
         const conditionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
           const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
-          return (
-            wholeTooth.includes(treatmentCode) ||
-            withSides.includes(treatmentCode)
-          )
+          return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
         if (conditionTreatments.length > 0) {
           html += `<div class="conditions-section">`
           html += `<h5>Condiciones:</h5>`
 
-          conditionTreatments.forEach((treatment) => {
-            const treatmentName = getTreatmentName(treatment.name)
-            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
-            let sideLabel = ''
+          const groupedConditions = groupTreatmentsBySurface(conditionTreatments)
 
-            // Debug: Let's see what we're actually getting
-            console.log('Debug treatment:', {
-              name: treatment.name,
-              pos: treatment.pos,
-              toothNum: toothNum,
-              hasToothInfo: !!toothInfo,
-              hasMapping: !!(toothInfo && toothInfo.mapeo_canvas),
-            })
-
-            // Proper surface mapping using FDI-linked tooth data
-            if (
-              withSides.includes(treatment.name) &&
-              treatment.pos &&
-              toothInfo &&
-              toothInfo.mapeo_canvas
-            ) {
-              let surfaceCode = null
-
-              // Handle different position formats from the odontogram plugin
-              if (treatment.pos.includes('-')) {
-                // Format: "13-top" or "13-T"
-                const parts = treatment.pos.split('-')
-                surfaceCode = parts[1]
-              } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
-                // Format: "T", "B", "L", "R", "M"
-                surfaceCode = treatment.pos
-              }
-
-              // Map single letter codes to full canvas position names
-              const canvasPositionMap = {
-                T: 'top',
-                B: 'bottom',
-                L: 'left',
-                R: 'right',
-                M: 'middle',
-                top: 'top',
-                bottom: 'bottom',
-                left: 'left',
-                right: 'right',
-                middle: 'middle',
-              }
-
-              const fullCanvasPosition = canvasPositionMap[surfaceCode]
-
-              console.log('Surface mapping:', {
-                rawSurfaceCode: surfaceCode,
-                fullCanvasPosition: fullCanvasPosition,
-                mapeoCanvas: toothInfo.mapeo_canvas,
-                anatomical: toothInfo.mapeo_canvas[fullCanvasPosition],
-              })
-
-              // Map canvas position to anatomical surface using tooth-specific mapping
-              if (fullCanvasPosition && toothInfo.mapeo_canvas[fullCanvasPosition]) {
-                const anatomical = toothInfo.mapeo_canvas[fullCanvasPosition]
-                sideLabel = ` ${anatomical}`
-              } else {
-                console.warn(
-                  `Surface mapping failed for tooth ${toothNum}, surface: ${surfaceCode}, fullPosition: ${fullCanvasPosition}`
-                )
-                sideLabel = ` superficie desconocida`
-              }
+          Object.values(groupedConditions).forEach((condition) => {
+            let surfaceDisplay = ''
+            if (condition.usesSides && condition.surfaces.length > 0) {
+              surfaceDisplay = ` - Cara/s: ${condition.surfaces.join(', ')}`
             }
 
-            totalTreatments++
-
-            // Determine layer count without displaying badges
-            if (
-              typeof shouldUseLayerColor !== 'undefined' &&
-              shouldUseLayerColor(treatment.name)
-            ) {
-              const layer = treatment.layer || 'pre'
-              treatmentsByLayer[layer]++
+            // Count for layer stats
+            if (typeof shouldUseLayerColor !== 'undefined' && shouldUseLayerColor(Object.keys(groupedConditions).find(key => groupedConditions[key] === condition))) {
+              treatmentsByLayer[condition.layer]++
             } else {
               treatmentsByLayer.condiciones++
             }
@@ -375,7 +358,7 @@ function updateOdontogramData(geometry) {
             html += `
               <div class="treatment-item">
                 <div class="treatment-details">
-                  <span class="treatment-name">${treatmentName}${sideLabel}</span>
+                  <span class="treatment-name">${condition.name}${surfaceDisplay}</span>
                 </div>
               </div>
             `
@@ -389,10 +372,7 @@ function updateOdontogramData(geometry) {
           const treatmentCode = treatment.name
           const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX']
           const withSides = ['SIL', 'RES', 'AMF', 'COF', 'INC']
-          return (
-            wholeTooth.includes(treatmentCode) ||
-            withSides.includes(treatmentCode)
-          )
+          return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
         if (prestacionTreatments.length > 0) {
@@ -405,59 +385,20 @@ function updateOdontogramData(geometry) {
             html += `<div class="prestaciones-section pre-existentes">`
             html += `<h5 style="color: #FF0000;">Prestaciones Preexistentes:</h5>`
 
-            preExistentes.forEach((treatment) => {
-              const treatmentName = getTreatmentName(treatment.name)
-              const withSides = ['SIL', 'RES', 'AMF', 'COF', 'INC']
-              let sideLabel = ''
+            const groupedPreExistentes = groupTreatmentsBySurface(preExistentes)
 
-              // Surface mapping for treatments that use sides
-              if (
-                withSides.includes(treatment.name) &&
-                treatment.pos &&
-                treatment.pos.includes('-') &&
-                toothInfo &&
-                toothInfo.mapeo_canvas
-              ) {
-                let surfaceCode = null
-
-                // Handle different position formats from the odontogram plugin
-                if (treatment.pos.includes('-')) {
-                  const parts = treatment.pos.split('-')
-                  surfaceCode = parts[1]
-                } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
-                  surfaceCode = treatment.pos
-                }
-
-                // Map single letter codes to full canvas position names
-                const canvasPositionMap = {
-                  T: 'top',
-                  B: 'bottom',
-                  L: 'left',
-                  R: 'right',
-                  M: 'middle',
-                  top: 'top',
-                  bottom: 'bottom',
-                  left: 'left',
-                  right: 'right',
-                  middle: 'middle',
-                }
-
-                const fullCanvasPosition = canvasPositionMap[surfaceCode]
-
-                // Map canvas position to anatomical surface using tooth-specific mapping
-                if (fullCanvasPosition && toothInfo.mapeo_canvas[fullCanvasPosition]) {
-                  const anatomical = toothInfo.mapeo_canvas[fullCanvasPosition]
-                  sideLabel = ` ${anatomical}`
-                }
+            Object.values(groupedPreExistentes).forEach((prestacion) => {
+              let surfaceDisplay = ''
+              if (prestacion.usesSides && prestacion.surfaces.length > 0) {
+                surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
               }
 
-              totalTreatments++
               treatmentsByLayer.pre++
 
               html += `
                 <div class="treatment-item pre-existente">
                   <div class="treatment-details">
-                    <span class="treatment-name" style="color: #FF0000;">${treatmentName}${sideLabel}</span>
+                    <span class="treatment-name" style="color: #FF0000;">${prestacion.name}${surfaceDisplay}</span>
                   </div>
                 </div>
               `
@@ -471,59 +412,20 @@ function updateOdontogramData(geometry) {
             html += `<div class="prestaciones-section requeridas">`
             html += `<h5 style="color: #0066FF;">Prestaciones Requeridas:</h5>`
 
-            requeridas.forEach((treatment) => {
-              const treatmentName = getTreatmentName(treatment.name)
-              const withSides = ['SIL', 'RES', 'AMF', 'COF', 'INC']
-              let sideLabel = ''
+            const groupedRequeridas = groupTreatmentsBySurface(requeridas)
 
-              // Surface mapping for treatments that use sides
-              if (
-                withSides.includes(treatment.name) &&
-                treatment.pos &&
-                treatment.pos.includes('-') &&
-                toothInfo &&
-                toothInfo.mapeo_canvas
-              ) {
-                let surfaceCode = null
-
-                // Handle different position formats from the odontogram plugin
-                if (treatment.pos.includes('-')) {
-                  const parts = treatment.pos.split('-')
-                  surfaceCode = parts[1]
-                } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
-                  surfaceCode = treatment.pos
-                }
-
-                // Map single letter codes to full canvas position names
-                const canvasPositionMap = {
-                  T: 'top',
-                  B: 'bottom',
-                  L: 'left',
-                  R: 'right',
-                  M: 'middle',
-                  top: 'top',
-                  bottom: 'bottom',
-                  left: 'left',
-                  right: 'right',
-                  middle: 'middle',
-                }
-
-                const fullCanvasPosition = canvasPositionMap[surfaceCode]
-
-                // Map canvas position to anatomical surface using tooth-specific mapping
-                if (fullCanvasPosition && toothInfo.mapeo_canvas[fullCanvasPosition]) {
-                  const anatomical = toothInfo.mapeo_canvas[fullCanvasPosition]
-                  sideLabel = ` ${anatomical}`
-                }
+            Object.values(groupedRequeridas).forEach((prestacion) => {
+              let surfaceDisplay = ''
+              if (prestacion.usesSides && prestacion.surfaces.length > 0) {
+                surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
               }
 
-              totalTreatments++
               treatmentsByLayer.req++
 
               html += `
                 <div class="treatment-item requerida">
                   <div class="treatment-details">
-                    <span class="treatment-name" style="color: #0066FF;">${treatmentName}${sideLabel}</span>
+                    <span class="treatment-name" style="color: #0066FF;">${prestacion.name}${surfaceDisplay}</span>
                   </div>
                 </div>
               `
