@@ -30,12 +30,12 @@ async function loadDentalData() {
  */
 function getToothInfo(fdi) {
   if (!dentalData || !dentalData.dientes) return null
-  return dentalData.dientes.find((tooth) => tooth.fdi === fdi)
+
+  // Ensure FDI is treated as number for proper matching
+  const fdiNumber = parseInt(fdi)
+  return dentalData.dientes.find((tooth) => tooth.fdi === fdiNumber)
 }
 
-/**
- * Display tooth information in the info panel
- */
 function displayToothInfo(fdi) {
   const toothInfo = getToothInfo(fdi)
   const infoElement = document.getElementById('toothInfo')
@@ -43,7 +43,8 @@ function displayToothInfo(fdi) {
   if (toothInfo) {
     const surfaceNames = {
       vestibular: 'Vestibular',
-      palatina: 'Palatina/Lingual',
+      palatina: 'Palatina',
+      lingual: 'Lingual',
       mesial: 'Mesial',
       distal: 'Distal',
       incisal: 'Incisal',
@@ -55,33 +56,33 @@ function displayToothInfo(fdi) {
       .join(', ')
 
     infoElement.innerHTML = `
-            <div class="tooth-details-card">
-                <h4>Diente ${toothInfo.fdi}</h4>
-                <div class="tooth-detail-row">
-                    <span class="label">Tipo:</span>
-                    <span class="value">${toothInfo.tipo}</span>
-                </div>
-                <div class="tooth-detail-row">
-                    <span class="label">Ubicación:</span>
-                    <span class="value">${toothInfo.nombre}</span>
-                </div>
-                <div class="tooth-detail-row">
-                    <span class="label">Arco:</span>
-                    <span class="value">${toothInfo.arco} - ${toothInfo.lado}</span>
-                </div>
-                <div class="tooth-detail-row">
-                    <span class="label">Caras:</span>
-                    <span class="value">${surfaces}</span>
-                </div>
-            </div>
-        `
+      <div class="tooth-details-card">
+        <h4>Diente ${toothInfo.fdi}</h4>
+        <div class="tooth-detail-row">
+          <span class="label">Tipo:</span>
+          <span class="value">${toothInfo.tipo}</span>
+        </div>
+        <div class="tooth-detail-row">
+          <span class="label">Ubicación:</span>
+          <span class="value">${toothInfo.nombre}</span>
+        </div>
+        <div class="tooth-detail-row">
+          <span class="label">Arco:</span>
+          <span class="value">${toothInfo.arco} - ${toothInfo.lado}</span>
+        </div>
+        <div class="tooth-detail-row">
+          <span class="label">Caras:</span>
+          <span class="value">${surfaces}</span>
+        </div>
+      </div>
+    `
   } else {
     infoElement.innerHTML = `
-            <div class="tooth-details-card">
-                <h4>Diente ${fdi}</h4>
-                <p>Información no disponible para este diente</p>
-            </div>
-        `
+      <div class="tooth-details-card">
+        <h4>Diente ${fdi}</h4>
+        <p>Información no disponible para este diente</p>
+      </div>
+    `
   }
 }
 
@@ -257,6 +258,7 @@ function updateOdontogramData(geometry) {
       const instance = $('#odontogram').data('odontogram')
       let toothNum = null
 
+      // Extract FDI number from odontogram teeth data
       for (const [teethKey, teethData] of Object.entries(instance.teeth)) {
         if (teethKey === key) {
           toothNum = teethData.num
@@ -264,10 +266,13 @@ function updateOdontogramData(geometry) {
         }
       }
 
-      const toothInfo = getToothInfo(toothNum)
-
       if (toothNum) {
+        // Link to JSON data using FDI code
+        const toothInfo = getToothInfo(toothNum)
+
+        // Use the "nombre" property from JSON as specified
         const toothName = toothInfo ? toothInfo.nombre : `Diente ${toothNum}`
+
         html += `<div class="tooth-data-group">`
         html += `<h4>Pieza: ${toothNum} - ${toothName}</h4>`
 
@@ -291,12 +296,21 @@ function updateOdontogramData(geometry) {
             const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
             let sideLabel = ''
 
-            if (withSides.includes(treatment.name) && treatment.pos && treatment.pos.includes('-') && toothInfo && toothInfo.mapeo_canvas) {
-              // Extract surface code (canvas position)
+            // Proper surface mapping using FDI-linked tooth data
+            if (
+              withSides.includes(treatment.name) &&
+              treatment.pos &&
+              treatment.pos.includes('-') &&
+              toothInfo &&
+              toothInfo.mapeo_canvas
+            ) {
+              // Extract canvas surface code from treatment position
               const surfaceCode = treatment.pos.split('-')[1]
-              // Map canvas code to anatomical name using mapeo_canvas
+
+              // Map canvas position to anatomical surface using tooth-specific mapping
               const anatomical = toothInfo.mapeo_canvas[surfaceCode]
-              // If not found, fallback to code
+
+              // Use anatomical name if found, otherwise use surface code
               sideLabel = anatomical ? ` ${anatomical}` : ` ${surfaceCode}`
             }
 
@@ -322,12 +336,12 @@ function updateOdontogramData(geometry) {
             }
 
             html += `
-    <div class="treatment-item ${layerClass}">
-      <div class="treatment-details">
-        <span class="treatment-name">${treatmentName}${sideLabel} ${layerBadge}</span>
-      </div>
-    </div>
-  `
+              <div class="treatment-item ${layerClass}">
+                <div class="treatment-details">
+                  <span class="treatment-name">${treatmentName}${sideLabel} ${layerBadge}</span>
+                </div>
+              </div>
+            `
           })
 
           html += `</div>`
