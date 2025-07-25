@@ -279,19 +279,7 @@ function updateOdontogramData(geometry) {
         html += `<div class="tooth-data-group">`
         html += `<h4>Pieza: ${toothNum} - ${toothName}</h4>`
         
-        // Add notes input for each tooth
-        html += `
-          <div class="tooth-notes-section">
-            <label for="notes-${toothNum}">Notas:</label>
-            <textarea 
-              id="notes-${toothNum}" 
-              class="tooth-notes" 
-              placeholder="Agregar notas para diente ${toothNum}..."
-              rows="2"
-              data-tooth="${toothNum}">
-            </textarea>
-          </div>
-        `
+        // Remove notes from here - will add below after all treatment sections
 
         // Group treatments by type and collect surfaces
         function groupTreatmentsBySurface(treatmentList) {
@@ -311,7 +299,7 @@ function updateOdontogramData(geometry) {
             }
 
             // Only collect surface info for treatments that use sides
-            if (withSides.includes(treatment.name) && treatment.pos && toothInfo && toothInfo.mapeo_canvas) {
+            if (withSides.includes(treatment.name) && treatment.pos && toothInfo) {
               let surfaceCode = null
 
               // Handle different position formats from the odontogram plugin
@@ -330,10 +318,12 @@ function updateOdontogramData(geometry) {
 
               const fullCanvasPosition = canvasPositionMap[surfaceCode]
 
-              // Map canvas position to anatomical surface using tooth-specific mapping
-              if (fullCanvasPosition && toothInfo.mapeo_canvas[fullCanvasPosition]) {
-                const anatomical = toothInfo.mapeo_canvas[fullCanvasPosition]
-                if (!grouped[treatment.name].surfaces.includes(anatomical)) {
+              // USE CORRECTED SURFACE MAPPING BASED ON FDI RULES
+              if (fullCanvasPosition) {
+                const correctMapping = getCorrectSurfaceMapping(toothNum)
+                const anatomical = correctMapping[fullCanvasPosition]
+                
+                if (anatomical && !grouped[treatment.name].surfaces.includes(anatomical)) {
                   grouped[treatment.name].surfaces.push(anatomical)
                 }
               }
@@ -452,22 +442,26 @@ function updateOdontogramData(geometry) {
           }
         }
 
-        html += `</div>`
+        // ADD NOTES SECTION AT THE END - BELOW ALL TOOTH DATA
+        html += `
+          <div class="tooth-notes-section">
+            <label for="notes-${toothNum}">Notas:</label>
+            <textarea 
+              id="notes-${toothNum}" 
+              class="tooth-notes" 
+              placeholder="Agregar notas para diente ${toothNum}..."
+              rows="2"
+              data-tooth="${toothNum}">
+            </textarea>
+          </div>
+        `
+
+        html += `</div>` // Close tooth-data-group
       }
     }
   }
 
-  // Add enhanced summary with layer breakdown
-  let summaryHtml = `<div class="data-summary">`
-  summaryHtml += `<h4>📊 Resumen de Tratamientos (${totalTreatments} total)</h4>`
 
-  // Layer summary
-  summaryHtml += `<div class="layer-summary">`
-  summaryHtml += `<span class="layer-count pre">Pre-existentes: ${treatmentsByLayer.pre}</span>`
-  summaryHtml += `<span class="layer-count req">Requeridos: ${treatmentsByLayer.req}</span>`
-  summaryHtml += `<span class="layer-count condiciones">Condiciones: ${treatmentsByLayer.condiciones}</span>`
-  summaryHtml += `</div>`
-  summaryHtml += `</div>`
 
   html = summaryHtml + html + '</div>'
   dataElement.innerHTML = html

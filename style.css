@@ -483,3 +483,47 @@ canvas {
     color: #999;
     font-style: italic;
 }
+
+/* Add to style.css */
+.tooth-notes-section {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #17a2b8;
+    border-top: 1px solid #dee2e6;
+}
+
+.tooth-notes-section label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 6px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tooth-notes {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 50px;
+    background: white;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.tooth-notes:focus {
+    outline: none;
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+.tooth-notes::placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
