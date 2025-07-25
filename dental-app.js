@@ -291,50 +291,58 @@ function updateOdontogramData(geometry) {
           html += `<div class="conditions-section">`
           html += `<h5>Condiciones:</h5>`
 
-        conditionTreatments.forEach((treatment) => {
-          const treatmentName = getTreatmentName(treatment.name)
-          const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
-          let sideLabel = ''
+conditionTreatments.forEach((treatment) => {
+  const treatmentName = getTreatmentName(treatment.name)
+  const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF']
+  let sideLabel = ''
 
-          // Proper surface mapping using FDI-linked tooth data
-          if (
-            withSides.includes(treatment.name) &&
-            treatment.pos &&
-            treatment.pos.includes('-') &&
-            toothInfo &&
-            toothInfo.mapeo_canvas
-          ) {
-            // Extract canvas surface code from treatment position
-            const surfaceCode = treatment.pos.split('-')[1]
+  // Proper surface mapping using FDI-linked tooth data
+  if (
+    withSides.includes(treatment.name) &&
+    treatment.pos &&
+    treatment.pos.includes('-') &&
+    toothInfo &&
+    toothInfo.mapeo_canvas
+  ) {
+    // Extract canvas surface code from treatment position (e.g., "13-top" -> "top")
+    const parts = treatment.pos.split('-')
+    const surfaceCode = parts[1] // This should be 'top', 'bottom', 'left', 'right', 'middle'
 
-            // Map canvas position to anatomical surface using tooth-specific mapping
-            const anatomical = toothInfo.mapeo_canvas[surfaceCode]
+    // Map canvas position to anatomical surface using tooth-specific mapping
+    const anatomical = toothInfo.mapeo_canvas[surfaceCode]
 
-            // Use anatomical name if found, otherwise use surface code
-            sideLabel = anatomical ? ` ${anatomical}` : ` ${surfaceCode}`
-          }
+    // Use anatomical name if found in the mapping
+    if (anatomical) {
+      sideLabel = ` ${anatomical}`
+    } else {
+      console.warn(
+        `Surface mapping not found for tooth ${toothNum}, surface: ${surfaceCode}`
+      )
+      sideLabel = ` ${surfaceCode}`
+    }
+  }
 
-          totalTreatments++
+  totalTreatments++
 
-          // Determine layer count without displaying badges
-          if (
-            typeof shouldUseLayerColor !== 'undefined' &&
-            shouldUseLayerColor(treatment.name)
-          ) {
-            const layer = treatment.layer || 'pre'
-            treatmentsByLayer[layer]++
-          } else {
-            treatmentsByLayer.condiciones++
-          }
+  // Determine layer count without displaying badges
+  if (
+    typeof shouldUseLayerColor !== 'undefined' &&
+    shouldUseLayerColor(treatment.name)
+  ) {
+    const layer = treatment.layer || 'pre'
+    treatmentsByLayer[layer]++
+  } else {
+    treatmentsByLayer.condiciones++
+  }
 
-          html += `
+  html += `
     <div class="treatment-item">
       <div class="treatment-details">
         <span class="treatment-name">${treatmentName}${sideLabel}</span>
       </div>
     </div>
   `
-        })  
+})
 
           html += `</div>`
         }
