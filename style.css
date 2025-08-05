@@ -239,7 +239,7 @@ input[type="radio"]:checked+.layer-label.required {
 
 /* CARIES BUTTON COLORS ONLY */
 .btn-caries-curable {
-    background: #4CAF50 !important;
+    background: #6896ecff !important;
     color: white !important;
     border-color: #45a049 !important;
 }

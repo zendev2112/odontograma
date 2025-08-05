@@ -525,7 +525,7 @@ RCT.prototype.render = function (ctx) {
   function CARIES(vertices, options) {
     this.name = 'CARIES'
     this.vertices = vertices
-    this.options = $.extend({ fillStyle: '#07ff07ff' }, options)
+    this.options = $.extend({ fillStyle: '#6896ecff' }, options)
     return this
   }
   CARIES.prototype.render = function (ctx) {
