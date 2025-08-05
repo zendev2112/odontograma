@@ -2634,7 +2634,7 @@ function getColorForTreatment(treatmentName, layer) {
         newGeometry = new PRE(geometry.vertices)
         break
       case ODONTOGRAM_MODE_NVT:
-        newGeometry = new NVT(geometry.vertices)
+        newGeometry = new NVT(geometry.vertices, layerOptions)
         break
       case ODONTOGRAM_MODE_UNE:
         newGeometry = new UNE(geometry.vertices)
@@ -3177,7 +3177,6 @@ function getColorForTreatment(treatmentName, layer) {
       coord = parseKeyCoord(keyCoord)
 
       switch (instance.mode) {
-        case ODONTOGRAM_MODE_NVT: // Kotak
         case ODONTOGRAM_MODE_RCT:
         case ODONTOGRAM_MODE_NON:
         case ODONTOGRAM_MODE_UNE:
@@ -3317,7 +3316,6 @@ function getColorForTreatment(treatmentName, layer) {
 
       switch (instance.mode) {
         // Whole tooth treatments - these apply to the entire tooth
-        case ODONTOGRAM_MODE_NVT: // Surco Profundo
         case ODONTOGRAM_MODE_RCT: // Tratamiento de Conducto
         case ODONTOGRAM_MODE_NON: // No existe
         case ODONTOGRAM_MODE_UNE: // No Erupcionado
