@@ -191,7 +191,10 @@ function getColorForTreatment(treatmentName, layer) {
   function RES(vertices, options) {
     this.name = 'RES'
     this.vertices = vertices
-    this.options = $.extend({ fillStyle: '#f74a1fff' }, options)
+    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend({ 
+      fillStyle: getColorForTreatment('RES', this.layer)
+    }, options)
     return this
   }
   RES.prototype.render = function (ctx) {
