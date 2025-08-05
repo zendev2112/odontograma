@@ -43,11 +43,9 @@ var LAYER_COLORS = {
 
 // Define which treatments ignore layer colors (pathologies)
 var PATHOLOGY_TREATMENTS = [
-  'CARIES', // Treatable caries
   'CARIES_UNTREATABLE', // Untreatable caries
   'MIS', // Missing tooth
   'PRE', // Periodontitis (paradentosis)
-  'NVT', // Deep sulcus
   'UNE', // Unerupted tooth
 ]
 
@@ -365,28 +363,43 @@ function getColorForTreatment(treatmentName, layer) {
     ctx.closePath()
     ctx.fill()
   }
-  // Class NVT = SEGITIGA DIBAWAH (seperti Akar) = gigi non-vital
+  // Class NVT = Surco Profundo - now works like REF with text symbol and layer system
   function NVT(vertices, options) {
     this.name = 'NVT'
     this.vertices = vertices
-    this.options = $.extend({ strokeStyle: '#333', height: 25 }, options)
+    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        font: 'bold 16px Arial',
+        color: getColorForTreatment('NVT', this.layer),
+      },
+      options
+    )
     return this
   }
   NVT.prototype.render = function (ctx) {
-    var x1 = parseFloat(this.vertices[0].x) + 1
-    var x2 = parseFloat(this.vertices[1].x) + 1
-    var y1 = parseFloat(this.vertices[0].y) + 1
-    var y2 = parseFloat(this.vertices[1].y) + 1
-    var size = x2 - x1
-    var height = parseFloat(this.options.height)
+    var xs = this.vertices.map(function (v) {
+      return v.x
+    })
+    var ys = this.vertices.map(function (v) {
+      return v.y
+    })
+    var centerX =
+      xs.reduce(function (a, b) {
+        return a + b
+      }, 0) / xs.length
+    var centerY =
+      ys.reduce(function (a, b) {
+        return a + b
+      }, 0) / ys.length
 
-    ctx.strokeStyle = this.options.strokeStyle
-    ctx.beginPath()
-    ctx.moveTo(x1 + size / 4, y2)
-    ctx.lineTo(x1 + size / 2, y2 + height)
-    ctx.lineTo(x2 - size / 4, y2)
-    ctx.closePath()
-    ctx.stroke()
+    ctx.save()
+    ctx.font = this.options.font
+    ctx.fillStyle = this.options.color
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('/Sp', centerX, centerY)
+    ctx.restore()
   }
 
   // Update RCT class to support red/blue layer colors

@@ -133,7 +133,7 @@ function getTreatmentIcon(code) {
     INC: 'I',
     FMC: '□',
     IPX: 'IM',
-    NVT: '∇',
+    NVT: '/Sp',
     UNE: 'NER',
     RCT: '▼',
     MIS: 'X',
@@ -365,7 +365,7 @@ function updateOdontogramData(geometry) {
         // Filter treatments for conditions only
         const conditionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
-          const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
+          const wholeTooth = ['PRE', 'MIS', 'UNE']
           const withSides = ['CARIES_UNTREATABLE']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
@@ -405,7 +405,7 @@ function updateOdontogramData(geometry) {
         const prestacionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX','RCT']
-          const withSides = ['CARIES', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+          const withSides = ['CARIES', 'REF', 'NVT', 'SIL', 'RES', 'AMF', 'COF', 'INC']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
@@ -594,7 +594,7 @@ function exportOdontogramData() {
         // Categorize treatments
         const condicionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
-          const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
+          const wholeTooth = ['PRE', 'MIS', 'UNE']
           const withSides = ['CARIES_UNTREATABLE']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
@@ -602,7 +602,7 @@ function exportOdontogramData() {
         const prestacionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX', 'RCT']
-          const withSides = ['CARIES', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+          const withSides = ['CARIES', 'REF', 'NVT', 'SIL', 'RES', 'AMF', 'COF', 'INC']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
