@@ -241,7 +241,7 @@ input[type="radio"]:checked+.layer-label.required {
 .btn-caries-curable {
     background: #6896ecff !important;
     color: white !important;
-    border-color: #45a049 !important;
+    border-color: #6896ecff !important;
 }
 
 .btn-caries-curable .symbol,
@@ -260,6 +260,18 @@ input[type="radio"]:checked+.layer-label.required {
     color: #000 !important;
 }
 
+/* RES BUTTON COLOR */
+#ODONTOGRAM_MODE_RES {
+    background: #f74a1fff !important;
+    color: white !important;
+    border-color: #f74a1fff !important;
+}
+
+#ODONTOGRAM_MODE_RES .symbol,
+#ODONTOGRAM_MODE_RES .name {
+    color: white !important;
+}
+
 /* HOVER EFFECTS */
 .column-left button:hover:not(.btn-caries-curable):not(.btn-caries-incurable),
 .column-right button:hover:not(.btn-caries-curable):not(.btn-caries-incurable) {
@@ -268,7 +280,7 @@ input[type="radio"]:checked+.layer-label.required {
 }
 
 .btn-caries-curable:hover {
-    background: #45a049 !important;
+    background: rgb(95, 137, 216) !important;
 }
 
 .btn-caries-incurable:hover {

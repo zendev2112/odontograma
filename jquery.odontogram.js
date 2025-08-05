@@ -191,41 +191,27 @@ function getColorForTreatment(treatmentName, layer) {
   function RES(vertices, options) {
     this.name = 'RES'
     this.vertices = vertices
-    this.layer =
-      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
-    this.options = $.extend(
-      {
-        font: 'bold 16px Arial',
-        color: getColorForTreatment('RES', this.layer),
-      },
-      options
-    )
+    this.options = $.extend({ fillStyle: '#f74a1fff' }, options)
     return this
   }
-
   RES.prototype.render = function (ctx) {
-    var xs = this.vertices.map(function (v) {
-      return v.x
-    })
-    var ys = this.vertices.map(function (v) {
-      return v.y
-    })
-    var centerX =
-      xs.reduce(function (a, b) {
-        return a + b
-      }, 0) / xs.length
-    var centerY =
-      ys.reduce(function (a, b) {
-        return a + b
-      }, 0) / ys.length
+    ctx.fillStyle = this.options.fillStyle
+    ctx.beginPath()
 
-    ctx.save()
-    ctx.font = this.options.font
-    ctx.fillStyle = this.options.color
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText('Δ', centerX, centerY)
-    ctx.restore()
+    var vertices = this.vertices.concat([])
+    var fpos = vertices.shift()
+    ctx.moveTo(fpos.x + 1, fpos.y + 1)
+
+    var pos
+    while (vertices.length > 0) {
+      pos = vertices.shift()
+      if (pos) {
+        ctx.lineTo(pos.x + 1, pos.y + 1)
+      }
+    }
+    ctx.lineTo(fpos.x + 1, fpos.y + 1)
+    ctx.closePath()
+    ctx.fill()
   }
 
   function REF(vertices, options) {
