@@ -314,7 +314,7 @@ function updateOdontogramData(geometry) {
           
           treatmentList.forEach((treatment) => {
             const treatmentName = getTreatmentName(treatment.name)
-            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF', 'NVT', 'SIL', 'RES', 'AMF', 'COF', 'INC']
             
             if (!grouped[treatment.name]) {
               grouped[treatment.name] = {
@@ -549,7 +549,7 @@ function exportOdontogramData() {
           
           treatmentList.forEach((treatment) => {
             const treatmentName = getTreatmentName(treatment.name)
-            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+            const withSides = ['CARIES', 'CARIES_UNTREATABLE', 'REF', 'NVT', 'SIL', 'RES', 'AMF', 'COF', 'INC']
             
             if (!grouped[treatment.name]) {
               grouped[treatment.name] = {
