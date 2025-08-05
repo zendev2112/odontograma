@@ -16,36 +16,6 @@
     <div class="main-container" style="margin-top: 60px;">
         <!-- CONTROLS COLUMN (Column 1 - 20%) -->
         <div class="controls-column">
-            <!-- Odontogram Type Selector -->
-            <div class="odontogram-selector">
-                <label for="odontogramType">Tipo de Dentición:</label>
-                <select id="odontogramType">
-                    <option value="adult">Dentición Permanente (Adultos)</option>
-                    <option value="children">Dentición Primaria (Niños)</option>
-                </select>
-
-            </div>
-
-            <!-- Layer Toggle Control -->
-            <div class="layer-toggle-panel">
-                <h3>Tipo de Prestación</h3>
-                <div class="toggle-container">
-                    <div class="radio-group">
-                        <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
-                        <label for="layer-pre" class="layer-label pre-existing">
-                            <span class="layer-indicator pre"></span>
-                            Prestación Preexistente
-                        </label>
-
-                        <input type="radio" id="layer-req" name="annotation-layer" value="req">
-                        <label for="layer-req" class="layer-label required">
-                            <span class="layer-indicator req"></span>
-                            Prestación Requerida
-                        </label>
-                    </div>
-                </div>
-
-            </div>
 
             <!-- Treatment Controls -->
             <div class="controls-panel">
@@ -155,7 +125,46 @@
 
         <!-- CONTENT AREA (Columns 2-5 - 80%) -->
         <div class="content-area">
-            <!-- TOP ROW: ODONTOGRAM (Fixed Size) -->
+            <!-- CONTROLS ROW ABOVE ODONTOGRAM -->
+            <div class="controls-row">
+                <!-- Tipo de Dentición as Radio Buttons -->
+                <div class="dentition-selector">
+                    <h3>Tipo de Dentición</h3>
+                    <div class="radio-group">
+                        <input type="radio" id="dentition-adult" name="dentition-type" value="adult" checked>
+                        <label for="dentition-adult" class="layer-label">
+                            <span class="layer-indicator"></span>
+                            Permanente (Adultos)
+                        </label>
+
+                        <input type="radio" id="dentition-children" name="dentition-type" value="children">
+                        <label for="dentition-children" class="layer-label">
+                            <span class="layer-indicator"></span>
+                            Primaria (Niños)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Tipo de Prestación -->
+                <div class="prestacion-selector">
+                    <h3>Tipo de Prestación</h3>
+                    <div class="radio-group">
+                        <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
+                        <label for="layer-pre" class="layer-label pre-existing">
+                            <span class="layer-indicator pre"></span>
+                            Prestación Preexistente
+                        </label>
+
+                        <input type="radio" id="layer-req" name="annotation-layer" value="req">
+                        <label for="layer-req" class="layer-label required">
+                            <span class="layer-indicator req"></span>
+                            Prestación Requerida
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ODONTOGRAM ROW -->
             <div class="odontogram-row">
                 <div class="odontogram-container">
                     <canvas id="odontogram">
@@ -170,10 +179,10 @@
                 </div>
             </div>
 
-            <!-- BOTTOM ROW: FLEXIBLE CONTENT -->
-            <div class="flexible-row">
-                <div class="flexible-section">
-                    <h3>Datos del Odontograma</h3>
+            <!-- NOTES ROW BELOW ODONTOGRAM -->
+            <div class="notes-row">
+                <div class="notes-section">
+                    <h3>Notas del Tratamiento</h3>
                     <div id="odontogramData" class="odontogram-data-content">
                         <p>Los datos aparecerán aquí cuando se marquen los dientes</p>
                     </div>

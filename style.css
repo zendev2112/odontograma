@@ -53,9 +53,10 @@ h1 {
     border-right: 2px solid #dee2e6;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 5px;
     overflow-y: auto;
     box-sizing: border-box;
+    max-height: calc(100vh - 60px);
 }
 
 /* MAIN CONTENT AREA (Columns 2-5 - 80%) */
@@ -64,45 +65,103 @@ h1 {
     /* Spans columns 2-5 */
     grid-row: 1;
     display: grid;
-    grid-template-rows: auto 1fr;
-    /* Top row: fixed, Bottom row: flexible */
-    gap: 10px;
-    padding: 10px;
+    grid-template-rows: auto auto 1fr;
+    /* Controls row, Odontogram row, Notes row */
+    gap: 5px;
+    padding: 5px;
     box-sizing: border-box;
 }
 
-/* TOP ROW: ODONTOGRAM (Fixed Size) */
-.odontogram-row {
+/* CONTROLS ROW ABOVE ODONTOGRAM */
+.controls-row {
     grid-row: 1;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    gap: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    min-height: 480px;
-    /* Fixed height to contain original odontogram */
+    padding: 10px;
+    align-items: flex-start;
+}
+
+.dentition-selector,
+.prestacion-selector {
+    flex: 1;
+}
+
+.dentition-selector h3,
+.prestacion-selector h3 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 12px;
+    border-bottom: 1px solid #3498db;
+    padding-bottom: 4px;
+}
+
+/* NOTES ROW BELOW ODONTOGRAM */
+.notes-row {
+    grid-row: 3;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.notes-section {
+    height: 100%;
+}
+
+.notes-section h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
+}
+
+/* ODONTOGRAM ROW (Row 2) */
+.odontogram-row {
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 2px;
+    height: 460px;
+    overflow: hidden;
 }
 
 /* BOTTOM ROW: FLEXIBLE CONTENT */
 .flexible-row {
     grid-row: 2;
     display: flex;
-    gap: 10px;
+    gap: 5px;
     overflow: hidden;
+    min-height: 250px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
 }
 
 /* FLEXIBLE CONTENT SECTIONS */
 .flexible-section {
     flex: 1;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px;
+    padding: 0;
     overflow-y: auto;
     box-sizing: border-box;
+}
+
+.flexible-section h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 16px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 8px;
 }
 
 /* ODONTOGRAM SELECTOR - COMPACT FOR CONTROLS COLUMN */
@@ -378,7 +437,7 @@ input[type="radio"]:checked+.layer-label.required {
 /* ODONTOGRAM CONTAINER */
 .odontogram-container {
     background: white;
-    padding: 10px;
+    padding: 2px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -396,6 +455,7 @@ canvas {
 /* DOWNLOAD SECTION */
 .download-section {
     text-align: center;
+    margin: 5px 0;
 }
 
 #download {

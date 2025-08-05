@@ -218,14 +218,9 @@ function initializeOdontogram(type) {
  * Update teeth range display
  */
 function updateTeethRangeDisplay(type) {
-  const teethRangeElement = document.getElementById('teethRange')
-  if (type === 'children') {
-    teethRangeElement.textContent =
-      '55-51, 61-65, 85-81, 71-75 (Dentición Temporal)'
-  } else {
-    teethRangeElement.textContent =
-      '18-11, 21-28, 48-41, 31-38 (Dentición Permanente)'
-  }
+  // This function is no longer needed since we removed the teethRange element
+  // Just log the change for debugging
+  console.log('🦷 Dentition type changed to:', type === 'children' ? 'Primary' : 'Permanent');
 }
 
 /**
@@ -233,12 +228,14 @@ function updateTeethRangeDisplay(type) {
  */
 function updateLayerUI() {
   const descriptionElement = document.getElementById('layer-description-text')
-  if (currentAnnotationLayer === 'pre') {
-    descriptionElement.innerHTML =
-      'Nuevas anotaciones se marcarán como <strong>pre-existentes</strong> en rojo'
-  } else {
-    descriptionElement.innerHTML =
-      'Nuevas anotaciones se marcarán como <strong>requeridas</strong> en azul'
+  if (descriptionElement) {
+    if (currentAnnotationLayer === 'pre') {
+      descriptionElement.innerHTML =
+        'Nuevas anotaciones se marcarán como <strong>pre-existentes</strong> en rojo'
+    } else {
+      descriptionElement.innerHTML =
+        'Nuevas anotaciones se marcarán como <strong>requeridas</strong> en azul'
+    }
   }
 }
 
@@ -708,8 +705,8 @@ function setupEventHandlers() {
         console.log('🔄 Annotation layer switched to:', currentAnnotationLayer);
     });
 
-    // Handle dentition type change
-    $('#odontogramType').on('change', function () {
+    // Handle dentition type change (new radio buttons)
+    $('input[name="dentition-type"]').on('change', function() {
         const selectedType = $(this).val();
         if (selectedType !== currentOdontogramType) {
             currentOdontogramType = selectedType;
