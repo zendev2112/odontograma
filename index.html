@@ -31,9 +31,19 @@
                         <span class="name">Tratamiento de Conducto</span>
                     </button>
 
+                    <button type="button" id="ODONTOGRAM_MODE_CARIES_UNTREATABLE" class="btn-caries-incurable">
+                        <span class="symbol">●</span>
+                        <span class="name">Caries Incurable</span>
+                    </button>
+
                     <button type="button" id="ODONTOGRAM_MODE_CFR">
                         <span class="symbol">=</span>
                         <span class="name">Extracción</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_AMF">
+                        <span class="symbol">/A</span>
+                        <span class="name">Obturación Amalgama</span>
                     </button>
 
                     <button type="button" id="ODONTOGRAM_MODE_COF">
@@ -44,6 +54,11 @@
                     <button type="button" id="ODONTOGRAM_MODE_MIS">
                         <span class="symbol" style="color: red;">X</span>
                         <span class="name">Diente Ausente</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_SIL">
+                        <span class="symbol">/S</span>
+                        <span class="name">Obturación Silicato</span>
                     </button>
 
                     <button type="button" id="ODONTOGRAM_MODE_POC">
@@ -184,7 +199,9 @@
                 <div class="notes-section">
                     <h3>Notas del Tratamiento</h3>
                     <div id="odontogramData" class="odontogram-data-content">
-                        <p>Los datos aparecerán aquí cuando se marquen los dientes</p>
+                        <p><strong>NOTAS DE PRUEBA:</strong> Los datos aparecerán aquí cuando se marquen los dientes</p>
+                        <p>Esta sección debe ser visible ahora con el borde azul.</p>
+                        <p>Selecciona un tratamiento y haz clic en un diente para ver las notas.</p>
                     </div>
                     <button type="button" id="exportData" class="export-btn">
                         <span>📊 Exportar Datos</span>
