@@ -193,7 +193,7 @@ function getColorForTreatment(treatmentName, layer) {
     this.vertices = vertices
     this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
     this.options = $.extend({ 
-      fillStyle: getColorForTreatment('RES', this.layer)
+      fillStyle: '#f74a1fff'  // ALWAYS RED in odontogram visual
     }, options)
     return this
   }
