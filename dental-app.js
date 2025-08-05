@@ -94,10 +94,10 @@ function displayToothInfo(fdi) {
  */
 function getTreatmentName(code) {
   const treatments = {
-    CARIES: 'Caries Curable',
+    CARIES: 'Caries',
     CFR: 'Extracción',
     AMF: 'Obturación Amalgama',
-    COF: 'Obturación Acrílico/Composite',
+    COF: 'Obturación',
     POC: 'Corona',
     INC: 'Incrustación',
     FMC: 'Prótesis Removible',
@@ -127,7 +127,7 @@ function getTreatmentIcon(code) {
     CARIES_UNTREATABLE: '●',
     CFR: '=',
     AMF: '/A',
-    COF: '/Ac',
+    COF: '/Ob',
     SIL: '/S',
     POC: '○',
     INC: 'I',

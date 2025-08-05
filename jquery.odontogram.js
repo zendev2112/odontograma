@@ -147,7 +147,7 @@ function getColorForTreatment(treatmentName, layer) {
     ctx.fillStyle = this.options.color
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText('/Ac', centerX, centerY)
+    ctx.fillText('/Ob', centerX, centerY)
     ctx.restore()
   }
 
