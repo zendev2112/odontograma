@@ -7,37 +7,114 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+    margin: 0;
+    padding: 0;
     background: #f4f7f9;
     color: #333;
+    overflow: hidden;
+    /* Prevent scrolling */
 }
 
 h1 {
     color: #2c3e50;
     text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
+    margin: 0;
+    padding: 10px 0;
+    font-size: 1.5rem;
+    background: white;
+    border-bottom: 2px solid #3498db;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* MAIN CONTAINER */
+/* 5-COLUMN LAYOUT - FULL VIEWPORT */
 .main-container {
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    /* 5 equal columns */
+    grid-template-rows: 1fr;
+    height: calc(100vh - 60px);
+    /* Account for fixed header */
+    width: 100vw;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* CONTROLS COLUMN (Column 1 - 20%) */
+.controls-column {
+    grid-column: 1;
+    grid-row: 1;
+    background: #f8f9fa;
+    border-right: 2px solid #dee2e6;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    padding: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-/* ODONTOGRAM SELECTOR */
+/* MAIN CONTENT AREA (Columns 2-5 - 80%) */
+.content-area {
+    grid-column: 2 / 6;
+    /* Spans columns 2-5 */
+    grid-row: 1;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    /* Top row: fixed, Bottom row: flexible */
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+/* TOP ROW: ODONTOGRAM (Fixed Size) */
+.odontogram-row {
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    min-height: 480px;
+    /* Fixed height to contain original odontogram */
+}
+
+/* BOTTOM ROW: FLEXIBLE CONTENT */
+.flexible-row {
+    grid-row: 2;
+    display: flex;
+    gap: 10px;
+    overflow: hidden;
+}
+
+/* FLEXIBLE CONTENT SECTIONS */
+.flexible-section {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* ODONTOGRAM SELECTOR - COMPACT FOR CONTROLS COLUMN */
 .odontogram-selector {
     background-color: white;
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 .odontogram-selector label {
@@ -65,13 +142,14 @@ h1 {
     border-radius: 12px;
 }
 
-/* LAYER TOGGLE PANEL */
+/* LAYER TOGGLE PANEL - COMPACT FOR CONTROLS COLUMN */
 .layer-toggle-panel {
     background: white;
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-left: 4px solid #e74c3c;
+    margin-bottom: 10px;
 }
 
 .layer-toggle-panel h3 {
@@ -172,18 +250,17 @@ input[type="radio"]:checked+.layer-label.required {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* BUTTON GRID - TWO COLUMNS */
+/* BUTTON GRID - COMPACT SINGLE COLUMN FOR CONTROLS */
 .button-grid {
-    display: flex;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3px;
 }
 
 .column-left,
 .column-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    display: contents;
+    /* Makes children participate in parent grid */
 }
 
 /* BUTTON STYLING - COMPACT WITH SYMBOL LEFT, NAME RIGHT */
