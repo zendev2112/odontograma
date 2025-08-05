@@ -366,7 +366,7 @@ function updateOdontogramData(geometry) {
         const conditionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
-          const withSides = ['CARIES_UNTREATABLE', 'REF']
+          const withSides = ['CARIES_UNTREATABLE']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
@@ -405,7 +405,7 @@ function updateOdontogramData(geometry) {
         const prestacionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX','RCT']
-          const withSides = ['CARIES', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+          const withSides = ['CARIES', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
@@ -595,14 +595,14 @@ function exportOdontogramData() {
         const condicionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['PRE', 'MIS', 'NVT', 'UNE']
-          const withSides = ['CARIES_UNTREATABLE', 'REF']
+          const withSides = ['CARIES_UNTREATABLE']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 
         const prestacionTreatments = treatments.filter((treatment) => {
           const treatmentCode = treatment.name
           const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX', 'RCT']
-          const withSides = ['CARIES', 'SIL', 'RES', 'AMF', 'COF', 'INC']
+          const withSides = ['CARIES', 'REF', 'SIL', 'RES', 'AMF', 'COF', 'INC']
           return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
         })
 

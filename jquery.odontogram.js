@@ -2358,12 +2358,29 @@ function getColorForTreatment(treatmentName, layer) {
       hoverGeoms.render(ctx)
     }
 
-    // Draw Geometry
+    // Draw Geometry with layering - painting functions behind, symbols on top
     var geoms
+    
+    // Define painting functions that should render behind (background layer)
+    var paintingFunctions = ['RES', 'CARIES', 'CARIES_UNTREATABLE', 'FIS', 'Polygon']
+    
+    // First pass: Render painting functions (background layer)
     for (var keyCoord in this.geometry) {
       geoms = this.geometry[keyCoord]
       for (var x in geoms) {
-        if (geoms[x].render) geoms[x].render(ctx)
+        if (geoms[x].render && paintingFunctions.includes(geoms[x].name)) {
+          geoms[x].render(ctx)
+        }
+      }
+    }
+    
+    // Second pass: Render all other treatments (foreground layer)
+    for (var keyCoord in this.geometry) {
+      geoms = this.geometry[keyCoord]
+      for (var x in geoms) {
+        if (geoms[x].render && !paintingFunctions.includes(geoms[x].name)) {
+          geoms[x].render(ctx)
+        }
       }
     }
 
