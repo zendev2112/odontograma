@@ -11,8 +11,6 @@ body {
     padding: 0;
     background: #f4f7f9;
     color: #333;
-    overflow: hidden;
-    /* Prevent scrolling */
 }
 
 h1 {
@@ -68,7 +66,6 @@ h1 {
     gap: 5px;
     padding: 5px;
     box-sizing: border-box;
-    height: calc(100vh - 60px);
 }
 
 /* CONTROLS ROW ABOVE ODONTOGRAM */
@@ -99,12 +96,11 @@ h1 {
 
 /* NOTES ROW BELOW ODONTOGRAM */
 .notes-row {
-    flex: 1;
+    flex-shrink: 0;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 15px;
-    overflow-y: auto;
     min-height: 200px;
     border: 2px solid #3498db;
 }
@@ -132,7 +128,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 5px;
-    height: 380px;
+    height: 350px;
     overflow: hidden;
 }
 
