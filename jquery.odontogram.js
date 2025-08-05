@@ -44,9 +44,7 @@ var LAYER_COLORS = {
 // Define which treatments ignore layer colors (pathologies)
 var PATHOLOGY_TREATMENTS = [
   'CARIES_UNTREATABLE', // Untreatable caries
-  'MIS', // Missing tooth
   'PRE', // Periodontitis (paradentosis)
-  'UNE', // Unerupted tooth
 ]
 
 // Helper function to determine if treatment should use layer colors
@@ -472,23 +470,48 @@ function getColorForTreatment(treatmentName, layer) {
     ctx.restore()
   }
 
-  // Class UNE = Un-Erupted (une)
+  // Class UNE = Un-Erupted - now works exactly like MIS with 'X' symbol and layer system
   function UNE(vertices, options) {
     this.name = 'UNE'
     this.vertices = vertices
-    this.options = $.extend({ fillStyle: '#555', fontsize: 12 }, options)
+    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend({ 
+      strokeStyle: getColorForTreatment('UNE', this.layer)
+    }, options)
     return this
   }
   UNE.prototype.render = function (ctx) {
-    var x = parseFloat(this.vertices[0].x)
-    var y = parseFloat(this.vertices[0].y)
-    var fontsize = parseInt(this.options.fontsize)
+    var x1 = parseFloat(this.vertices[0].x) + 1
+    var y1 = parseFloat(this.vertices[0].y) + 1
+    var x2 = parseFloat(this.vertices[1].x) + 1
+    var y2 = parseFloat(this.vertices[1].y) + 1
+    var bigBoxSize = x2 - x1
+    var smallBoxSize = bigBoxSize / 2
+    var lines = [
+      {
+        x1: x1 + smallBoxSize * 0.5,
+        y1: y1 - smallBoxSize / 2,
+        x2: x1 + smallBoxSize * 1.5,
+        y2: y2 + smallBoxSize / 2,
+      },
+      {
+        x1: x1 + smallBoxSize * 1.5,
+        y1: y1 - smallBoxSize / 2,
+        x2: x1 + smallBoxSize * 0.5,
+        y2: y2 + smallBoxSize / 2,
+      },
+    ]
 
-    ctx.fillStyle = '#000'
-    ctx.font = 'bold ' + fontsize + 'px Arial'
-    ctx.textBaseline = 'bottom'
-    ctx.textAlign = 'left'
-    ctx.fillText('   NER', x, y) // Changed from UNE to NER
+    ctx.strokeStyle = this.options.strokeStyle
+    ctx.lineWidth = 4
+    var line
+    for (var i = 0; i < lines.length; i++) {
+      line = lines[i]
+      ctx.beginPath()
+      ctx.moveTo(line.x1, line.y1)
+      ctx.lineTo(line.x2, line.y2)
+      ctx.stroke()
+    }
   }
   // Class PRE = Paredontosis
   function PRE(vertices, options) {
@@ -742,11 +765,14 @@ function getColorForTreatment(treatmentName, layer) {
       ctx.stroke()
     }
   }
-  // Class MIS = Gigi hilang (mis)
+  // Class MIS = Gigi hilang (mis) - now supports red/blue layer system
   function MIS(vertices, options) {
     this.name = 'MIS'
     this.vertices = vertices
-    this.options = $.extend({ strokeStyle: '#333' }, options)
+    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend({ 
+      strokeStyle: getColorForTreatment('MIS', this.layer)
+    }, options)
     return this
   }
   MIS.prototype.render = function (ctx) {
@@ -2628,7 +2654,7 @@ function getColorForTreatment(treatmentName, layer) {
         newGeometry = new CARIES_UNTREATABLE(geometry.vertices)
         break
       case ODONTOGRAM_MODE_MIS:
-        newGeometry = new MIS(geometry.vertices)
+        newGeometry = new MIS(geometry.vertices, layerOptions)
         break
       case ODONTOGRAM_MODE_PRE:
         newGeometry = new PRE(geometry.vertices)
@@ -2637,7 +2663,7 @@ function getColorForTreatment(treatmentName, layer) {
         newGeometry = new NVT(geometry.vertices, layerOptions)
         break
       case ODONTOGRAM_MODE_UNE:
-        newGeometry = new UNE(geometry.vertices)
+        newGeometry = new UNE(geometry.vertices, layerOptions)
         break
       case ODONTOGRAM_MODE_NON:
         newGeometry = new NON(geometry.vertices)
