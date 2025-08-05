@@ -13,187 +13,196 @@
 <body>
     <h1>Sistema de Odontograma Dental</h1>
 
-    <div class="main-container" style="margin-top: 60px;"></div>
-    <!-- CONTROLS COLUMN (Column 1 - 20%) -->
-    <div class="controls-column">
-        <!-- Odontogram Type Selector -->
-        <div class="odontogram-selector"></div>
-        <option va="odontogramType">Tipo de Dentición:</label>
-            <select id="odontogramType">
-                <option value="adult">Dentición Permanente (Adultos)</option>
-                <option value="children">Dentición Primaria (Niños)</option>
-            </select>
-    </div>
-
-    <!-- Layer Toggle Control -->
-    <div class="layer-toggle-panel">
-        <h3>Tipo de Prestación</h3>
-        <div class="toggle-container"></div>
-        <div class="radio-group"></div>
-        <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
-        <label for="layer-pre" class="layer-label pre-existing"></label>
-        <span class="layer-indicator pre"></span>
-        Prestación Preexistente
-        </label>
-
-        <input type="radio" id="layer-req" name="annotation-layer" value="req">
-        <label for="layer-req" class="layer-label required"></label>
-        <span class="layer-indicator req"></span>
-        Prestación Requerida
-        </label>
-    </div>
-    </div>
-    </div>
-
-    <!-- Treatment Controls -->
-    <div class="controls-panel"></div>
-    <div class="button-grid">
-        <!-- All buttons in compact grid -->
-        <button type="button" id="ODONTOGRAM_MODE_CARIES" class="btn-caries-curable">
-            <span class="symbol">●</span>
-            <span class="name">Caries</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_RCT">
-            <span class="symbol big">▼</span>
-            <span class="name">Tratamiento de Conducto</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_CARIES_UNTREATABLE" class="btn-caries-incurable">
-            <span class="symbol">●</span>
-            <span class="name">Caries Incurable</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_CFR">
-            <span class="symbol">=</span>
-            <span class="name">Extracción</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_AMF">
-            <span class="symbol">/A</span>
-            <span class="name">Obturación Amalgama</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_COF">
-            <span class="symbol">/Ob</span>
-            <span class="name">Obturación</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_MIS">
-            <span class="symbol" style="color: red;">X</span>
-            <span class="name">Diente Ausente</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_SIL">
-            <span class="symbol">/S</span>
-            <span class="name">Obturación Silicato</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_POC">
-            <span class="symbol big">○</span>
-            <span class="name">Corona</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_PRE">
-            <span class="symbol">Pd</span>
-            <span class="name">Paradentosis</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_INC">
-            <span class="symbol">I</span>
-            <span class="name">Incrustación</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_FRM_ACR">
-            <span class="symbol">P</span>
-            <span class="name">Pivot</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_FMC">
-            <span class="symbol big">□</span>
-            <span class="name">Prot. Removible</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_BRIDGE">
-            <span class="symbol">Π</span>
-            <span class="name">Puente</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_IPX">
-            <span class="symbol">IM</span>
-            <span class="name">Implante</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_ORT">
-            <span class="symbol">~</span>
-            <span class="name">Ortodoncia</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_NVT">
-            <span class="symbol">/Sp</span>
-            <span class="name">Surco Profundo</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_RES">
-            <span class="symbol">Δ</span>
-            <span class="name">Restauración</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_UNE">
-            <span class="symbol" style="color: blue;">X</span>
-            <span class="name">Pieza No Erupcionada</span>
-        </button>
-
-        <button type="button" id="ODONTOGRAM_MODE_REF">
-            <span class="symbol">/Rf</span>
-            <span class="name">Restauración Filtrada</span>
-        </button>
-    </div>
-    </div>
-
-    <!-- Action Controls -->
-    <div class="control-group">
-        <button id="ODONTOGRAM_MODE_HAPUS" class="treatment-btn delete-btn" title="Borrar tratamientos seleccionados">
-            <span class="icon">🗑️</span>
-            <span class="name">Borrar</span>
-        </button>
-        <button id="ODONTOGRAM_MODE_DEFAULT" class="treatment-btn default-btn" title="Limpiar todo el odontograma">
-            <span class="icon">🧹</span>
-            <span class="name">Limpiar Todo</span>
-        </button>
-    </div>
-    </div>
-
-    <!-- CONTENT AREA (Columns 2-5 - 80%) -->
-    <div class="content-area">
-        <!-- TOP ROW: ODONTOGRAM (Fixed Size) -->
-        <div class="odontogram-row">
-            <div class="odontogram-container">
-                <canvas id="odontogram">
-                    Tu navegador no soporta canvas. Por favor actualiza tu navegador.
-                </canvas>
-            </div>
-
-            <div class="download-section">
-                <button type="button" id="download">
-                    <span>💾 Descargar Odontograma</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- BOTTOM ROW: FLEXIBLE CONTENT -->
-        <div class="flexible-row">
-            <div class="flexible-section">
-                <h3>Datos del Odontograma</h3>
-                <div id="odontogramData" class="odontogram-data-content">
-                    <p>Los datos aparecerán aquí cuando se marquen los dientes</p>
+    <div class="main-container" style="margin-top: 60px;">
+        <!-- CONTROLS COLUMN (Column 1 - 20%) -->
+        <div class="controls-column">
+            <!-- Odontogram Type Selector -->
+            <div class="odontogram-selector">
+                <label for="odontogramType">Tipo de Dentición:</label>
+                <select id="odontogramType">
+                    <option value="adult">Dentición Permanente (Adultos)</option>
+                    <option value="children">Dentición Primaria (Niños)</option>
+                </select>
+                <div id="teethRange" class="teeth-range">
+                    18-11, 21-28, 48-41, 31-38 (Dentición Permanente)
                 </div>
-                <button type="button" id="exportData" class="export-btn">
-                    <span>📊 Exportar Datos</span>
+            </div>
+
+            <!-- Layer Toggle Control -->
+            <div class="layer-toggle-panel">
+                <h3>Tipo de Prestación</h3>
+                <div class="toggle-container">
+                    <div class="radio-group">
+                        <input type="radio" id="layer-pre" name="annotation-layer" value="pre" checked>
+                        <label for="layer-pre" class="layer-label pre-existing">
+                            <span class="layer-indicator pre"></span>
+                            Prestación Preexistente
+                        </label>
+
+                        <input type="radio" id="layer-req" name="annotation-layer" value="req">
+                        <label for="layer-req" class="layer-label required">
+                            <span class="layer-indicator req"></span>
+                            Prestación Requerida
+                        </label>
+                    </div>
+                </div>
+                <div class="layer-description">
+                    <p id="layer-description-text">Nuevas anotaciones se marcarán como <strong>pre-existentes</strong>
+                        en rojo</p>
+                </div>
+            </div>
+
+            <!-- Treatment Controls -->
+            <div class="controls-panel">
+                <div class="button-grid">
+                    <!-- All buttons in single column -->
+                    <button type="button" id="ODONTOGRAM_MODE_CARIES" class="btn-caries-curable">
+                        <span class="symbol">●</span>
+                        <span class="name">Caries</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_RCT">
+                        <span class="symbol big">▼</span>
+                        <span class="name">Tratamiento de Conducto</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_CARIES_UNTREATABLE" class="btn-caries-incurable">
+                        <span class="symbol">●</span>
+                        <span class="name">Caries Incurable</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_CFR">
+                        <span class="symbol">=</span>
+                        <span class="name">Extracción</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_AMF">
+                        <span class="symbol">/A</span>
+                        <span class="name">Obturación Amalgama</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_COF">
+                        <span class="symbol">/Ob</span>
+                        <span class="name">Obturación</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_MIS">
+                        <span class="symbol" style="color: red;">X</span>
+                        <span class="name">Diente Ausente</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_SIL">
+                        <span class="symbol">/S</span>
+                        <span class="name">Obturación Silicato</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_POC">
+                        <span class="symbol big">○</span>
+                        <span class="name">Corona</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_PRE">
+                        <span class="symbol">Pd</span>
+                        <span class="name">Paradentosis</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_INC">
+                        <span class="symbol">I</span>
+                        <span class="name">Incrustación</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_FRM_ACR">
+                        <span class="symbol">P</span>
+                        <span class="name">Pivot</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_FMC">
+                        <span class="symbol big">□</span>
+                        <span class="name">Prot. Removible</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_BRIDGE">
+                        <span class="symbol">Π</span>
+                        <span class="name">Puente</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_IPX">
+                        <span class="symbol">IM</span>
+                        <span class="name">Implante</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_ORT">
+                        <span class="symbol">~</span>
+                        <span class="name">Ortodoncia</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_NVT">
+                        <span class="symbol">/Sp</span>
+                        <span class="name">Surco Profundo</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_RES">
+                        <span class="symbol">Δ</span>
+                        <span class="name">Restauración</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_UNE">
+                        <span class="symbol" style="color: blue;">X</span>
+                        <span class="name">Pieza No Erupcionada</span>
+                    </button>
+
+                    <button type="button" id="ODONTOGRAM_MODE_REF">
+                        <span class="symbol">/Rf</span>
+                        <span class="name">Restauración Filtrada</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="control-group">
+                <button id="ODONTOGRAM_MODE_HAPUS" class="treatment-btn delete-btn"
+                    title="Borrar tratamientos seleccionados">
+                    <span class="icon">🗑️</span>
+                    <span class="name">Borrar</span>
+                </button>
+                <button id="ODONTOGRAM_MODE_DEFAULT" class="treatment-btn default-btn"
+                    title="Limpiar todo el odontograma">
+                    <span class="icon">🧹</span>
+                    <span class="name">Limpiar Todo</span>
                 </button>
             </div>
         </div>
-    </div>
+
+        <!-- CONTENT AREA (Columns 2-5 - 80%) -->
+        <div class="content-area">
+            <!-- TOP ROW: ODONTOGRAM (Fixed Size) -->
+            <div class="odontogram-row">
+                <div class="odontogram-container">
+                    <canvas id="odontogram">
+                        Tu navegador no soporta canvas. Por favor actualiza tu navegador.
+                    </canvas>
+                </div>
+
+                <div class="download-section">
+                    <button type="button" id="download">
+                        <span>💾 Descargar Odontograma</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTTOM ROW: FLEXIBLE CONTENT -->
+            <div class="flexible-row">
+                <div class="flexible-section">
+                    <h3>Datos del Odontograma</h3>
+                    <div id="odontogramData" class="odontogram-data-content">
+                        <p>Los datos aparecerán aquí cuando se marquen los dientes</p>
+                    </div>
+                    <button type="button" id="exportData" class="export-btn">
+                        <span>📊 Exportar Datos</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="./dental-app.js"></script>
