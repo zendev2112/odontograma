@@ -470,13 +470,13 @@ function getColorForTreatment(treatmentName, layer) {
     ctx.restore()
   }
 
-  // Class UNE = Un-Erupted - now works exactly like MIS with 'X' symbol and layer system
+  // Class UNE = Un-Erupted - ALWAYS BLUE in odontogram, layer system only for notes
   function UNE(vertices, options) {
     this.name = 'UNE'
     this.vertices = vertices
     this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
     this.options = $.extend({ 
-      strokeStyle: getColorForTreatment('UNE', this.layer)
+      strokeStyle: '#0066FF'  // ALWAYS BLUE in odontogram visual
     }, options)
     return this
   }
@@ -765,13 +765,13 @@ function getColorForTreatment(treatmentName, layer) {
       ctx.stroke()
     }
   }
-  // Class MIS = Gigi hilang (mis) - now supports red/blue layer system
+  // Class MIS = Gigi hilang (mis) - ALWAYS RED in odontogram, layer system only for notes
   function MIS(vertices, options) {
     this.name = 'MIS'
     this.vertices = vertices
     this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
     this.options = $.extend({ 
-      strokeStyle: getColorForTreatment('MIS', this.layer)
+      strokeStyle: '#FF0000'  // ALWAYS RED in odontogram visual
     }, options)
     return this
   }
