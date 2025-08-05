@@ -124,14 +124,15 @@ h1 {
 }
 
 #odontogramType {
-    padding: 8px 12px;
-    border: 2px solid #3498db;
-    border-radius: 6px;
+    padding: 4px 8px;
+    border: 1px solid #3498db;
+    border-radius: 4px;
     background: white;
     color: #2c3e50;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
+    width: 100%;
 }
 
 .teeth-range {
@@ -153,11 +154,11 @@ h1 {
 }
 
 .layer-toggle-panel h3 {
-    margin: 0 0 15px 0;
+    margin: 0 0 8px 0;
     color: #2c3e50;
-    font-size: 16px;
-    border-bottom: 2px solid #e74c3c;
-    padding-bottom: 8px;
+    font-size: 12px;
+    border-bottom: 1px solid #e74c3c;
+    padding-bottom: 4px;
 }
 
 .toggle-container {
@@ -168,8 +169,9 @@ h1 {
 
 .radio-group {
     display: flex;
-    gap: 20px;
-    align-items: center;
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
 }
 
 .radio-group input[type="radio"] {
@@ -179,13 +181,13 @@ h1 {
 .layer-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: 8px;
-    border: 2px solid #ddd;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 500;
+    font-size: 12px;
     transition: all 0.2s ease;
     background: white;
 }
@@ -245,7 +247,7 @@ input[type="radio"]:checked+.layer-label.required {
 /* CONTROLS PANEL - COMPACT BUTTONS */
 .controls-panel {
     background: white;
-    padding: 15px;
+    padding: 8px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -376,7 +378,7 @@ input[type="radio"]:checked+.layer-label.required {
 /* ODONTOGRAM CONTAINER */
 .odontogram-container {
     background: white;
-    padding: 15px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -724,28 +726,28 @@ canvas {
 
 /* Add to style.css */
 
-/* Enhanced Control Group Styling */
+/* Enhanced Control Group Styling - COMPACT */
 .control-group {
     display: flex;
-    gap: 15px;
+    gap: 8px;
     justify-content: center;
-    margin: 20px 0;
-    padding: 15px;
+    margin: 10px 0 0 0;
+    padding: 8px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid #dee2e6;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-/* Treatment Button Base Styling */
+/* Treatment Button Base Styling - COMPACT */
 .treatment-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
+    padding: 6px 10px;
     border: 2px solid transparent;
-    border-radius: 10px;
+    border-radius: 6px;
     background: white;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -754,9 +756,10 @@ canvas {
     text-decoration: none;
     position: relative;
     overflow: hidden;
-    min-width: 140px;
-    min-height: 80px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 80px;
+    min-height: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    flex: 1;
 }
 
 .treatment-btn::before {

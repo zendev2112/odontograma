@@ -365,7 +365,8 @@ function getColorForTreatment(treatmentName, layer) {
   function NVT(vertices, options) {
     this.name = 'NVT'
     this.vertices = vertices
-    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
     this.options = $.extend(
       {
         font: 'bold 16px Arial',
@@ -474,10 +475,14 @@ function getColorForTreatment(treatmentName, layer) {
   function UNE(vertices, options) {
     this.name = 'UNE'
     this.vertices = vertices
-    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
-    this.options = $.extend({ 
-      strokeStyle: '#0066FF'  // ALWAYS BLUE in odontogram visual
-    }, options)
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        strokeStyle: '#0066FF', // ALWAYS BLUE in odontogram visual
+      },
+      options
+    )
     return this
   }
   UNE.prototype.render = function (ctx) {
@@ -769,10 +774,14 @@ function getColorForTreatment(treatmentName, layer) {
   function MIS(vertices, options) {
     this.name = 'MIS'
     this.vertices = vertices
-    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
-    this.options = $.extend({ 
-      strokeStyle: '#FF0000'  // ALWAYS RED in odontogram visual
-    }, options)
+    this.layer =
+      options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend(
+      {
+        strokeStyle: '#FF0000', // ALWAYS RED in odontogram visual
+      },
+      options
+    )
     return this
   }
   MIS.prototype.render = function (ctx) {
@@ -2399,10 +2408,16 @@ function getColorForTreatment(treatmentName, layer) {
 
     // Draw Geometry with layering - painting functions behind, symbols on top
     var geoms
-    
+
     // Define painting functions that should render behind (background layer)
-    var paintingFunctions = ['RES', 'CARIES', 'CARIES_UNTREATABLE', 'FIS', 'Polygon']
-    
+    var paintingFunctions = [
+      'RES',
+      'CARIES',
+      'CARIES_UNTREATABLE',
+      'FIS',
+      'Polygon',
+    ]
+
     // First pass: Render painting functions (background layer)
     for (var keyCoord in this.geometry) {
       geoms = this.geometry[keyCoord]
@@ -2412,7 +2427,7 @@ function getColorForTreatment(treatmentName, layer) {
         }
       }
     }
-    
+
     // Second pass: Render all other treatments (foreground layer)
     for (var keyCoord in this.geometry) {
       geoms = this.geometry[keyCoord]
