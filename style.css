@@ -881,6 +881,20 @@ canvas {
     color: white;
 }
 
+/* Download Button Styling */
+.download-btn {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+/* Export Button Styling */
+.export-btn {
+    background: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+
 
 
 .default-btn .icon {

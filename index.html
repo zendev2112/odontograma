@@ -13,7 +13,7 @@
 <body>
     <header class="app-header">
         <img src="./assets/logo.jpg" alt="Sistema de Odontograma Dental" class="app-logo">
-    </header>header>""
+    </header>header&gt;""
 
     <div class="main-container" style="margin-top: 60px;">
         <!-- CONTROLS COLUMN (Column 1 - 20%) -->
@@ -122,6 +122,18 @@
                     <span class="name">Limpiar Todo</span>
                 </button>
             </div>
+
+            <!-- Download and Export Controls -->
+            <div class="control-group">
+                <button id="download" class="treatment-btn download-btn" title="Descargar imagen del odontograma">
+                    <span class="icon">💾</span>
+                    <span class="name">Descargar Odontograma</span>
+                </button>
+                <button id="exportData" class="treatment-btn export-btn" title="Exportar datos en formato JSON">
+                    <span class="icon">📊</span>
+                    <span class="name">Exportar Datos</span>
+                </button>
+            </div>
         </div>
 
         <!-- CONTENT AREA (Columns 2-5 - 80%) -->
@@ -173,11 +185,7 @@
                     </canvas>
                 </div>
 
-                <div class="download-section">
-                    <button type="button" id="download">
-                        <span>💾 Descargar Odontograma</span>
-                    </button>
-                </div>
+
             </div>
 
             <!-- NOTES ROW BELOW ODONTOGRAM -->
@@ -187,9 +195,6 @@
                     <div id="odontogramData" class="odontogram-data-content">
                         <p>Los datos aparecerán aquí cuando se marquen los dientes</p>
                     </div>
-                    <button type="button" id="exportData" class="export-btn">
-                        <span>📊 Exportar Datos</span>
-                    </button>
                 </div>
             </div>
         </div>
