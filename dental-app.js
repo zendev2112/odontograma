@@ -1043,9 +1043,9 @@ async function generateProfessionalPNG() {
 
     let currentY = 30
 
-    // 1. HEADER WITH VISIBLE LOGO (UPPER LEFT CORNER)
-    let logoWidth = 120
-    let logoHeight = 120
+    // 1. HEADER WITH BIGGER, IMPORTANT LOGO
+    let logoWidth = 200 // BIGGER LOGO
+    let logoHeight = 200 // BIGGER LOGO
 
     try {
       const logo = new Image()
@@ -1055,27 +1055,35 @@ async function generateProfessionalPNG() {
         logo.src = './assets/logo.jpg'
       })
 
-      // Draw VISIBLE logo in upper left corner
+      // Draw BIGGER, IMPORTANT logo in upper left corner
       ctx.drawImage(logo, 30, currentY, logoWidth, logoHeight)
     } catch (error) {
       console.warn('⚠️ Could not load logo:', error)
-      // Draw visible placeholder if logo fails
+      // Draw BIGGER placeholder if logo fails
       ctx.fillStyle = '#e0e0e0'
       ctx.fillRect(30, currentY, logoWidth, logoHeight)
       ctx.fillStyle = '#666'
-      ctx.font = 'bold 16px Arial'
+      ctx.font = 'bold 32px Arial'
       ctx.textAlign = 'center'
-      ctx.fillText('CLÍNICA', 30 + logoWidth / 2, currentY + logoHeight / 2 - 8)
-      ctx.fillText('DENTAL', 30 + logoWidth / 2, currentY + logoHeight / 2 + 8)
+      ctx.fillText(
+        'CLÍNICA',
+        30 + logoWidth / 2,
+        currentY + logoHeight / 2 - 20
+      )
+      ctx.fillText('DENTAL', 30 + logoWidth / 2, currentY + logoHeight / 2 + 20)
     }
 
-    // TITLE next to logo
+    // DUMMY PATIENT NAME (above timestamp)
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 32px Arial'
-    ctx.textAlign = 'left'
-    ctx.fillText('ODONTOGRAMA PROFESIONAL', 170, currentY + 40)
+    ctx.font = 'bold 24px Arial'
+    ctx.textAlign = 'right'
+    ctx.fillText(
+      'Paciente: María González Rodríguez',
+      canvas.width - 30,
+      currentY + 60
+    )
 
-    // TIMESTAMP (right side)
+    // TIMESTAMP (below patient name)
     const now = new Date()
     const timestamp = now.toLocaleDateString('es-ES', {
       year: 'numeric',
@@ -1088,18 +1096,44 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 18px Arial'
     ctx.textAlign = 'right'
-    ctx.fillText(`Fecha: ${timestamp}`, canvas.width - 30, currentY + 40)
+    ctx.fillText(`Fecha: ${timestamp}`, canvas.width - 30, currentY + 90)
 
-    currentY += logoHeight + 40
+    currentY += logoWidth + 40
 
-    // 2. ODONTOGRAM SECTION (centered)
+    // 2. LAYOUT: PRESTACIONES COLORS LEFT, ODONTOGRAM RIGHT
+    const prestacionesX = 30
+    const prestacionesWidth = 250
+    const odontogramX = prestacionesX + prestacionesWidth + 30
+
+    // LEFT: PRESTACIONES COLORS (no "Sistema de Capas" title)
+    let prestacionesY = currentY
+
+    // Red layer (pre-existing)
+    ctx.fillStyle = '#FF0000'
+    ctx.fillRect(prestacionesX, prestacionesY, 20, 15)
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 24px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
-    currentY += 30
+    ctx.font = '16px Arial'
+    ctx.textAlign = 'left'
+    ctx.fillText(
+      'Prestación Preexistente',
+      prestacionesX + 30,
+      prestacionesY + 12
+    )
+    prestacionesY += 30
 
-    // Get and draw odontogram
+    // Blue layer (required)
+    ctx.fillStyle = '#0066FF'
+    ctx.fillRect(prestacionesX, prestacionesY, 20, 15)
+    ctx.fillStyle = '#2c3e50'
+    ctx.fillText('Prestación Requerida', prestacionesX + 30, prestacionesY + 12)
+
+    // RIGHT: ODONTOGRAM AT ORIGINAL SIZE (not stretched)
+    ctx.fillStyle = '#2c3e50'
+    ctx.font = 'bold 20px Arial'
+    ctx.textAlign = 'left'
+    ctx.fillText('ODONTOGRAMA', odontogramX, currentY)
+
+    // Get and draw odontogram at ORIGINAL SIZE
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
     const odontogramImg = new Image()
 
@@ -1108,282 +1142,142 @@ async function generateProfessionalPNG() {
       odontogramImg.src = odontogramDataURL
     })
 
-    // Draw odontogram (centered, good size for landscape)
-    const odontogramWidth = 900
-    const odontogramHeight = 280
-    const odontogramX = (canvas.width - odontogramWidth) / 2
+    // Draw odontogram at ORIGINAL SIZE (not stretched)
+    const originalWidth = odontogramImg.naturalWidth
+    const originalHeight = odontogramImg.naturalHeight
     ctx.drawImage(
       odontogramImg,
       odontogramX,
-      currentY,
-      odontogramWidth,
-      odontogramHeight
+      currentY + 30,
+      originalWidth,
+      originalHeight
     )
-    currentY += odontogramHeight + 30
 
-    // 3. TWO-COLUMN LAYOUT: SYMBOLS REFERENCE + NOTES
-    const leftColumnX = 30
-    const rightColumnX = canvas.width / 2 + 30
-    const columnWidth = canvas.width / 2 - 60
-
-    // LEFT COLUMN: SYMBOL REFERENCE OF CURRENT HTML BUTTONS
-    let leftY = currentY
+    // 3. NOTES SECTION: GRID FOR 32 TEETH (8 columns x 4 rows)
+    const notesStartY = currentY + 30 + originalHeight + 40
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial'
+    ctx.font = 'bold 18px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText('REFERENCIA DE SÍMBOLOS', leftColumnX, leftY)
-    leftY += 30
+    ctx.fillText('NOTAS CLÍNICAS', 30, notesStartY)
 
-    // Create symbols reference based on CURRENT HTML BUTTONS
-    const symbolsFromHTML = [
-      { symbol: 'X', name: 'Diente Ausente', color: '#FF0000' },
-      { symbol: 'X', name: 'Diente No Erupcionado', color: '#0066FF' },
-      { symbol: '=', name: 'Diente Indicado para Extracción', color: '#666' },
-      { symbol: '●', name: 'Caries', color: '#FFC107' },
-      { symbol: 'Pd', name: 'Paradentosis', color: '#666' },
-      { symbol: '/Sp', name: 'Surco Profundo', color: '#666' },
-      { symbol: '/Ob', name: 'Obturación', color: '#666' },
-      { symbol: 'I', name: 'Incrustación', color: '#666' },
-      { symbol: 'Δ', name: 'Restauración', color: '#666' },
-      { symbol: '/Rf', name: 'Restauración Filtrada', color: '#666' },
-      { symbol: '○', name: 'Corona', color: '#666' },
-      { symbol: 'P', name: 'Pivot', color: '#666' },
-      { symbol: '□', name: 'Prot. Removible', color: '#666' },
-      { symbol: 'Π', name: 'Puente', color: '#666' },
-      { symbol: 'IM', name: 'Implante', color: '#666' },
-      { symbol: '▼', name: 'Tratamiento de Conducto', color: '#666' },
-      { symbol: '~', name: 'Ortodoncia', color: '#666' },
+    // 8x4 GRID for notes (8 columns, 4 rows for 32 teeth)
+    const gridStartY = notesStartY + 30
+    const gridColumns = 8
+    const gridRows = 4
+    const cellWidth = (canvas.width - 60) / gridColumns // Full width minus margins
+    const cellHeight = 80
+
+    // Get ONLY the notes text (not odontogram references)
+    const allNotes = []
+
+    // Collect notes for teeth 11-18, 21-28, 31-38, 41-48 (standard FDI numbering)
+    const standardTeeth = [
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18, // Upper right
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28, // Upper left
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38, // Lower left
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48, // Lower right
     ]
 
-    // Draw symbols in left column
-    ctx.font = '14px Arial'
-
-    symbolsFromHTML.forEach((item, index) => {
-      // Draw symbol
-      ctx.fillStyle = item.color
-      ctx.font = 'bold 16px Arial'
-      ctx.textAlign = 'left'
-      ctx.fillText(item.symbol, leftColumnX, leftY)
-
-      // Draw name
-      ctx.fillStyle = '#2c3e50'
-      ctx.font = '14px Arial'
-      ctx.fillText(item.name, leftColumnX + 30, leftY)
-
-      leftY += 22
+    standardTeeth.forEach((toothNum) => {
+      const note = toothNotes[toothNum] || ''
+      allNotes.push({
+        tooth: toothNum,
+        note: note.trim(),
+      })
     })
 
-    // Add layer system reference
-    leftY += 20
-    ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 16px Arial'
-    ctx.fillText('SISTEMA DE CAPAS:', leftColumnX, leftY)
-    leftY += 25
+    // Draw notes in 8x4 grid
+    let noteIndex = 0
+    for (let row = 0; row < gridRows; row++) {
+      for (let col = 0; col < gridColumns; col++) {
+        const cellX = 30 + col * cellWidth
+        const cellY = gridStartY + row * cellHeight
 
-    // Red layer (pre-existing)
-    ctx.fillStyle = '#FF0000'
-    ctx.fillRect(leftColumnX, leftY - 15, 20, 15)
-    ctx.fillStyle = '#2c3e50'
-    ctx.font = '14px Arial'
-    ctx.fillText('Prestación Preexistente', leftColumnX + 30, leftY - 5)
-    leftY += 25
+        // Draw cell border
+        ctx.strokeStyle = '#ddd'
+        ctx.lineWidth = 1
+        ctx.strokeRect(cellX, cellY, cellWidth, cellHeight)
 
-    // Blue layer (required)
-    ctx.fillStyle = '#0066FF'
-    ctx.fillRect(leftColumnX, leftY - 15, 20, 15)
-    ctx.fillStyle = '#2c3e50'
-    ctx.fillText('Prestación Requerida', leftColumnX + 30, leftY - 5)
+        if (noteIndex < allNotes.length) {
+          const noteData = allNotes[noteIndex]
 
-    // RIGHT COLUMN: ALL INFORMATION GATHERED IN NOTES
-    let rightY = currentY
-    ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial'
-    ctx.textAlign = 'left'
-    ctx.fillText('INFORMACIÓN CLÍNICA', rightColumnX, rightY)
-    rightY += 30
+          // Draw tooth number header
+          ctx.fillStyle = '#2c3e50'
+          ctx.font = 'bold 12px Arial'
+          ctx.textAlign = 'left'
+          ctx.fillText(`Diente ${noteData.tooth}`, cellX + 5, cellY + 15)
 
-    // Get all data from notes and treatments
-    const hasData =
-      Object.keys(currentGeometry).length > 0 ||
-      Object.keys(toothNotes).length > 0
+          // Draw note text (ONLY the note text, no odontogram references)
+          if (noteData.note) {
+            ctx.fillStyle = '#333'
+            ctx.font = '10px Arial'
 
-    if (hasData) {
-      ctx.font = '14px Arial'
-      ctx.fillStyle = '#2c3e50'
+            // Word wrap the note text to fit in cell
+            const words = noteData.note.split(' ')
+            let line = ''
+            let lineY = cellY + 30
+            const maxWidth = cellWidth - 10
+            const maxLines = 4 // Limit to 4 lines per cell
+            let lineCount = 0
 
-      // Process each tooth with treatments or notes
-      for (const [key, treatments] of Object.entries(currentGeometry)) {
-        if (treatments && treatments.length > 0) {
-          const instance = $('#odontogram').data('odontogram')
-          let toothNum = null
+            for (const word of words) {
+              if (lineCount >= maxLines) break
 
-          // Get tooth number
-          for (const [teethKey, teethData] of Object.entries(instance.teeth)) {
-            if (teethKey === key) {
-              toothNum = teethData.num
-              break
-            }
-          }
+              const testLine = line + word + ' '
+              const metrics = ctx.measureText(testLine)
 
-          if (toothNum) {
-            const toothInfo = getToothInfo(toothNum)
-            const toothName = toothInfo
-              ? toothInfo.nombre
-              : `Diente ${toothNum}`
-
-            // Tooth header
-            ctx.font = 'bold 16px Arial'
-            ctx.fillStyle = '#2c3e50'
-            ctx.fillText(
-              `Pieza ${toothNum} - ${toothName}`,
-              rightColumnX,
-              rightY
-            )
-            rightY += 20
-
-            // Group treatments by layer
-            const preExistentes = treatments.filter((t) => t.layer === 'pre')
-            const requeridas = treatments.filter(
-              (t) => t.layer === 'req' || !t.layer
-            )
-
-            // Pre-existing treatments
-            if (preExistentes.length > 0) {
-              ctx.font = 'bold 14px Arial'
-              ctx.fillStyle = '#FF0000'
-              ctx.fillText(
-                '• Prestaciones Preexistentes:',
-                rightColumnX + 10,
-                rightY
-              )
-              rightY += 18
-
-              preExistentes.forEach((treatment) => {
-                ctx.font = '13px Arial'
-                ctx.fillStyle = '#2c3e50'
-                ctx.fillText(
-                  `  - ${getTreatmentName(treatment.name)}`,
-                  rightColumnX + 10,
-                  rightY
-                )
-                rightY += 16
-              })
-            }
-
-            // Required treatments
-            if (requeridas.length > 0) {
-              ctx.font = 'bold 14px Arial'
-              ctx.fillStyle = '#0066FF'
-              ctx.fillText(
-                '• Prestaciones Requeridas:',
-                rightColumnX + 10,
-                rightY
-              )
-              rightY += 18
-
-              requeridas.forEach((treatment) => {
-                ctx.font = '13px Arial'
-                ctx.fillStyle = '#2c3e50'
-                ctx.fillText(
-                  `  - ${getTreatmentName(treatment.name)}`,
-                  rightColumnX + 10,
-                  rightY
-                )
-                rightY += 16
-              })
-            }
-
-            // Clinical notes for this tooth
-            const toothNote = toothNotes[toothNum]
-            if (toothNote && toothNote.trim()) {
-              ctx.font = 'bold 14px Arial'
-              ctx.fillStyle = '#4A4A4A'
-              ctx.fillText('• Notas Clínicas:', rightColumnX + 10, rightY)
-              rightY += 18
-
-              // Word wrap for notes
-              ctx.font = '13px Arial'
-              ctx.fillStyle = '#2c3e50'
-              const words = toothNote.split(' ')
-              let line = ''
-              const maxWidth = columnWidth - 20
-
-              for (const word of words) {
-                const testLine = line + word + ' '
-                const metrics = ctx.measureText(testLine)
-
-                if (metrics.width > maxWidth && line !== '') {
-                  ctx.fillText(`  ${line}`, rightColumnX + 10, rightY)
-                  line = word + ' '
-                  rightY += 16
-                } else {
-                  line = testLine
-                }
-              }
-
-              if (line) {
-                ctx.fillText(`  ${line}`, rightColumnX + 10, rightY)
-                rightY += 16
+              if (metrics.width > maxWidth && line !== '') {
+                ctx.fillText(line.trim(), cellX + 5, lineY)
+                line = word + ' '
+                lineY += 12
+                lineCount++
+              } else {
+                line = testLine
               }
             }
 
-            rightY += 15 // Space between teeth
-          }
-        }
-      }
-
-      // Add standalone notes (teeth with notes but no treatments)
-      for (const [toothNum, note] of Object.entries(toothNotes)) {
-        if (note.trim() && !currentGeometry[`tooth-${toothNum}`]) {
-          const toothInfo = getToothInfo(toothNum)
-          const toothName = toothInfo ? toothInfo.nombre : `Diente ${toothNum}`
-
-          ctx.font = 'bold 16px Arial'
-          ctx.fillStyle = '#2c3e50'
-          ctx.fillText(`Pieza ${toothNum} - ${toothName}`, rightColumnX, rightY)
-          rightY += 20
-
-          ctx.font = 'bold 14px Arial'
-          ctx.fillStyle = '#4A4A4A'
-          ctx.fillText('• Notas Clínicas:', rightColumnX + 10, rightY)
-          rightY += 18
-
-          // Word wrap for notes
-          ctx.font = '13px Arial'
-          ctx.fillStyle = '#2c3e50'
-          const words = note.split(' ')
-          let line = ''
-          const maxWidth = columnWidth - 20
-
-          for (const word of words) {
-            const testLine = line + word + ' '
-            const metrics = ctx.measureText(testLine)
-
-            if (metrics.width > maxWidth && line !== '') {
-              ctx.fillText(`  ${line}`, rightColumnX + 10, rightY)
-              line = word + ' '
-              rightY += 16
-            } else {
-              line = testLine
+            // Draw remaining text if within line limit
+            if (line.trim() && lineCount < maxLines) {
+              ctx.fillText(line.trim(), cellX + 5, lineY)
             }
+          } else {
+            // Show "Sin notas" for empty cells
+            ctx.fillStyle = '#999'
+            ctx.font = 'italic 10px Arial'
+            ctx.fillText('Sin notas', cellX + 5, cellY + 35)
           }
-
-          if (line) {
-            ctx.fillText(`  ${line}`, rightColumnX + 10, rightY)
-            rightY += 16
-          }
-
-          rightY += 15
         }
+
+        noteIndex++
       }
-    } else {
-      ctx.font = '14px Arial'
-      ctx.fillStyle = '#666'
-      ctx.fillText(
-        'No hay información registrada para este odontograma.',
-        rightColumnX,
-        rightY
-      )
     }
 
     // 4. FOOTER
@@ -1406,7 +1300,7 @@ async function generateProfessionalPNG() {
           currentOdontogramType === 'children' ? 'temporal' : 'permanente'
         const fileTimestamp = now.toISOString().slice(0, 19).replace(/:/g, '-')
 
-        link.download = `odontograma_profesional_${dentitionType}_${fileTimestamp}.png`
+        link.download = `odontograma_${dentitionType}_${fileTimestamp}.png`
         link.href = url
         link.click()
 
