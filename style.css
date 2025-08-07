@@ -94,6 +94,53 @@ h1 {
     padding-bottom: 4px;
 }
 
+/* DENTITION SELECTOR RADIO BUTTONS */
+.dentition-selector .radio-group input[type="radio"] {
+    display: none;
+}
+
+.dentition-selector .layer-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.dentition-selector .layer-label:hover {
+    border-color: #bbb;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dentition-selector .layer-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #3498db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Active state for dentition selector */
+.dentition-selector input[type="radio"]:checked+.layer-label {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    font-weight: 600;
+}
+
+.dentition-selector input[type="radio"]:checked+.layer-label .layer-indicator {
+    background: #3498db;
+}
+
 /* NOTES ROW BELOW ODONTOGRAM */
 .notes-row {
     flex-shrink: 0;
@@ -563,11 +610,7 @@ canvas {
     border: 2px solid #ff2d2d;
 }
 
-.delete-btn:hover {
-    background: linear-gradient(135deg, #ff3838, #ff2d2d);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
-}
+
 
 .default-btn {
     background: linear-gradient(135deg, #747d8c, #57606f);
@@ -575,11 +618,7 @@ canvas {
     border: 2px solid #2f3542;
 }
 
-.default-btn:hover {
-    background: linear-gradient(135deg, #57606f, #2f3542);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(116, 125, 140, 0.3);
-}
+
 
 .delete-btn.active,
 .default-btn.active {
