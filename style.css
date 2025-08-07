@@ -13,12 +13,13 @@ body {
     color: #333;
 }
 
-h1 {
-    color: #2c3e50;
-    text-align: center;
+/* HEADER WITH LOGO */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
     padding: 10px 0;
-    font-size: 1.5rem;
     background: white;
     border-bottom: 2px solid #3498db;
     position: fixed;
@@ -27,6 +28,12 @@ h1 {
     right: 0;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
 }
 
 /* 5-COLUMN LAYOUT - FULL VIEWPORT */
