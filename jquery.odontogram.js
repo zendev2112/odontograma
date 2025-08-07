@@ -44,7 +44,6 @@ var LAYER_COLORS = {
 // Define which treatments ignore layer colors (pathologies)
 var PATHOLOGY_TREATMENTS = [
   'CARIES_UNTREATABLE', // Untreatable caries
-  'PRE', // Periodontitis (paradentosis)
 ]
 
 // Helper function to determine if treatment should use layer colors
@@ -518,11 +517,15 @@ function getColorForTreatment(treatmentName, layer) {
       ctx.stroke()
     }
   }
-  // Class PRE = Paredontosis
+  // Class PRE = Paredontosis - now supports red/blue layer system
   function PRE(vertices, options) {
     this.name = 'PRE'
     this.vertices = vertices
-    this.options = $.extend({ fillStyle: '#555', fontsize: 16 }, options)
+    this.layer = options && options.layer ? options.layer : CURRENT_ANNOTATION_LAYER
+    this.options = $.extend({ 
+      fillStyle: getColorForTreatment('PRE', this.layer), 
+      fontsize: 16 
+    }, options)
     return this
   }
   PRE.prototype.render = function (ctx) {
@@ -530,11 +533,11 @@ function getColorForTreatment(treatmentName, layer) {
     var y = parseFloat(this.vertices[0].y)
     var fontsize = parseInt(this.options.fontsize)
 
-    ctx.fillStyle = '#000'
+    ctx.fillStyle = this.options.fillStyle
     ctx.font = 'bold ' + fontsize + 'px Arial'
     ctx.textBaseline = 'bottom'
     ctx.textAlign = 'left'
-    ctx.fillText('Pd', x, y) // Changed from PRE to PER
+    ctx.fillText('Pd', x, y)
   }
   // Class ANO = Anomali (ano), Pegshaped, micro, fusi, etc
   function ANO(vertices, options) {
@@ -2672,7 +2675,7 @@ function getColorForTreatment(treatmentName, layer) {
         newGeometry = new MIS(geometry.vertices, layerOptions)
         break
       case ODONTOGRAM_MODE_PRE:
-        newGeometry = new PRE(geometry.vertices)
+        newGeometry = new PRE(geometry.vertices, layerOptions)
         break
       case ODONTOGRAM_MODE_NVT:
         newGeometry = new NVT(geometry.vertices, layerOptions)
