@@ -1064,7 +1064,11 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#3498db'
     ctx.font = 'bold 14px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText('ODONTÓLOGO - MP 0922', 30 + doctorInfoWidth / 2, currentY + 65)
+    ctx.fillText(
+      'ODONTÓLOGO - MP 0922',
+      30 + doctorInfoWidth / 2,
+      currentY + 65
+    )
 
     // DUMMY PATIENT NAME (above timestamp)
     ctx.fillStyle = '#2c3e50'
@@ -1124,7 +1128,7 @@ async function generateProfessionalPNG() {
       { symbol: 'Π', name: 'Puente', color: '#000' },
       { symbol: 'IM', name: 'Implante', color: '#000' },
       { symbol: '▼', name: 'Tratamiento de Conducto', color: '#000' },
-      { symbol: '~', name: 'Ortodoncia', color: '#000' }
+      { symbol: '~', name: 'Ortodoncia', color: '#000' },
     ]
 
     // Draw symbols with exact colors from HTML
@@ -1133,14 +1137,14 @@ async function generateProfessionalPNG() {
       ctx.fillStyle = item.color
       ctx.font = 'bold 14px Arial'
       ctx.textAlign = 'left'
-      
+
       // For white symbols, add a dark background to make them visible
       if (item.color === '#FFFFFF') {
         ctx.fillStyle = '#6896ec' // Same blue as btn-caries-curable
         ctx.fillRect(prestacionesX - 2, symbolsY - 12, 18, 16)
         ctx.fillStyle = '#FFFFFF'
       }
-      
+
       ctx.fillText(item.symbol, prestacionesX, symbolsY)
 
       // Draw name
@@ -1172,12 +1176,7 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#2c3e50'
     ctx.fillText('Prestación Requerida', prestacionesX + 20, symbolsY - 2)
 
-    // RIGHT: ODONTOGRAM AT ORIGINAL SIZE (not stretched)
-    ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial'
-    ctx.textAlign = 'left'
-    ctx.fillText('ODONTOGRAMA', odontogramX, currentY)
-
+    // CENTER: ODONTOGRAM AT ORIGINAL SIZE (not stretched)
     // Get and draw odontogram at ORIGINAL SIZE
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
     const odontogramImg = new Image()
@@ -1187,82 +1186,60 @@ async function generateProfessionalPNG() {
       odontogramImg.src = odontogramDataURL
     })
 
-    // Draw odontogram at ORIGINAL SIZE (not stretched)
+    // Calculate centered position for odontogram
     const originalWidth = odontogramImg.naturalWidth
     const originalHeight = odontogramImg.naturalHeight
+    const centeredOdontogramX = (canvas.width - originalWidth) / 2
+
+    // Draw CENTERED 'ODONTOGRAMA' title
+    ctx.fillStyle = '#2c3e50'
+    ctx.font = 'bold 20px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
+
+    // Draw odontogram CENTERED
     ctx.drawImage(
       odontogramImg,
-      odontogramX,
+      centeredOdontogramX,
       currentY + 30,
       originalWidth,
       originalHeight
     )
 
-    // 3. NOTES SECTION: GRID FOR 32 TEETH (8 columns x 4 rows)
+    // 3. NOTES SECTION: ONLY TEETH WITH NOTES
     const notesStartY = currentY + 30 + originalHeight + 40
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 18px Arial'
     ctx.textAlign = 'left'
     ctx.fillText('NOTAS CLÍNICAS', 30, notesStartY)
 
-    // 8x4 GRID for notes (8 columns, 4 rows for 32 teeth)
-    const gridStartY = notesStartY + 30
-    const gridColumns = 8
-    const gridRows = 4
-    const cellWidth = (canvas.width - 60) / gridColumns // Full width minus margins
-    const cellHeight = 80
+    // Get ONLY teeth that have notes (not empty ones)
+    const teethWithNotes = []
+    for (const [toothNum, note] of Object.entries(toothNotes)) {
+      if (note && note.trim()) {
+        teethWithNotes.push({
+          tooth: parseInt(toothNum),
+          note: note.trim(),
+        })
+      }
+    }
 
-    // Get ONLY the notes text (not odontogram references)
-    const allNotes = []
+    // Sort by tooth number
+    teethWithNotes.sort((a, b) => a.tooth - b.tooth)
 
-    // Collect notes for teeth 11-18, 21-28, 31-38, 41-48 (standard FDI numbering)
-    const standardTeeth = [
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18, // Upper right
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28, // Upper left
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-      38, // Lower left
-      41,
-      42,
-      43,
-      44,
-      45,
-      46,
-      47,
-      48, // Lower right
-    ]
+    if (teethWithNotes.length > 0) {
+      // Dynamic grid based on number of teeth with notes
+      const gridStartY = notesStartY + 30
+      const maxColumns = 6 // Maximum columns
+      const gridColumns = Math.min(maxColumns, teethWithNotes.length)
+      const gridRows = Math.ceil(teethWithNotes.length / gridColumns)
+      const cellWidth = (canvas.width - 60) / gridColumns
+      const cellHeight = 100
 
-    standardTeeth.forEach((toothNum) => {
-      const note = toothNotes[toothNum] || ''
-      allNotes.push({
-        tooth: toothNum,
-        note: note.trim(),
-      })
-    })
-
-    // Draw notes in 8x4 grid
-    let noteIndex = 0
-    for (let row = 0; row < gridRows; row++) {
-      for (let col = 0; col < gridColumns; col++) {
+      // Draw notes in dynamic grid
+      teethWithNotes.forEach((noteData, index) => {
+        const col = index % gridColumns
+        const row = Math.floor(index / gridColumns)
         const cellX = 30 + col * cellWidth
         const cellY = gridStartY + row * cellHeight
 
@@ -1271,58 +1248,58 @@ async function generateProfessionalPNG() {
         ctx.lineWidth = 1
         ctx.strokeRect(cellX, cellY, cellWidth, cellHeight)
 
-        if (noteIndex < allNotes.length) {
-          const noteData = allNotes[noteIndex]
+        // Draw tooth number header
+        ctx.fillStyle = '#2c3e50'
+        ctx.font = 'bold 14px Arial'
+        ctx.textAlign = 'left'
+        ctx.fillText(`Diente ${noteData.tooth}`, cellX + 5, cellY + 18)
 
-          // Draw tooth number header
-          ctx.fillStyle = '#2c3e50'
-          ctx.font = 'bold 12px Arial'
-          ctx.textAlign = 'left'
-          ctx.fillText(`Diente ${noteData.tooth}`, cellX + 5, cellY + 15)
+        // Draw note text with word wrapping
+        ctx.fillStyle = '#333'
+        ctx.font = '11px Arial'
 
-          // Draw note text (ONLY the note text, no odontogram references)
-          if (noteData.note) {
-            ctx.fillStyle = '#333'
-            ctx.font = '10px Arial'
+        const words = noteData.note.split(' ')
+        let line = ''
+        let lineY = cellY + 35
+        const maxWidth = cellWidth - 10
+        const maxLines = 6 // More lines since we have more space
 
-            // Word wrap the note text to fit in cell
-            const words = noteData.note.split(' ')
-            let line = ''
-            let lineY = cellY + 30
-            const maxWidth = cellWidth - 10
-            const maxLines = 4 // Limit to 4 lines per cell
-            let lineCount = 0
+        for (const word of words) {
+          const testLine = line + word + ' '
+          const metrics = ctx.measureText(testLine)
 
-            for (const word of words) {
-              if (lineCount >= maxLines) break
-
-              const testLine = line + word + ' '
-              const metrics = ctx.measureText(testLine)
-
-              if (metrics.width > maxWidth && line !== '') {
-                ctx.fillText(line.trim(), cellX + 5, lineY)
-                line = word + ' '
-                lineY += 12
-                lineCount++
-              } else {
-                line = testLine
-              }
-            }
-
-            // Draw remaining text if within line limit
-            if (line.trim() && lineCount < maxLines) {
+          if (metrics.width > maxWidth && line !== '') {
+            if (lineY < cellY + cellHeight - 15) {
+              // Check if we have space
               ctx.fillText(line.trim(), cellX + 5, lineY)
+              line = word + ' '
+              lineY += 13
+            } else {
+              // Truncate if we run out of space
+              ctx.fillText(line.trim() + '...', cellX + 5, lineY)
+              break
             }
           } else {
-            // Show "Sin notas" for empty cells
-            ctx.fillStyle = '#999'
-            ctx.font = 'italic 10px Arial'
-            ctx.fillText('Sin notas', cellX + 5, cellY + 35)
+            line = testLine
           }
         }
 
-        noteIndex++
-      }
+        // Draw remaining text if we have space
+        if (line.trim() && lineY < cellY + cellHeight - 15) {
+          ctx.fillText(line.trim(), cellX + 5, lineY)
+        }
+      })
+    } else {
+      // Show message when no notes exist
+      const gridStartY = notesStartY + 30
+      ctx.fillStyle = '#666'
+      ctx.font = '14px Arial'
+      ctx.textAlign = 'left'
+      ctx.fillText(
+        'No hay notas registradas para este odontograma.',
+        30,
+        gridStartY + 30
+      )
     }
 
     // 4. FOOTER
