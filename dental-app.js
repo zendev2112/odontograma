@@ -1043,35 +1043,28 @@ async function generateProfessionalPNG() {
 
     let currentY = 30
 
-    // 1. HEADER WITH BIGGER, IMPORTANT LOGO
-    let logoWidth = 200 // BIGGER LOGO
-    let logoHeight = 200 // BIGGER LOGO
+    // 1. HEADER WITH DOCTOR INFO (replacing logo)
+    let doctorInfoWidth = 200
+    let doctorInfoHeight = 100
 
-    try {
-      const logo = new Image()
-      await new Promise((resolve, reject) => {
-        logo.onload = resolve
-        logo.onerror = reject
-        logo.src = './assets/logo.jpg'
-      })
+    // Draw doctor info box
+    ctx.fillStyle = '#f8f9fa'
+    ctx.fillRect(30, currentY, doctorInfoWidth, doctorInfoHeight)
+    ctx.strokeStyle = '#3498db'
+    ctx.lineWidth = 2
+    ctx.strokeRect(30, currentY, doctorInfoWidth, doctorInfoHeight)
 
-      // Draw BIGGER, IMPORTANT logo in upper left corner
-      ctx.drawImage(logo, 30, currentY, logoWidth, logoHeight)
-    } catch (error) {
-      console.warn('⚠️ Could not load logo:', error)
-      // Draw BIGGER placeholder if logo fails
-      ctx.fillStyle = '#e0e0e0'
-      ctx.fillRect(30, currentY, logoWidth, logoHeight)
-      ctx.fillStyle = '#666'
-      ctx.font = 'bold 32px Arial'
-      ctx.textAlign = 'center'
-      ctx.fillText(
-        'CLÍNICA',
-        30 + logoWidth / 2,
-        currentY + logoHeight / 2 - 20
-      )
-      ctx.fillText('DENTAL', 30 + logoWidth / 2, currentY + logoHeight / 2 + 20)
-    }
+    // Draw doctor name (top)
+    ctx.fillStyle = '#2c3e50'
+    ctx.font = 'bold 18px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('Dr. ZENÓN PONCE', 30 + doctorInfoWidth / 2, currentY + 35)
+
+    // Draw doctor title (bottom)
+    ctx.fillStyle = '#3498db'
+    ctx.font = 'bold 14px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('ODONTÓLOGO - MP 0922', 30 + doctorInfoWidth / 2, currentY + 65)
 
     // DUMMY PATIENT NAME (above timestamp)
     ctx.fillStyle = '#2c3e50'
@@ -1098,34 +1091,86 @@ async function generateProfessionalPNG() {
     ctx.textAlign = 'right'
     ctx.fillText(`Fecha: ${timestamp}`, canvas.width - 30, currentY + 90)
 
-    currentY += logoWidth + 40
+    currentY += doctorInfoHeight + 40
 
     // 2. LAYOUT: PRESTACIONES COLORS LEFT, ODONTOGRAM RIGHT
     const prestacionesX = 30
     const prestacionesWidth = 250
     const odontogramX = prestacionesX + prestacionesWidth + 30
 
-    // LEFT: PRESTACIONES COLORS (no "Sistema de Capas" title)
-    let prestacionesY = currentY
-
-    // Red layer (pre-existing)
-    ctx.fillStyle = '#FF0000'
-    ctx.fillRect(prestacionesX, prestacionesY, 20, 15)
+    // LEFT: SYMBOL REFERENCE (exact same symbols from HTML)
+    let symbolsY = currentY
     ctx.fillStyle = '#2c3e50'
-    ctx.font = '16px Arial'
+    ctx.font = 'bold 16px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText(
-      'Prestación Preexistente',
-      prestacionesX + 30,
-      prestacionesY + 12
-    )
-    prestacionesY += 30
+    ctx.fillText('REFERENCIA DE SÍMBOLOS', prestacionesX, symbolsY)
+    symbolsY += 25
 
-    // Blue layer (required)
-    ctx.fillStyle = '#0066FF'
-    ctx.fillRect(prestacionesX, prestacionesY, 20, 15)
+    // Create symbols reference with EXACT same symbols and colors from HTML
+    const symbolsFromHTML = [
+      { symbol: 'X', name: 'Diente Ausente', color: '#FF0000' }, // red from HTML
+      { symbol: 'X', name: 'Diente No Erupcionado', color: '#0066FF' }, // blue from HTML
+      { symbol: '=', name: 'Diente Indicado para Extracción', color: '#000' },
+      { symbol: '●', name: 'Caries', color: '#FFFFFF' }, // white symbol (from btn-caries-curable)
+      { symbol: 'Pd', name: 'Paradentosis', color: '#000' },
+      { symbol: '/Sp', name: 'Surco Profundo', color: '#000' },
+      { symbol: '/Ob', name: 'Obturación', color: '#000' },
+      { symbol: 'I', name: 'Incrustación', color: '#000' },
+      { symbol: 'Δ', name: 'Restauración', color: '#FFFFFF' }, // white symbol (from RES styling)
+      { symbol: '/Rf', name: 'Restauración Filtrada', color: '#000' },
+      { symbol: '○', name: 'Corona', color: '#000' },
+      { symbol: 'P', name: 'Pivot', color: '#000' },
+      { symbol: '□', name: 'Prot. Removible', color: '#000' },
+      { symbol: 'Π', name: 'Puente', color: '#000' },
+      { symbol: 'IM', name: 'Implante', color: '#000' },
+      { symbol: '▼', name: 'Tratamiento de Conducto', color: '#000' },
+      { symbol: '~', name: 'Ortodoncia', color: '#000' }
+    ]
+
+    // Draw symbols with exact colors from HTML
+    symbolsFromHTML.forEach((item, index) => {
+      // Draw symbol with exact color
+      ctx.fillStyle = item.color
+      ctx.font = 'bold 14px Arial'
+      ctx.textAlign = 'left'
+      
+      // For white symbols, add a dark background to make them visible
+      if (item.color === '#FFFFFF') {
+        ctx.fillStyle = '#6896ec' // Same blue as btn-caries-curable
+        ctx.fillRect(prestacionesX - 2, symbolsY - 12, 18, 16)
+        ctx.fillStyle = '#FFFFFF'
+      }
+      
+      ctx.fillText(item.symbol, prestacionesX, symbolsY)
+
+      // Draw name
+      ctx.fillStyle = '#2c3e50'
+      ctx.font = '12px Arial'
+      ctx.fillText(item.name, prestacionesX + 25, symbolsY)
+
+      symbolsY += 18
+    })
+
+    // Add prestaciones colors below symbols (REDUCED SIZE)
+    symbolsY += 15
     ctx.fillStyle = '#2c3e50'
-    ctx.fillText('Prestación Requerida', prestacionesX + 30, prestacionesY + 12)
+    ctx.font = 'bold 12px Arial' // REDUCED from 16px
+    ctx.fillText('CAPAS:', prestacionesX, symbolsY)
+    symbolsY += 18
+
+    // Red layer (pre-existing) - REDUCED SIZE
+    ctx.fillStyle = '#FF0000'
+    ctx.fillRect(prestacionesX, symbolsY - 10, 15, 12) // REDUCED size
+    ctx.fillStyle = '#2c3e50'
+    ctx.font = '11px Arial' // REDUCED from 16px
+    ctx.fillText('Prestación Preexistente', prestacionesX + 20, symbolsY - 2)
+    symbolsY += 16
+
+    // Blue layer (required) - REDUCED SIZE
+    ctx.fillStyle = '#0066FF'
+    ctx.fillRect(prestacionesX, symbolsY - 10, 15, 12) // REDUCED size
+    ctx.fillStyle = '#2c3e50'
+    ctx.fillText('Prestación Requerida', prestacionesX + 20, symbolsY - 2)
 
     // RIGHT: ODONTOGRAM AT ORIGINAL SIZE (not stretched)
     ctx.fillStyle = '#2c3e50'
