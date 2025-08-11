@@ -1026,45 +1026,66 @@ canvas {
     font-weight: bold;
 }
 
-/* PROFESSIONAL CLINICAL BUTTON STYLING - UNIFIED COLORS */
+/* PROFESSIONAL CLINICAL BUTTON STYLING - HIGH CONTRAST */
 
-/* Reset all button colors to professional blue-based theme */
-.button-grid button,
-.control-group .treatment-btn {
-    background: #2c5aa0 !important;
+/* Reset all buttons to professional dark gray base */
+.button-grid button {
+    background: #2d3748 !important;
     color: white !important;
-    border: 1px solid #1e3d6f !important;
+    border: 1px solid #1a202c !important;
     transition: all 0.2s ease !important;
 }
 
-/* High contrast alternative buttons - Professional Gray */
+/* High contrast alternating pattern - Light gray */
 .button-grid button:nth-child(even) {
-    background: #4a5568 !important;
+    background: #718096 !important;
     color: white !important;
-    border-color: #2d3748 !important;
+    border-color: #4a5568 !important;
 }
 
-/* Hover states - Consistent across all buttons */
-.button-grid button:hover,
-.control-group .treatment-btn:hover {
-    background: #1e3d6f !important;
+/* PRESERVE IMPORTANT DENTAL STATUS COLORS */
+/* Missing tooth - Keep red X */
+#ODONTOGRAM_MODE_MIS {
+    background: #2d3748 !important;
+    color: white !important;
+}
+
+#ODONTOGRAM_MODE_MIS .symbol {
+    color: #e53e3e !important;
+    /* Keep red X */
+}
+
+/* Unerupted tooth - Keep blue X */
+#ODONTOGRAM_MODE_UNE {
+    background: #718096 !important;
+    color: white !important;
+}
+
+#ODONTOGRAM_MODE_UNE .symbol {
+    color: #3182ce !important;
+    /* Keep blue X */
+}
+
+/* Hover states - Consistent darkening */
+.button-grid button:hover {
+    background: #1a202c !important;
     transform: translateY(-1px) !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 .button-grid button:nth-child(even):hover {
-    background: #2d3748 !important;
+    background: #4a5568 !important;
 }
 
 /* Active/Selected state */
 .button-grid button:active,
 .button-grid button.active {
-    background: #1a365d !important;
+    background: #171923 !important;
     transform: translateY(0) !important;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* Control buttons - Semantic colors but professional */
+/* Control buttons - Keep semantic colors for actions */
 .control-group .treatment-btn.delete-btn {
     background: #c53030 !important;
     border-color: #9b2c2c !important;
@@ -1093,16 +1114,15 @@ canvas {
 }
 
 .control-group .treatment-btn.export-btn {
-    background: #3182ce !important;
-    border-color: #2c5282 !important;
+    background: #805ad5 !important;
+    border-color: #6b46c1 !important;
 }
 
 .control-group .treatment-btn.export-btn:hover {
-    background: #2c5282 !important;
+    background: #6b46c1 !important;
 }
 
-/* Ensure text is always readable */
-.button-grid button .symbol,
+/* Ensure all text is white except special symbols */
 .button-grid button .name,
 .control-group .treatment-btn .icon,
 .control-group .treatment-btn .name {
@@ -1110,17 +1130,14 @@ canvas {
     text-shadow: none !important;
 }
 
-/* Remove any special styling that conflicts */
-#ODONTOGRAM_MODE_POC .symbol,
-#ODONTOGRAM_MODE_POC .name {
+/* Default symbol color */
+.button-grid button .symbol {
     color: white !important;
-    font-weight: 500 !important;
-    text-shadow: none !important;
 }
 
 /* Focus states for accessibility */
 .button-grid button:focus,
 .control-group .treatment-btn:focus {
-    outline: 2px solid #63b3ed !important;
+    outline: 2px solid #ffd700 !important;
     outline-offset: 2px !important;
 }
