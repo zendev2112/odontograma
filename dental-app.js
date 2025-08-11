@@ -1077,14 +1077,14 @@ async function generateProfessionalPNG() {
     ctx.stroke()
     currentY += 40
 
-    // ODONTOGRAM SECTION - PROPERLY SCALED
+    // ODONTOGRAM SECTION - MUCH SMALLER CONTAINER
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 24px Arial'
+    ctx.font = 'bold 20px Arial' // REDUCED FROM 24px
     ctx.textAlign = 'center'
     ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
-    currentY += 30 // REDUCED FROM 40
+    currentY += 20 // REDUCED FROM 30
 
-    // Get odontogram and scale properly
+    // Get odontogram and scale much smaller
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
     const odontogramImg = new Image()
 
@@ -1093,9 +1093,9 @@ async function generateProfessionalPNG() {
       odontogramImg.src = odontogramDataURL
     })
 
-    // Calculate proper scaling to fit width while maintaining aspect ratio
-    const maxOdontogramWidth = canvas.width - 80 // REDUCED MARGINS FROM 120 TO 80
-    const maxOdontogramHeight = 400
+    // DRASTICALLY REDUCED CONTAINER SIZE
+    const maxOdontogramWidth = canvas.width - 200 // REDUCED FROM 80 TO 200 (much smaller)
+    const maxOdontogramHeight = 250 // REDUCED FROM 400 TO 250
     
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
@@ -1105,13 +1105,9 @@ async function generateProfessionalPNG() {
     const scaledHeight = odontogramImg.naturalHeight * scale
     const odontogramX = (canvas.width - scaledWidth) / 2
 
-    // Draw tighter border around odontogram - REDUCED PADDING
-    ctx.strokeStyle = '#bdc3c7'
-    ctx.lineWidth = 2
-    ctx.strokeRect(odontogramX - 5, currentY - 5, scaledWidth + 10, scaledHeight + 10) // REDUCED FROM 10/20 TO 5/10
-
+    // NO BORDER - just draw the odontogram directly
     ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
-    currentY += scaledHeight + 50 // INCREASED SPACING FROM 30 TO 50 for more distance to notes
+    currentY += scaledHeight + 40 // REDUCED SPACING TO 40
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
@@ -1395,8 +1391,8 @@ async function generateProfessionalPNG() {
       }
     }
 
-    // PROFESSIONAL FOOTER - REDUCED SPACING
-    currentY = Math.max(currentY + 50, canvas.height - 100) // LESS WHITESPACE
+    // PROFESSIONAL FOOTER
+    currentY = Math.max(currentY + 50, canvas.height - 100)
     ctx.fillStyle = '#7f8c8d'
     ctx.font = '14px Arial'
     ctx.textAlign = 'center'
