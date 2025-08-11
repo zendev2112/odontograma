@@ -1082,7 +1082,7 @@ async function generateProfessionalPNG() {
     ctx.font = 'bold 24px Arial'
     ctx.textAlign = 'center'
     ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
-    currentY += 40
+    currentY += 30 // REDUCED FROM 40
 
     // Get odontogram and scale properly
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
@@ -1094,7 +1094,7 @@ async function generateProfessionalPNG() {
     })
 
     // Calculate proper scaling to fit width while maintaining aspect ratio
-    const maxOdontogramWidth = canvas.width - 120 // Leave margins
+    const maxOdontogramWidth = canvas.width - 80 // REDUCED MARGINS FROM 120 TO 80
     const maxOdontogramHeight = 400
     
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
@@ -1105,13 +1105,13 @@ async function generateProfessionalPNG() {
     const scaledHeight = odontogramImg.naturalHeight * scale
     const odontogramX = (canvas.width - scaledWidth) / 2
 
-    // Draw border around odontogram
+    // Draw tighter border around odontogram - REDUCED PADDING
     ctx.strokeStyle = '#bdc3c7'
     ctx.lineWidth = 2
-    ctx.strokeRect(odontogramX - 10, currentY - 10, scaledWidth + 20, scaledHeight + 20)
+    ctx.strokeRect(odontogramX - 5, currentY - 5, scaledWidth + 10, scaledHeight + 10) // REDUCED FROM 10/20 TO 5/10
 
     ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
-    currentY += scaledHeight + 30 // REDUCED SPACING FROM 60 TO 30
+    currentY += scaledHeight + 50 // INCREASED SPACING FROM 30 TO 50 for more distance to notes
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
