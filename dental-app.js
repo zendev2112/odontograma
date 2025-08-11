@@ -1107,7 +1107,7 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 16px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText('REFERENCIA DE SÍMBOLOS', prestacionesX, symbolsY)
+    ctx.fillText('REFERENCIAS', prestacionesX, symbolsY)
     symbolsY += 25
 
     // Create symbols reference with EXACT same symbols and colors from HTML
@@ -1159,7 +1159,7 @@ async function generateProfessionalPNG() {
     symbolsY += 15
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 12px Arial' // REDUCED from 16px
-    ctx.fillText('CAPAS:', prestacionesX, symbolsY)
+    ctx.fillText('', prestacionesX, symbolsY)
     symbolsY += 18
 
     // Red layer (pre-existing) - REDUCED SIZE
@@ -1211,7 +1211,7 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 18px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText('NOTAS CLÍNICAS', 30, notesStartY)
+    ctx.fillText('NOTAS', 30, notesStartY)
 
     // Get ONLY teeth that have notes (not empty ones)
     const teethWithNotes = []

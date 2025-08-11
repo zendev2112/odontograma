@@ -812,11 +812,6 @@ canvas {
     box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
-.tooth-notes::placeholder {
-    color: #6c757d;
-    font-style: italic;
-}
-
 .note-status {
     margin-top: 5px;
     font-size: 11px;
@@ -1029,4 +1024,103 @@ canvas {
     justify-content: center;
     font-size: 12px;
     font-weight: bold;
+}
+
+/* PROFESSIONAL CLINICAL BUTTON STYLING - UNIFIED COLORS */
+
+/* Reset all button colors to professional blue-based theme */
+.button-grid button,
+.control-group .treatment-btn {
+    background: #2c5aa0 !important;
+    color: white !important;
+    border: 1px solid #1e3d6f !important;
+    transition: all 0.2s ease !important;
+}
+
+/* High contrast alternative buttons - Professional Gray */
+.button-grid button:nth-child(even) {
+    background: #4a5568 !important;
+    color: white !important;
+    border-color: #2d3748 !important;
+}
+
+/* Hover states - Consistent across all buttons */
+.button-grid button:hover,
+.control-group .treatment-btn:hover {
+    background: #1e3d6f !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.button-grid button:nth-child(even):hover {
+    background: #2d3748 !important;
+}
+
+/* Active/Selected state */
+.button-grid button:active,
+.button-grid button.active {
+    background: #1a365d !important;
+    transform: translateY(0) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Control buttons - Semantic colors but professional */
+.control-group .treatment-btn.delete-btn {
+    background: #c53030 !important;
+    border-color: #9b2c2c !important;
+}
+
+.control-group .treatment-btn.delete-btn:hover {
+    background: #9b2c2c !important;
+}
+
+.control-group .treatment-btn.default-btn {
+    background: #4a5568 !important;
+    border-color: #2d3748 !important;
+}
+
+.control-group .treatment-btn.default-btn:hover {
+    background: #2d3748 !important;
+}
+
+.control-group .treatment-btn.download-btn {
+    background: #38a169 !important;
+    border-color: #2f855a !important;
+}
+
+.control-group .treatment-btn.download-btn:hover {
+    background: #2f855a !important;
+}
+
+.control-group .treatment-btn.export-btn {
+    background: #3182ce !important;
+    border-color: #2c5282 !important;
+}
+
+.control-group .treatment-btn.export-btn:hover {
+    background: #2c5282 !important;
+}
+
+/* Ensure text is always readable */
+.button-grid button .symbol,
+.button-grid button .name,
+.control-group .treatment-btn .icon,
+.control-group .treatment-btn .name {
+    color: white !important;
+    text-shadow: none !important;
+}
+
+/* Remove any special styling that conflicts */
+#ODONTOGRAM_MODE_POC .symbol,
+#ODONTOGRAM_MODE_POC .name {
+    color: white !important;
+    font-weight: 500 !important;
+    text-shadow: none !important;
+}
+
+/* Focus states for accessibility */
+.button-grid button:focus,
+.control-group .treatment-btn:focus {
+    outline: 2px solid #63b3ed !important;
+    outline-offset: 2px !important;
 }
