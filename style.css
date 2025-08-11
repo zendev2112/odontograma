@@ -454,16 +454,20 @@ input[type="radio"]:checked+.layer-label.required {
     color: #000 !important;
 }
 
-/* RES BUTTON COLOR */
+/* RES BUTTON COLOR - Updated to reddish tone */
 #ODONTOGRAM_MODE_RES {
-    background: #f74a1fff !important;
+    background: #dc3545 !important;
     color: white !important;
-    border-color: #f74a1fff !important;
+    border-color: #c82333 !important;
 }
 
 #ODONTOGRAM_MODE_RES .symbol,
 #ODONTOGRAM_MODE_RES .name {
     color: white !important;
+}
+
+#ODONTOGRAM_MODE_RES:hover {
+    background: #c82333 !important;
 }
 
 /* HOVER EFFECTS */
