@@ -164,15 +164,15 @@ body {
     background: #3498db;
 }
 
-/* NOTES ROW BELOW ODONTOGRAM - INCREASED SIZE */
+/* NOTES ROW BELOW ODONTOGRAM - SMALLER SIZE */
 .notes-row {
     flex-shrink: 0;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    min-height: 300px;
-    /* Increased from 200px */
+    padding: 10px;
+    min-height: 120px;
+    /* Much smaller */
     border: 2px solid #3498db;
 }
 
@@ -183,26 +183,26 @@ body {
 }
 
 .notes-section h3 {
-    margin: 0 0 15px 0;
+    margin: 0 0 8px 0;
     color: #2c3e50;
-    font-size: 16px;
+    font-size: 14px;
     border-bottom: 2px solid #3498db;
-    padding-bottom: 8px;
+    padding-bottom: 4px;
     flex-shrink: 0;
 }
 
-/* Textarea styling for notes */
+/* Textarea styling for notes - MUCH SMALLER */
 .notes-section textarea {
     flex: 1;
     width: 100%;
-    min-height: 220px;
-    /* Minimum height for textarea */
-    padding: 12px;
+    min-height: 80px;
+    /* Much smaller */
+    padding: 8px;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.4;
     resize: vertical;
     background: #fafafa;
     color: #333;
