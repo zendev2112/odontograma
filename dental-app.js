@@ -1023,34 +1023,68 @@ function setupEventHandlers() {
 }
 
 /**
- * Generate clean vertical document with treatments and notes only
+ * Generate professional clinical document
  */
 async function generateProfessionalPNG() {
   try {
-    console.log('🖼️ Generating clean vertical document...')
+    console.log('🖼️ Generating professional clinical document...')
 
-    // Create vertical canvas
+    // Create A4-sized vertical canvas (professional medical standard)
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
 
-    // VERTICAL ORIENTATION - 800x1200
-    canvas.width = 800
-    canvas.height = 1200
+    // A4 proportions at high resolution
+    canvas.width = 1200
+    canvas.height = 1600
 
-    // WHITE BACKGROUND
+    // Clinical white background
     ctx.fillStyle = '#FFFFFF'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    let currentY = 40
+    let currentY = 60
 
-    // TITLE ONLY
+    // PROFESSIONAL HEADER
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 28px Arial'
+    ctx.font = 'bold 36px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
+    ctx.fillText('FICHA ODONTOLÓGICA', canvas.width / 2, currentY)
+    currentY += 50
+
+    // Patient info section
+    ctx.fillStyle = '#34495e'
+    ctx.font = '20px Arial'
+    ctx.textAlign = 'left'
+    
+    // Patient name box
+    ctx.strokeStyle = '#bdc3c7'
+    ctx.lineWidth = 2
+    ctx.strokeRect(60, currentY, canvas.width - 120, 40)
+    ctx.fillText('PACIENTE: _________________________________', 80, currentY + 28)
     currentY += 60
 
-    // ODONTOGRAM CENTERED
+    // Date and professional info
+    const currentDate = new Date().toLocaleDateString('es-ES')
+    ctx.font = '18px Arial'
+    ctx.fillText(`FECHA: ${currentDate}`, 80, currentY)
+    currentY += 40
+
+    // Professional header line
+    ctx.strokeStyle = '#3498db'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(60, currentY)
+    ctx.lineTo(canvas.width - 60, currentY)
+    ctx.stroke()
+    currentY += 40
+
+    // ODONTOGRAM SECTION - PROPERLY SCALED
+    ctx.fillStyle = '#2c3e50'
+    ctx.font = 'bold 24px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
+    currentY += 40
+
+    // Get odontogram and scale properly
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
     const odontogramImg = new Image()
 
@@ -1059,21 +1093,42 @@ async function generateProfessionalPNG() {
       odontogramImg.src = odontogramDataURL
     })
 
-    const originalWidth = odontogramImg.naturalWidth
-    const originalHeight = odontogramImg.naturalHeight
-    const centeredX = (canvas.width - originalWidth) / 2
+    // Calculate proper scaling to fit width while maintaining aspect ratio
+    const maxOdontogramWidth = canvas.width - 120 // Leave margins
+    const maxOdontogramHeight = 400
+    
+    const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
+    const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
+    const scale = Math.min(scaleX, scaleY)
+    
+    const scaledWidth = odontogramImg.naturalWidth * scale
+    const scaledHeight = odontogramImg.naturalHeight * scale
+    const odontogramX = (canvas.width - scaledWidth) / 2
 
-    ctx.drawImage(odontogramImg, centeredX, currentY, originalWidth, originalHeight)
-    currentY += originalHeight + 40
+    // Draw border around odontogram
+    ctx.strokeStyle = '#bdc3c7'
+    ctx.lineWidth = 2
+    ctx.strokeRect(odontogramX - 10, currentY - 10, scaledWidth + 20, scaledHeight + 20)
 
-    // TREATMENTS SECTION
+    ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
+    currentY += scaledHeight + 60
+
+    // TREATMENTS SECTION - PROFESSIONAL FORMATTING
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial'
+    ctx.font = 'bold 22px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText('TRATAMIENTOS REGISTRADOS', 50, currentY)
-    currentY += 30
+    ctx.fillText('TRATAMIENTOS REGISTRADOS', 80, currentY)
+    
+    // Underline for section
+    ctx.strokeStyle = '#3498db'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(80, currentY + 5)
+    ctx.lineTo(450, currentY + 5)
+    ctx.stroke()
+    currentY += 40
 
-    // Extract current treatments from HTML
+    // Extract and format treatments professionally
     const treatments = []
     for (const [key, treatmentList] of Object.entries(currentGeometry)) {
       if (treatmentList && treatmentList.length > 0) {
@@ -1113,7 +1168,7 @@ async function generateProfessionalPNG() {
                   const correctMapping = getCorrectSurfaceMapping(toothNum)
                   const anatomical = correctMapping[fullCanvasPosition]
                   if (anatomical) {
-                    surfaceInfo = ` - ${anatomical}`
+                    surfaceInfo = ` (${anatomical})`
                   }
                 }
               }
@@ -1132,41 +1187,76 @@ async function generateProfessionalPNG() {
     // Sort treatments by tooth number
     treatments.sort((a, b) => parseInt(a.tooth) - parseInt(b.tooth))
 
-    // Display treatments
-    ctx.font = '14px Arial'
-    ctx.fillStyle = '#34495e'
-
+    // Display treatments in professional table format
     if (treatments.length > 0) {
-      treatments.forEach((treatment) => {
-        if (currentY > 950) return // Stop if running out of space
+      ctx.font = '16px Arial'
+      
+      // Table headers
+      ctx.fillStyle = '#34495e'
+      ctx.fillText('PIEZA', 100, currentY)
+      ctx.fillText('TRATAMIENTO', 200, currentY)
+      ctx.fillText('ESTADO', 600, currentY)
+      currentY += 25
 
-        const layerColor = treatment.layer === 'pre' ? '#FF0000' : '#0066FF'
-        const layerText = treatment.layer === 'pre' ? '[PRE]' : '[REQ]'
+      // Table header line
+      ctx.strokeStyle = '#bdc3c7'
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.moveTo(80, currentY)
+      ctx.lineTo(canvas.width - 80, currentY)
+      ctx.stroke()
+      currentY += 20
+
+      treatments.forEach((treatment, index) => {
+        if (currentY > 1400) return // Stop if running out of space
+
+        // Alternating row background
+        if (index % 2 === 0) {
+          ctx.fillStyle = '#f8f9fa'
+          ctx.fillRect(80, currentY - 15, canvas.width - 160, 25)
+        }
+
+        // Tooth number
+        ctx.fillStyle = '#2c3e50'
+        ctx.font = 'bold 16px Arial'
+        ctx.fillText(treatment.tooth, 100, currentY)
         
-        // Draw layer indicator
-        ctx.fillStyle = layerColor
-        ctx.fillText(layerText, 70, currentY)
-        
-        // Draw treatment text
+        // Treatment name
         ctx.fillStyle = '#34495e'
-        const treatmentText = `Diente ${treatment.tooth}: ${treatment.treatment}`
-        ctx.fillText(treatmentText, 130, currentY)
-        currentY += 25
+        ctx.font = '16px Arial'
+        ctx.fillText(treatment.treatment, 200, currentY)
+        
+        // Layer status with color coding
+        ctx.fillStyle = treatment.layer === 'pre' ? '#e74c3c' : '#3498db'
+        ctx.font = 'bold 14px Arial'
+        const layerText = treatment.layer === 'pre' ? 'PREEXISTENTE' : 'REQUERIDO'
+        ctx.fillText(layerText, 600, currentY)
+        
+        currentY += 30
       })
     } else {
-      ctx.fillStyle = '#95a5a6'
-      ctx.fillText('No se han registrado tratamientos', 70, currentY)
-      currentY += 25
+      ctx.fillStyle = '#7f8c8d'
+      ctx.font = '18px Arial'
+      ctx.fillText('No se han registrado tratamientos', 100, currentY)
+      currentY += 40
     }
 
-    // NOTES SECTION
+    // NOTES SECTION - PROFESSIONAL FORMATTING
     currentY += 30
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial'
-    ctx.fillText('NOTAS', 50, currentY)
-    currentY += 30
+    ctx.font = 'bold 22px Arial'
+    ctx.fillText('OBSERVACIONES CLÍNICAS', 80, currentY)
+    
+    // Underline for section
+    ctx.strokeStyle = '#3498db'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(80, currentY + 5)
+    ctx.lineTo(480, currentY + 5)
+    ctx.stroke()
+    currentY += 40
 
-    // Get all notes from HTML
+    // Get all notes
     const allNotes = []
     for (const [toothNum, note] of Object.entries(toothNotes)) {
       if (note && note.trim()) {
@@ -1180,64 +1270,74 @@ async function generateProfessionalPNG() {
     // Sort by tooth number
     allNotes.sort((a, b) => a.tooth - b.tooth)
 
-    // Display notes
-    ctx.font = '14px Arial'
-    ctx.fillStyle = '#34495e'
-
+    // Display notes professionally
     if (allNotes.length > 0) {
       allNotes.forEach((noteData) => {
-        if (currentY > 1100) return // Stop if running out of space
+        if (currentY > 1500) return // Stop if running out of space
 
-        // Draw tooth number
+        // Note header with tooth number
         ctx.fillStyle = '#2c3e50'
-        ctx.font = 'bold 14px Arial'
-        ctx.fillText(`Diente ${noteData.tooth}:`, 70, currentY)
-        currentY += 20
+        ctx.font = 'bold 18px Arial'
+        ctx.fillText(`PIEZA ${noteData.tooth}:`, 100, currentY)
+        currentY += 25
 
-        // Word wrap note text
+        // Note content with professional formatting
         ctx.fillStyle = '#34495e'
-        ctx.font = '12px Arial'
+        ctx.font = '16px Arial'
         const words = noteData.note.split(' ')
         let line = ''
-        const maxWidth = 660
+        const maxWidth = 1000
+        const lineHeight = 22
 
         for (const word of words) {
           const testLine = line + word + ' '
           const metrics = ctx.measureText(testLine)
 
           if (metrics.width > maxWidth && line !== '') {
-            ctx.fillText(line.trim(), 90, currentY)
+            ctx.fillText(line.trim(), 120, currentY)
             line = word + ' '
-            currentY += 18
-            if (currentY > 1100) break
+            currentY += lineHeight
+            if (currentY > 1500) break
           } else {
             line = testLine
           }
         }
         
-        if (line.trim() && currentY <= 1100) {
-          ctx.fillText(line.trim(), 90, currentY)
-          currentY += 25
+        if (line.trim() && currentY <= 1500) {
+          ctx.fillText(line.trim(), 120, currentY)
+          currentY += lineHeight + 15
         }
       })
     } else {
-      ctx.fillStyle = '#95a5a6'
-      ctx.fillText('No hay notas registradas', 70, currentY)
+      ctx.fillStyle = '#7f8c8d'
+      ctx.font = '18px Arial'
+      ctx.fillText('No hay observaciones registradas', 100, currentY)
     }
 
-    // Convert to blob and download
+    // PROFESSIONAL FOOTER
+    currentY = canvas.height - 80
+    ctx.fillStyle = '#7f8c8d'
+    ctx.font = '14px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('Documento generado por Sistema de Odontograma Digital', canvas.width / 2, currentY)
+    
+    ctx.fillStyle = '#bdc3c7'
+    ctx.font = '12px Arial'
+    ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
+
+    // Download with proper filename
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       const now = new Date()
-      const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-')
+      const timestamp = now.toISOString().slice(0, 10)
 
-      link.download = `odontograma_${timestamp}.png`
+      link.download = `Odontograma_${timestamp}.png`
       link.href = url
       link.click()
 
       URL.revokeObjectURL(url)
-      console.log('✅ Clean vertical document downloaded')
+      console.log('✅ Professional clinical document downloaded')
     }, 'image/png', 1.0)
 
   } catch (error) {
