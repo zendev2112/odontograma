@@ -164,19 +164,22 @@ body {
     background: #3498db;
 }
 
-/* NOTES ROW BELOW ODONTOGRAM */
+/* NOTES ROW BELOW ODONTOGRAM - INCREASED SIZE */
 .notes-row {
     flex-shrink: 0;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 15px;
-    min-height: 200px;
+    min-height: 300px;
+    /* Increased from 200px */
     border: 2px solid #3498db;
 }
 
 .notes-section {
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .notes-section h3 {
@@ -185,6 +188,36 @@ body {
     font-size: 16px;
     border-bottom: 2px solid #3498db;
     padding-bottom: 8px;
+    flex-shrink: 0;
+}
+
+/* Textarea styling for notes */
+.notes-section textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 220px;
+    /* Minimum height for textarea */
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    background: #fafafa;
+    color: #333;
+}
+
+.notes-section textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    background: white;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.notes-section textarea::placeholder {
+    color: #999;
+    font-style: italic;
 }
 
 /* ODONTOGRAM ROW */
