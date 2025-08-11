@@ -1111,27 +1111,26 @@ async function generateProfessionalPNG() {
     ctx.strokeRect(odontogramX - 10, currentY - 10, scaledWidth + 20, scaledHeight + 20)
 
     ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
-    currentY += scaledHeight + 60
+    currentY += scaledHeight + 30 // REDUCED SPACING FROM 60 TO 30
 
-    // TREATMENTS SECTION - PROFESSIONAL FORMATTING
+    // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 22px Arial'
     ctx.textAlign = 'left'
-    ctx.fillText('TRATAMIENTOS REGISTRADOS', 80, currentY)
+    ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
     
     // Underline for section
     ctx.strokeStyle = '#3498db'
     ctx.lineWidth = 2
     ctx.beginPath()
     ctx.moveTo(80, currentY + 5)
-    ctx.lineTo(450, currentY + 5)
+    ctx.lineTo(550, currentY + 5)
     ctx.stroke()
     currentY += 40
 
-    // Extract and format treatments professionally
-    const treatments = []
-    for (const [key, treatmentList] of Object.entries(currentGeometry)) {
-      if (treatmentList && treatmentList.length > 0) {
+    // Process each tooth with treatments and notes - MATCHING HTML STRUCTURE
+    for (const [key, treatments] of Object.entries(currentGeometry)) {
+      if (treatments && treatments.length > 0) {
         const instance = $('#odontogram').data('odontogram')
         let toothNum = null
 
@@ -1143,179 +1142,261 @@ async function generateProfessionalPNG() {
         }
 
         if (toothNum) {
-          treatmentList.forEach((treatment) => {
-            const treatmentName = getTreatmentName(treatment.name)
-            let surfaceInfo = ''
-            
-            if (treatment.pos) {
-              const toothInfo = getToothInfo(toothNum)
-              if (toothInfo) {
+          const toothInfo = getToothInfo(toothNum)
+          const toothName = toothInfo ? toothInfo.nombre : `Diente ${toothNum}`
+
+          // TOOTH HEADER - MATCHING HTML
+          ctx.fillStyle = '#2c3e50'
+          ctx.font = 'bold 18px Arial'
+          ctx.fillText(`Pieza: ${toothNum} - ${toothName}`, 100, currentY)
+          currentY += 30
+
+          // Group treatments by surface for proper display - MATCHING HTML LOGIC
+          function groupTreatmentsBySurface(treatmentList) {
+            const grouped = {}
+
+            treatmentList.forEach((treatment) => {
+              const treatmentName = getTreatmentName(treatment.name)
+              const withSides = [
+                'CARIES',
+                'CARIES_UNTREATABLE',
+                'REF',
+                'NVT',
+                'SIL',
+                'RES',
+                'AMF',
+                'COF',
+                'INC',
+              ]
+
+              if (!grouped[treatment.name]) {
+                grouped[treatment.name] = {
+                  name: treatmentName,
+                  surfaces: [],
+                  layer: treatment.layer || 'pre',
+                  usesSides: withSides.includes(treatment.name),
+                }
+              }
+
+              // Only collect surface info for treatments that use sides
+              if (
+                withSides.includes(treatment.name) &&
+                treatment.pos &&
+                toothInfo
+              ) {
                 let surfaceCode = null
+
+                // Handle different position formats from the odontogram plugin
                 if (treatment.pos.includes('-')) {
                   const parts = treatment.pos.split('-')
                   surfaceCode = parts[1]
-                } else {
+                } else if (
+                  typeof treatment.pos === 'string' &&
+                  treatment.pos.length <= 2
+                ) {
                   surfaceCode = treatment.pos
                 }
 
+                // Map single letter codes to full canvas position names
                 const canvasPositionMap = {
-                  T: 'top', B: 'bottom', L: 'left', R: 'right', M: 'middle',
-                  top: 'top', bottom: 'bottom', left: 'left', right: 'right', middle: 'middle'
+                  T: 'top',
+                  B: 'bottom',
+                  L: 'left',
+                  R: 'right',
+                  M: 'middle',
+                  top: 'top',
+                  bottom: 'bottom',
+                  left: 'left',
+                  right: 'right',
+                  middle: 'middle',
                 }
 
                 const fullCanvasPosition = canvasPositionMap[surfaceCode]
+
+                // USE CORRECTED SURFACE MAPPING BASED ON FDI RULES
                 if (fullCanvasPosition) {
                   const correctMapping = getCorrectSurfaceMapping(toothNum)
                   const anatomical = correctMapping[fullCanvasPosition]
-                  if (anatomical) {
-                    surfaceInfo = ` (${anatomical})`
+
+                  if (
+                    anatomical &&
+                    !grouped[treatment.name].surfaces.includes(anatomical)
+                  ) {
+                    grouped[treatment.name].surfaces.push(anatomical)
                   }
                 }
               }
+            })
+
+            return grouped
+          }
+
+          // CONDITIONS SECTION - MATCHING HTML
+          const conditionTreatments = treatments.filter((treatment) => {
+            const treatmentCode = treatment.name
+            const wholeTooth = []
+            const withSides = ['CARIES_UNTREATABLE']
+            return (
+              wholeTooth.includes(treatmentCode) ||
+              withSides.includes(treatmentCode)
+            )
+          })
+
+          if (conditionTreatments.length > 0) {
+            ctx.fillStyle = '#34495e'
+            ctx.font = 'bold 16px Arial'
+            ctx.fillText('Condiciones:', 120, currentY)
+            currentY += 25
+
+            const groupedConditions = groupTreatmentsBySurface(conditionTreatments)
+
+            Object.values(groupedConditions).forEach((condition) => {
+              let surfaceDisplay = ''
+              if (condition.usesSides && condition.surfaces.length > 0) {
+                surfaceDisplay = ` - Cara/s: ${condition.surfaces.join(', ')}`
+              }
+
+              ctx.fillStyle = '#34495e'
+              ctx.font = '14px Arial'
+              ctx.fillText(`• ${condition.name}${surfaceDisplay}`, 140, currentY)
+              currentY += 20
+            })
+            currentY += 10
+          }
+
+          // PRESTACIONES SECTION - MATCHING HTML STRUCTURE
+          const prestacionTreatments = treatments.filter((treatment) => {
+            const treatmentCode = treatment.name
+            const wholeTooth = [
+              'CFR',
+              'FRM_ACR',
+              'BRIDGE',
+              'ORT',
+              'POC',
+              'FMC',
+              'IPX',
+              'RCT',
+              'MIS',
+              'UNE',
+              'PRE',
+            ]
+            const withSides = [
+              'CARIES',
+              'REF',
+              'NVT',
+              'SIL',
+              'RES',
+              'AMF',
+              'COF',
+              'INC',
+            ]
+            return (
+              wholeTooth.includes(treatmentCode) ||
+              withSides.includes(treatmentCode)
+            )
+          })
+
+          if (prestacionTreatments.length > 0) {
+            // Separate by layer - MATCHING HTML
+            const preExistentes = prestacionTreatments.filter(
+              (t) => t.layer === 'pre'
+            )
+            const requeridas = prestacionTreatments.filter(
+              (t) => t.layer === 'req' || !t.layer
+            )
+
+            // PRESTACIONES PREEXISTENTES - MATCHING HTML
+            if (preExistentes.length > 0) {
+              ctx.fillStyle = '#FF0000'
+              ctx.font = 'bold 16px Arial'
+              ctx.fillText('Prestaciones Preexistentes:', 120, currentY)
+              currentY += 25
+
+              const groupedPreExistentes = groupTreatmentsBySurface(preExistentes)
+
+              Object.values(groupedPreExistentes).forEach((prestacion) => {
+                let surfaceDisplay = ''
+                if (prestacion.usesSides && prestacion.surfaces.length > 0) {
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+                }
+
+                ctx.fillStyle = '#FF0000'
+                ctx.font = '14px Arial'
+                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
+                currentY += 20
+              })
+              currentY += 10
             }
 
-            treatments.push({
-              tooth: toothNum,
-              treatment: treatmentName + surfaceInfo,
-              layer: treatment.layer || 'pre'
-            })
-          })
-        }
-      }
-    }
+            // PRESTACIONES REQUERIDAS - MATCHING HTML
+            if (requeridas.length > 0) {
+              ctx.fillStyle = '#0066FF'
+              ctx.font = 'bold 16px Arial'
+              ctx.fillText('Prestaciones Requeridas:', 120, currentY)
+              currentY += 25
 
-    // Sort treatments by tooth number
-    treatments.sort((a, b) => parseInt(a.tooth) - parseInt(b.tooth))
+              const groupedRequeridas = groupTreatmentsBySurface(requeridas)
 
-    // Display treatments in professional table format
-    if (treatments.length > 0) {
-      ctx.font = '16px Arial'
-      
-      // Table headers
-      ctx.fillStyle = '#34495e'
-      ctx.fillText('PIEZA', 100, currentY)
-      ctx.fillText('TRATAMIENTO', 200, currentY)
-      ctx.fillText('ESTADO', 600, currentY)
-      currentY += 25
+              Object.values(groupedRequeridas).forEach((prestacion) => {
+                let surfaceDisplay = ''
+                if (prestacion.usesSides && prestacion.surfaces.length > 0) {
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+                }
 
-      // Table header line
-      ctx.strokeStyle = '#bdc3c7'
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.moveTo(80, currentY)
-      ctx.lineTo(canvas.width - 80, currentY)
-      ctx.stroke()
-      currentY += 20
-
-      treatments.forEach((treatment, index) => {
-        if (currentY > 1400) return // Stop if running out of space
-
-        // Alternating row background
-        if (index % 2 === 0) {
-          ctx.fillStyle = '#f8f9fa'
-          ctx.fillRect(80, currentY - 15, canvas.width - 160, 25)
-        }
-
-        // Tooth number
-        ctx.fillStyle = '#2c3e50'
-        ctx.font = 'bold 16px Arial'
-        ctx.fillText(treatment.tooth, 100, currentY)
-        
-        // Treatment name
-        ctx.fillStyle = '#34495e'
-        ctx.font = '16px Arial'
-        ctx.fillText(treatment.treatment, 200, currentY)
-        
-        // Layer status with color coding
-        ctx.fillStyle = treatment.layer === 'pre' ? '#e74c3c' : '#3498db'
-        ctx.font = 'bold 14px Arial'
-        const layerText = treatment.layer === 'pre' ? 'PREEXISTENTE' : 'REQUERIDO'
-        ctx.fillText(layerText, 600, currentY)
-        
-        currentY += 30
-      })
-    } else {
-      ctx.fillStyle = '#7f8c8d'
-      ctx.font = '18px Arial'
-      ctx.fillText('No se han registrado tratamientos', 100, currentY)
-      currentY += 40
-    }
-
-    // NOTES SECTION - PROFESSIONAL FORMATTING
-    currentY += 30
-    ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 22px Arial'
-    ctx.fillText('OBSERVACIONES CLÍNICAS', 80, currentY)
-    
-    // Underline for section
-    ctx.strokeStyle = '#3498db'
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.moveTo(80, currentY + 5)
-    ctx.lineTo(480, currentY + 5)
-    ctx.stroke()
-    currentY += 40
-
-    // Get all notes
-    const allNotes = []
-    for (const [toothNum, note] of Object.entries(toothNotes)) {
-      if (note && note.trim()) {
-        allNotes.push({
-          tooth: parseInt(toothNum),
-          note: note.trim()
-        })
-      }
-    }
-
-    // Sort by tooth number
-    allNotes.sort((a, b) => a.tooth - b.tooth)
-
-    // Display notes professionally
-    if (allNotes.length > 0) {
-      allNotes.forEach((noteData) => {
-        if (currentY > 1500) return // Stop if running out of space
-
-        // Note header with tooth number
-        ctx.fillStyle = '#2c3e50'
-        ctx.font = 'bold 18px Arial'
-        ctx.fillText(`PIEZA ${noteData.tooth}:`, 100, currentY)
-        currentY += 25
-
-        // Note content with professional formatting
-        ctx.fillStyle = '#34495e'
-        ctx.font = '16px Arial'
-        const words = noteData.note.split(' ')
-        let line = ''
-        const maxWidth = 1000
-        const lineHeight = 22
-
-        for (const word of words) {
-          const testLine = line + word + ' '
-          const metrics = ctx.measureText(testLine)
-
-          if (metrics.width > maxWidth && line !== '') {
-            ctx.fillText(line.trim(), 120, currentY)
-            line = word + ' '
-            currentY += lineHeight
-            if (currentY > 1500) break
-          } else {
-            line = testLine
+                ctx.fillStyle = '#0066FF'
+                ctx.font = '14px Arial'
+                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
+                currentY += 20
+              })
+              currentY += 10
+            }
           }
+
+          // NOTES SECTION - MATCHING HTML FORMAT
+          const existingNote = toothNotes[toothNum]
+          if (existingNote && existingNote.trim()) {
+            ctx.fillStyle = '#34495e'
+            ctx.font = 'bold 16px Arial'
+            ctx.fillText('Notas:', 120, currentY)
+            currentY += 25
+
+            // Format notes text with word wrapping - MATCHING HTML DISPLAY
+            ctx.fillStyle = '#34495e'
+            ctx.font = '14px Arial'
+            const words = existingNote.trim().split(' ')
+            let line = ''
+            const maxWidth = 1000
+            const lineHeight = 18
+
+            for (const word of words) {
+              const testLine = line + word + ' '
+              const metrics = ctx.measureText(testLine)
+
+              if (metrics.width > maxWidth && line !== '') {
+                ctx.fillText(line.trim(), 140, currentY)
+                line = word + ' '
+                currentY += lineHeight
+                if (currentY > 1500) break
+              } else {
+                line = testLine
+              }
+            }
+            
+            if (line.trim() && currentY <= 1500) {
+              ctx.fillText(line.trim(), 140, currentY)
+              currentY += lineHeight + 10
+            }
+          }
+
+          currentY += 20 // Space between teeth
+          
+          if (currentY > 1400) break // Stop if running out of space
         }
-        
-        if (line.trim() && currentY <= 1500) {
-          ctx.fillText(line.trim(), 120, currentY)
-          currentY += lineHeight + 15
-        }
-      })
-    } else {
-      ctx.fillStyle = '#7f8c8d'
-      ctx.font = '18px Arial'
-      ctx.fillText('No hay observaciones registradas', 100, currentY)
+      }
     }
 
-    // PROFESSIONAL FOOTER
-    currentY = canvas.height - 80
+    // PROFESSIONAL FOOTER - REDUCED SPACING
+    currentY = Math.max(currentY + 50, canvas.height - 100) // LESS WHITESPACE
     ctx.fillStyle = '#7f8c8d'
     ctx.font = '14px Arial'
     ctx.textAlign = 'center'
