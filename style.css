@@ -55,26 +55,50 @@ body {
 /* PATIENT INFO SECTION */
 .patient-info {
     text-align: center;
-    padding: 15px 20px;
+    padding: 8px 15px;
+    /* Reduced from 15px 20px */
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 3px solid #17a2b8;
-    margin-bottom: 20px;
+    border-bottom: 2px solid #17a2b8;
+    /* Reduced from 3px */
+    margin-bottom: 10px;
+    /* Reduced from 20px */
+    position: relative;
 }
 
 .patient-name {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
+    /* Reduced from 1.5rem */
     font-weight: bold;
     color: #2c3e50;
-    margin-bottom: 5px;
-    letter-spacing: 1px;
+    margin-bottom: 2px;
+    /* Reduced from 5px */
+    letter-spacing: 0.5px;
+    /* Reduced from 1px */
 }
 
 .patient-title {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    /* Reduced from 0.9rem */
     color: #6c757d;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+}
+
+/* Make it even more compact on mobile */
+@media (max-width: 768px) {
+    .patient-info {
+        padding: 6px 10px;
+        margin-bottom: 8px;
+    }
+
+    .patient-name {
+        font-size: 1rem;
+    }
+
+    .patient-title {
+        font-size: 0.7rem;
+    }
 }
 
 .patient-info.loaded {

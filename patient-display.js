@@ -1,34 +1,97 @@
 /**
- * Extract patient name from URL and display in header
+ * Fetch and display patient name from Airtable via Vercel API
  */
-function displayPatientName() {
-    // Get URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const patientName = urlParams.get('paciente');
+
+async function fetchAndDisplayPatientName() {
+    console.log('🔍 Starting patient name fetch from Airtable...')
+    console.log('Current URL:', window.location.href)
+    console.log('Search params:', window.location.search)
     
-    // Get header elements
-    const patientNameElement = document.getElementById('patientName');
-    const patientInfoElement = document.getElementById('patientInfo');
-    
-    if (patientName && patientNameElement) {
-        // Decode and display the patient name
-        const decodedName = decodeURIComponent(patientName);
-        patientNameElement.textContent = decodedName.toUpperCase();
+    try {
+        // Get ALL URL parameters for debugging
+        const urlParams = new URLSearchParams(window.location.search)
+        console.log('All URL parameters:')
+        for (let [key, value] of urlParams.entries()) {
+            console.log(`  ${key}: ${value}`)
+        }
         
-        // Update page title
-        document.title = `Odontograma - ${decodedName}`;
+        const recordId = urlParams.get('recordId') || urlParams.get('id')
         
-        // Add loaded class for styling
-        patientInfoElement.classList.add('loaded');
+        console.log('Record ID from URL:', recordId)
         
-        console.log('Patient name displayed:', decodedName);
-    } else {
-        // Fallback if no patient name
-        patientNameElement.textContent = 'PACIENTE SIN NOMBRE';
-        patientInfoElement.classList.add('loaded');
-        console.log('No patient name found in URL');
+        if (!recordId) {
+            console.warn('⚠️ No record ID found in URL parameters')
+            console.log('Available parameters:', Array.from(urlParams.keys()))
+            setFallbackPatientName()
+            return
+        }
+        
+        // Show loading state
+        updatePatientHeader('Cargando paciente...', false)
+        
+        // Call our Vercel API endpoint
+        const apiUrl = `/api/patient?recordId=${encodeURIComponent(recordId)}`
+        console.log('Calling API:', apiUrl)
+        
+        const response = await fetch(apiUrl)
+        console.log('API response status:', response.status)
+        
+        const data = await response.json()
+        console.log('API response data:', data)
+        
+        if (response.ok && data.success) {
+            console.log('✅ Successfully fetched patient data:', data.patient)
+            updatePatientHeader(data.patient.name, true)
+        } else {
+            console.error('❌ API error:', data.error)
+            console.log('Full error response:', data)
+            setFallbackPatientName()
+        }
+        
+    } catch (error) {
+        console.error('❌ Error fetching patient data:', error)
+        setFallbackPatientName()
     }
 }
 
-// Run when page loads
-document.addEventListener('DOMContentLoaded', displayPatientName);
+function updatePatientHeader(patientName, isLoaded) {
+    console.log('Updating header with:', patientName)
+    
+    const patientNameElement = document.getElementById('patientName')
+    const patientInfoElement = document.getElementById('patientInfo')
+    
+    console.log('patientName element found:', !!patientNameElement)
+    console.log('patientInfo element found:', !!patientInfoElement)
+    
+    if (patientNameElement) {
+        patientNameElement.textContent = patientName.toUpperCase()
+        console.log('Header updated successfully')
+    } else {
+        console.error('❌ patientName element not found in DOM')
+    }
+    
+    if (patientInfoElement && isLoaded) {
+        patientInfoElement.classList.add('loaded')
+        // Update page title
+        document.title = `Odontograma - ${patientName}`
+    }
+}
+
+function setFallbackPatientName() {
+    console.log('Setting fallback patient name')
+    updatePatientHeader('PACIENTE SIN NOMBRE', true)
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, starting patient fetch...')
+    fetchAndDisplayPatientName()
+})
+
+// Also try immediate execution in case DOM is already loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fetchAndDisplayPatientName)
+} else {
+    console.log('DOM already loaded, executing immediately...')
+    fetchAndDisplayPatientName()
+}
