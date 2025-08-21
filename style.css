@@ -56,48 +56,50 @@ body {
 .patient-info {
     text-align: center;
     padding: 8px 15px;
-    /* Reduced from 15px 20px */
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     border-bottom: 2px solid #17a2b8;
-    /* Reduced from 3px */
     margin-bottom: 10px;
-    /* Reduced from 20px */
     position: relative;
+}
+
+.patient-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.patient-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 500;
 }
 
 .patient-name {
     font-size: 1.1rem;
-    /* Reduced from 1.5rem */
     font-weight: bold;
     color: #2c3e50;
-    margin-bottom: 2px;
-    /* Reduced from 5px */
     letter-spacing: 0.5px;
-    /* Reduced from 1px */
 }
 
-.patient-title {
-    font-size: 0.75rem;
-    /* Reduced from 0.9rem */
-    color: #6c757d;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-/* Make it even more compact on mobile */
+/* Make it stack on mobile */
 @media (max-width: 768px) {
+    .patient-header {
+        flex-direction: column;
+        gap: 2px;
+    }
+
     .patient-info {
         padding: 6px 10px;
         margin-bottom: 8px;
     }
 
-    .patient-name {
-        font-size: 1rem;
+    .patient-label {
+        font-size: 0.8rem;
     }
 
-    .patient-title {
-        font-size: 0.7rem;
+    .patient-name {
+        font-size: 1rem;
     }
 }
 
