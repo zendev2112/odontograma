@@ -1025,9 +1025,16 @@ function setupEventHandlers() {
 /**
  * Generate professional clinical document
  */
+/**
+ * Generate professional clinical document with patient name
+ */
 async function generateProfessionalPNG() {
   try {
     console.log('🖼️ Generating professional clinical document...')
+
+    // Get patient name from existing functions
+    const patientName = getCurrentPatientName() || window.currentPatientName || 'PACIENTE SIN NOMBRE'
+    console.log('📝 Patient name for document:', patientName)
 
     // Create A4-sized vertical canvas (professional medical standard)
     const canvas = document.createElement('canvas')
@@ -1055,11 +1062,27 @@ async function generateProfessionalPNG() {
     ctx.font = '20px Arial'
     ctx.textAlign = 'left'
     
-    // Patient name box
+    // Patient name box with actual name
     ctx.strokeStyle = '#bdc3c7'
     ctx.lineWidth = 2
     ctx.strokeRect(60, currentY, canvas.width - 120, 40)
-    ctx.fillText('PACIENTE: _________________________________', 80, currentY + 28)
+    
+    // Format patient name to fit in the box
+    const maxNameWidth = canvas.width - 200 // Leave space for "PACIENTE: "
+    ctx.font = '20px Arial'
+    let displayName = patientName.toUpperCase()
+    
+    // Truncate if too long to fit
+    const metrics = ctx.measureText(displayName)
+    if (metrics.width > maxNameWidth) {
+      // Truncate and add ellipsis
+      while (ctx.measureText(displayName + '...').width > maxNameWidth && displayName.length > 0) {
+        displayName = displayName.slice(0, -1)
+      }
+      displayName += '...'
+    }
+    
+    ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 28)
     currentY += 60
 
     // Date and professional info
@@ -1079,10 +1102,10 @@ async function generateProfessionalPNG() {
 
     // ODONTOGRAM SECTION - MUCH SMALLER CONTAINER
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial' // REDUCED FROM 24px
+    ctx.font = 'bold 20px Arial'
     ctx.textAlign = 'center'
     ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
-    currentY += 20 // REDUCED FROM 30
+    currentY += 20
 
     // Get odontogram and scale much smaller
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
@@ -1094,8 +1117,8 @@ async function generateProfessionalPNG() {
     })
 
     // DRASTICALLY REDUCED CONTAINER SIZE
-    const maxOdontogramWidth = canvas.width - 200 // REDUCED FROM 80 TO 200 (much smaller)
-    const maxOdontogramHeight = 250 // REDUCED FROM 400 TO 250
+    const maxOdontogramWidth = canvas.width - 200
+    const maxOdontogramHeight = 250
     
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
@@ -1107,7 +1130,7 @@ async function generateProfessionalPNG() {
 
     // NO BORDER - just draw the odontogram directly
     ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
-    currentY += scaledHeight + 40 // REDUCED SPACING TO 40
+    currentY += scaledHeight + 40
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
@@ -1402,19 +1425,20 @@ async function generateProfessionalPNG() {
     ctx.font = '12px Arial'
     ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
 
-    // Download with proper filename
+    // Download with proper filename including patient name
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       const now = new Date()
       const timestamp = now.toISOString().slice(0, 10)
-
-      link.download = `Odontograma_${timestamp}.png`
+      const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
+      
+      link.download = `Odontograma_${sanitizedName}_${timestamp}.png`
       link.href = url
       link.click()
 
       URL.revokeObjectURL(url)
-      console.log('✅ Professional clinical document downloaded')
+      console.log('✅ Professional clinical document downloaded with patient name:', patientName)
     }, 'image/png', 1.0)
 
   } catch (error) {
