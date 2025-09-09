@@ -1121,8 +1121,8 @@ async function generateProfessionalPNG() {
     })
 
     // INCREASED CONTAINER SIZE FOR BETTER READABILITY
-    const maxOdontogramWidth = canvas.width - 120 // INCREASED from 200 to 120 (more width)
-    const maxOdontogramHeight = 350 // INCREASED from 250 to 350 (more height)
+    const maxOdontogramWidth = canvas.width - 80 // INCREASED from 200 to 120 (more width)
+    const maxOdontogramHeight = 400 // INCREASED from 250 to 350 (more height)
 
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
