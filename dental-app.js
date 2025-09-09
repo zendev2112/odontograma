@@ -1023,11 +1023,15 @@ function setupEventHandlers() {
 }
 
 /**
- * Generate professional clinical document
+ * Generate professional clinical document with patient name from Airtable
  */
 async function generateProfessionalPNG() {
   try {
     console.log('🖼️ Generating professional clinical document...')
+
+    // Get patient name from existing functions (NEW)
+    const patientName = getCurrentPatientName() || getPatientNameFromDOM() || 'PACIENTE SIN NOMBRE'
+    console.log('📝 Patient name for document:', patientName)
 
     // Create A4-sized vertical canvas (professional medical standard)
     const canvas = document.createElement('canvas')
@@ -1055,11 +1059,28 @@ async function generateProfessionalPNG() {
     ctx.font = '20px Arial'
     ctx.textAlign = 'left'
     
-    // Patient name box
+    // Patient name box with actual name from Airtable (UPDATED)
     ctx.strokeStyle = '#bdc3c7'
     ctx.lineWidth = 2
     ctx.strokeRect(60, currentY, canvas.width - 120, 40)
-    ctx.fillText('PACIENTE: _________________________________', 80, currentY + 28)
+    
+    // Format patient name to fit in the box (NEW)
+    const maxNameWidth = canvas.width - 200 // Leave space for "PACIENTE: "
+    ctx.font = '20px Arial'
+    let displayName = patientName.toUpperCase()
+    
+    // Truncate if too long to fit (NEW)
+    const metrics = ctx.measureText(displayName)
+    if (metrics.width > maxNameWidth) {
+      // Truncate and add ellipsis
+      while (ctx.measureText(displayName + '...').width > maxNameWidth && displayName.length > 0) {
+        displayName = displayName.slice(0, -1)
+      }
+      displayName += '...'
+    }
+    
+    // Display actual patient name instead of placeholder (UPDATED)
+    ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 28)
     currentY += 60
 
     // Date and professional info
@@ -1402,24 +1423,55 @@ async function generateProfessionalPNG() {
     ctx.font = '12px Arial'
     ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
 
-    // Download with proper filename
+    // Download with patient name in filename (UPDATED)
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       const now = new Date()
       const timestamp = now.toISOString().slice(0, 10)
+      const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
 
-      link.download = `Odontograma_${timestamp}.png`
+      link.download = `Odontograma_${sanitizedName}_${timestamp}.png`
       link.href = url
       link.click()
 
       URL.revokeObjectURL(url)
-      console.log('✅ Professional clinical document downloaded')
+      console.log('✅ Professional clinical document downloaded with patient name:', patientName)
     }, 'image/png', 1.0)
 
   } catch (error) {
     console.error('❌ Error generating document:', error)
   }
+}
+
+/**
+ * Helper function to get patient name from DOM (NEW)
+ */
+function getPatientNameFromDOM() {
+  const patientNameElement = document.getElementById('patientName')
+  if (patientNameElement) {
+    const name = patientNameElement.textContent.trim()
+    if (name && name !== 'CARGANDO PACIENTE...' && name !== 'PACIENTE SIN NOMBRE') {
+      return name
+    }
+  }
+  return null
+}
+
+/**
+ * Get current patient name with multiple fallbacks (NEW)
+ */
+function getCurrentPatientName() {
+  // Try global function first (from patient-display.js)
+  if (typeof window.getCurrentPatientName === 'function') {
+    const name = window.getCurrentPatientName()
+    if (name && name !== 'PACIENTE SIN NOMBRE') {
+      return name
+    }
+  }
+  
+  // Fallback to DOM
+  return getPatientNameFromDOM()
 }
 
 /**
