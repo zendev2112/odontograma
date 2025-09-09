@@ -1458,20 +1458,15 @@ function getPatientNameFromDOM() {
   return null
 }
 
-/**
- * Get current patient name with multiple fallbacks (NEW)
- */
 function getCurrentPatientName() {
-  // Try global function first (from patient-display.js)
-  if (typeof window.getCurrentPatientName === 'function') {
-    const name = window.getCurrentPatientName()
-    if (name && name !== 'PACIENTE SIN NOMBRE') {
+  const patientNameElement = document.getElementById('patientName')
+  if (patientNameElement) {
+    const name = patientNameElement.textContent.trim()
+    if (name && name !== 'CARGANDO PACIENTE...' && name !== 'PACIENTE SIN NOMBRE') {
       return name
     }
   }
-  
-  // Fallback to DOM
-  return getPatientNameFromDOM()
+  return 'PACIENTE SIN NOMBRE'
 }
 
 /**

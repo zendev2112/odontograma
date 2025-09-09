@@ -55,26 +55,28 @@ async function fetchAndDisplayPatientName() {
 }
 
 function updatePatientHeader(patientName, isLoaded) {
-    console.log('Updating header with:', patientName)
-    
-    const patientNameElement = document.getElementById('patientName')
-    const patientInfoElement = document.getElementById('patientInfo')
-    
-    console.log('patientName element found:', !!patientNameElement)
-    console.log('patientInfo element found:', !!patientInfoElement)
-    
-    if (patientNameElement) {
-        patientNameElement.textContent = patientName.toUpperCase()
-        console.log('Header updated successfully')
-    } else {
-        console.error('❌ patientName element not found in DOM')
-    }
-    
-    if (patientInfoElement && isLoaded) {
-        patientInfoElement.classList.add('loaded')
-        // Update page title
-        document.title = `Odontograma - ${patientName}`
-    }
+  console.log('🔄 Updating header with:', patientName)
+
+  const patientNameElement = document.getElementById('patientName')
+  const patientInfoElement = document.getElementById('patientInfo')
+
+  if (patientNameElement) {
+    patientNameElement.textContent = patientName.toUpperCase()
+
+    // Store globally for access by other scripts (ADD THIS)
+    window.currentPatientName = patientName.toUpperCase()
+    localStorage.setItem('currentPatientName', patientName.toUpperCase())
+
+    console.log('✅ Header updated and name stored globally')
+  } else {
+    console.error('❌ patientName element not found')
+  }
+
+  if (patientInfoElement && isLoaded) {
+    patientInfoElement.classList.add('loaded')
+    document.title = `Odontograma - ${patientName}`
+    console.log('✅ Page title updated')
+  }
 }
 
 function setFallbackPatientName() {
