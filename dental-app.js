@@ -1030,7 +1030,10 @@ async function generateProfessionalPNG() {
     console.log('🖼️ Generating professional clinical document...')
 
     // Get patient name from existing functions (NEW)
-    const patientName = getCurrentPatientName() || getPatientNameFromDOM() || 'PACIENTE SIN NOMBRE'
+    const patientName =
+      getCurrentPatientName() ||
+      getPatientNameFromDOM() ||
+      'PACIENTE SIN NOMBRE'
     console.log('📝 Patient name for document:', patientName)
 
     // Create A4-sized vertical canvas (professional medical standard)
@@ -1058,27 +1061,30 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#34495e'
     ctx.font = '20px Arial'
     ctx.textAlign = 'left'
-    
+
     // Patient name box with actual name from Airtable (UPDATED)
     ctx.strokeStyle = '#bdc3c7'
     ctx.lineWidth = 2
     ctx.strokeRect(60, currentY, canvas.width - 120, 40)
-    
+
     // Format patient name to fit in the box (NEW)
     const maxNameWidth = canvas.width - 200 // Leave space for "PACIENTE: "
     ctx.font = '20px Arial'
     let displayName = patientName.toUpperCase()
-    
+
     // Truncate if too long to fit (NEW)
     const metrics = ctx.measureText(displayName)
     if (metrics.width > maxNameWidth) {
       // Truncate and add ellipsis
-      while (ctx.measureText(displayName + '...').width > maxNameWidth && displayName.length > 0) {
+      while (
+        ctx.measureText(displayName + '...').width > maxNameWidth &&
+        displayName.length > 0
+      ) {
         displayName = displayName.slice(0, -1)
       }
       displayName += '...'
     }
-    
+
     // Display actual patient name instead of placeholder (UPDATED)
     ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 28)
     currentY += 60
@@ -1098,14 +1104,14 @@ async function generateProfessionalPNG() {
     ctx.stroke()
     currentY += 40
 
-    // ODONTOGRAM SECTION - MUCH SMALLER CONTAINER
+    // ODONTOGRAM SECTION - BIGGER SIZE FOR BETTER READABILITY
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial' // REDUCED FROM 24px
+    ctx.font = 'bold 20px Arial'
     ctx.textAlign = 'center'
     ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
-    currentY += 20 // REDUCED FROM 30
+    currentY += 20
 
-    // Get odontogram and scale much smaller
+    // Get odontogram and scale bigger for better reading
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
     const odontogramImg = new Image()
 
@@ -1114,28 +1120,34 @@ async function generateProfessionalPNG() {
       odontogramImg.src = odontogramDataURL
     })
 
-    // DRASTICALLY REDUCED CONTAINER SIZE
-    const maxOdontogramWidth = canvas.width - 200 // REDUCED FROM 80 TO 200 (much smaller)
-    const maxOdontogramHeight = 250 // REDUCED FROM 400 TO 250
-    
+    // INCREASED CONTAINER SIZE FOR BETTER READABILITY
+    const maxOdontogramWidth = canvas.width - 120 // INCREASED from 200 to 120 (more width)
+    const maxOdontogramHeight = 350 // INCREASED from 250 to 350 (more height)
+
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
     const scale = Math.min(scaleX, scaleY)
-    
+
     const scaledWidth = odontogramImg.naturalWidth * scale
     const scaledHeight = odontogramImg.naturalHeight * scale
     const odontogramX = (canvas.width - scaledWidth) / 2
 
     // NO BORDER - just draw the odontogram directly
-    ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
-    currentY += scaledHeight + 40 // REDUCED SPACING TO 40
+        ctx.drawImage(
+          odontogramImg,
+          odontogramX,
+          currentY,
+          scaledWidth,
+          scaledHeight
+        )
+        currentY += scaledHeight + 40
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 22px Arial'
     ctx.textAlign = 'left'
     ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
-    
+
     // Underline for section
     ctx.strokeStyle = '#3498db'
     ctx.lineWidth = 2
@@ -1265,7 +1277,8 @@ async function generateProfessionalPNG() {
             ctx.fillText('Condiciones:', 120, currentY)
             currentY += 25
 
-            const groupedConditions = groupTreatmentsBySurface(conditionTreatments)
+            const groupedConditions =
+              groupTreatmentsBySurface(conditionTreatments)
 
             Object.values(groupedConditions).forEach((condition) => {
               let surfaceDisplay = ''
@@ -1275,7 +1288,11 @@ async function generateProfessionalPNG() {
 
               ctx.fillStyle = '#34495e'
               ctx.font = '14px Arial'
-              ctx.fillText(`• ${condition.name}${surfaceDisplay}`, 140, currentY)
+              ctx.fillText(
+                `• ${condition.name}${surfaceDisplay}`,
+                140,
+                currentY
+              )
               currentY += 20
             })
             currentY += 10
@@ -1329,17 +1346,24 @@ async function generateProfessionalPNG() {
               ctx.fillText('Prestaciones Preexistentes:', 120, currentY)
               currentY += 25
 
-              const groupedPreExistentes = groupTreatmentsBySurface(preExistentes)
+              const groupedPreExistentes =
+                groupTreatmentsBySurface(preExistentes)
 
               Object.values(groupedPreExistentes).forEach((prestacion) => {
                 let surfaceDisplay = ''
                 if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(
+                    ', '
+                  )}`
                 }
 
                 ctx.fillStyle = '#FF0000'
                 ctx.font = '14px Arial'
-                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
+                ctx.fillText(
+                  `• ${prestacion.name}${surfaceDisplay}`,
+                  140,
+                  currentY
+                )
                 currentY += 20
               })
               currentY += 10
@@ -1357,12 +1381,18 @@ async function generateProfessionalPNG() {
               Object.values(groupedRequeridas).forEach((prestacion) => {
                 let surfaceDisplay = ''
                 if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(
+                    ', '
+                  )}`
                 }
 
                 ctx.fillStyle = '#0066FF'
                 ctx.font = '14px Arial'
-                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
+                ctx.fillText(
+                  `• ${prestacion.name}${surfaceDisplay}`,
+                  140,
+                  currentY
+                )
                 currentY += 20
               })
               currentY += 10
@@ -1398,7 +1428,7 @@ async function generateProfessionalPNG() {
                 line = testLine
               }
             }
-            
+
             if (line.trim() && currentY <= 1500) {
               ctx.fillText(line.trim(), 140, currentY)
               currentY += lineHeight + 10
@@ -1406,7 +1436,7 @@ async function generateProfessionalPNG() {
           }
 
           currentY += 20 // Space between teeth
-          
+
           if (currentY > 1400) break // Stop if running out of space
         }
       }
@@ -1417,28 +1447,44 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#7f8c8d'
     ctx.font = '14px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText('Documento generado por Sistema de Odontograma Digital', canvas.width / 2, currentY)
-    
+    ctx.fillText(
+      'Documento generado por Sistema de Odontograma Digital',
+      canvas.width / 2,
+      currentY
+    )
+
     ctx.fillStyle = '#bdc3c7'
     ctx.font = '12px Arial'
-    ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
+    ctx.fillText(
+      `Generado el ${new Date().toLocaleString('es-ES')}`,
+      canvas.width / 2,
+      currentY + 20
+    )
 
     // Download with patient name in filename (UPDATED)
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      const now = new Date()
-      const timestamp = now.toISOString().slice(0, 10)
-      const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
+    canvas.toBlob(
+      (blob) => {
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        const now = new Date()
+        const timestamp = now.toISOString().slice(0, 10)
+        const sanitizedName = patientName
+          .replace(/[^a-zA-Z0-9\s]/g, '')
+          .replace(/\s+/g, '_')
 
-      link.download = `Odontograma_${sanitizedName}_${timestamp}.png`
-      link.href = url
-      link.click()
+        link.download = `Odontograma_${sanitizedName}_${timestamp}.png`
+        link.href = url
+        link.click()
 
-      URL.revokeObjectURL(url)
-      console.log('✅ Professional clinical document downloaded with patient name:', patientName)
-    }, 'image/png', 1.0)
-
+        URL.revokeObjectURL(url)
+        console.log(
+          '✅ Professional clinical document downloaded with patient name:',
+          patientName
+        )
+      },
+      'image/png',
+      1.0
+    )
   } catch (error) {
     console.error('❌ Error generating document:', error)
   }
