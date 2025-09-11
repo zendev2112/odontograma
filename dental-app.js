@@ -1439,48 +1439,67 @@ async function generateProfessionalPNG() {
     ctx.font = '12px Arial'
     ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
 
-    // Convert canvas to blob and upload to Airtable
-    canvas.toBlob(async (blob) => {
-      try {
-        console.log('📤 Uploading PNG to Airtable...')
-        
-        // Create filename with patient name and timestamp
-        const now = new Date()
-        const timestamp = now.toISOString().slice(0, 10)
-        const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
-        const filename = `Odontograma_${sanitizedName}_${timestamp}.png`
-        
-        // Create FormData for upload
-        const formData = new FormData()
-        formData.append('file', blob, filename)
-        formData.append('recordId', recordId)
-        formData.append('fieldName', 'odontograma-adjunto')
-        
-        // Upload to our Vercel API endpoint
-        const uploadResponse = await fetch('/api/upload-odontogram', {
-          method: 'POST',
-          body: formData
-        })
-        
-        const uploadResult = await uploadResponse.json()
-        
-        if (uploadResponse.ok && uploadResult.success) {
-          console.log('✅ PNG uploaded successfully to Airtable!')
-          alert('✅ Odontograma subido exitosamente a Airtable')
-        } else {
-          console.error('❌ Upload failed:', uploadResult.error)
-          alert(`❌ Error al subir: ${uploadResult.error}`)
-        }
-        
-      } catch (uploadError) {
-        console.error('❌ Upload error:', uploadError)
-        alert('❌ Error al subir el archivo a Airtable')
-      } finally {
-        // Restore button state
-        downloadBtn.innerHTML = originalText
-        downloadBtn.disabled = false
-      }
-    }, 'image/png', 1.0)
+// Convert canvas to blob and upload to Airtable
+canvas.toBlob(async (blob) => {
+  try {
+    console.log('📤 Uploading PNG to Airtable...')
+    
+    // Create filename with patient name and timestamp
+    const now = new Date()
+    const timestamp = now.toISOString().slice(0, 10)
+    const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
+    const filename = `Odontograma_${sanitizedName}_${timestamp}.png`
+    
+    // Create FormData for upload
+    const formData = new FormData()
+    formData.append('file', blob, filename)
+    formData.append('recordId', recordId)
+    formData.append('fieldName', 'odontograma-adjunto')
+    
+    console.log('Uploading with data:')
+    console.log('- Record ID:', recordId)
+    console.log('- Filename:', filename)
+    console.log('- Blob size:', blob.size)
+    
+    // Upload to our Vercel API endpoint
+    const uploadResponse = await fetch('/api/upload-odontogram', {
+      method: 'POST',
+      body: formData
+    })
+    
+    console.log('Upload response status:', uploadResponse.status)
+    console.log('Upload response headers:', Object.fromEntries(uploadResponse.headers.entries()))
+    
+    // Try to get response text first to see what we're getting
+    const responseText = await uploadResponse.text()
+    console.log('Raw response:', responseText)
+    
+    let uploadResult
+    try {
+      uploadResult = JSON.parse(responseText)
+    } catch (jsonError) {
+      console.error('❌ Response is not valid JSON:', responseText)
+      throw new Error(`Server returned invalid JSON: ${responseText.substring(0, 100)}...`)
+    }
+    
+    if (uploadResponse.ok && uploadResult.success) {
+      console.log('✅ PNG uploaded successfully to Airtable!')
+      console.log('✅ Attachment URL:', uploadResult.attachmentUrl)
+      alert('✅ Odontograma subido exitosamente a Airtable')
+    } else {
+      console.error('❌ Upload failed:', uploadResult)
+      alert(`❌ Error al subir: ${uploadResult.error || 'Unknown error'}`)
+    }
+    
+  } catch (uploadError) {
+    console.error('❌ Upload error:', uploadError)
+    alert(`❌ Error al subir el archivo: ${uploadError.message}`)
+  } finally {
+    // Restore button state
+    downloadBtn.innerHTML = originalText
+    downloadBtn.disabled = false
+  }
+}, 'image/png', 1.0)
 
   } catch (error) {
     console.error('❌ Error generating document:', error)
