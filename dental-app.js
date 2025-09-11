@@ -1023,18 +1023,32 @@ function setupEventHandlers() {
 }
 
 /**
- * Generate professional clinical document with patient name from Airtable
+ * Generate professional clinical document and upload to Airtable attachment field
  */
 async function generateProfessionalPNG() {
   try {
-    console.log('🖼️ Generating professional clinical document...')
+    console.log('🖼️ Generating professional clinical document for Airtable upload...')
 
-    // Get patient name from existing functions (NEW)
-    const patientName =
-      getCurrentPatientName() ||
-      getPatientNameFromDOM() ||
-      'PACIENTE SIN NOMBRE'
+    // Get current patient record ID and name
+    const urlParams = new URLSearchParams(window.location.search)
+    const recordId = urlParams.get('recordId') || urlParams.get('id')
+    
+    if (!recordId) {
+      console.error('❌ No record ID found in URL - cannot upload to Airtable')
+      alert('Error: No se pudo identificar el paciente para subir el archivo')
+      return
+    }
+
+    // Get patient name from existing functions
+    const patientName = getCurrentPatientName() || getPatientNameFromDOM() || 'PACIENTE SIN NOMBRE'
     console.log('📝 Patient name for document:', patientName)
+    console.log('📝 Record ID:', recordId)
+
+    // Show loading state
+    const downloadBtn = document.getElementById('download')
+    const originalText = downloadBtn.innerHTML
+    downloadBtn.innerHTML = '<span class="icon">⏳</span><span class="name">Subiendo...</span>'
+    downloadBtn.disabled = true
 
     // Create A4-sized vertical canvas (professional medical standard)
     const canvas = document.createElement('canvas')
@@ -1061,31 +1075,27 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#34495e'
     ctx.font = '20px Arial'
     ctx.textAlign = 'left'
-
-    // Patient name box with actual name from Airtable (UPDATED)
+    
+    // Patient name box with actual name from Airtable
     ctx.strokeStyle = '#bdc3c7'
     ctx.lineWidth = 2
     ctx.strokeRect(60, currentY, canvas.width - 120, 40)
-
-    // Format patient name to fit in the box (NEW)
-    const maxNameWidth = canvas.width - 200 // Leave space for "PACIENTE: "
+    
+    // Format patient name to fit in the box
+    const maxNameWidth = canvas.width - 200
     ctx.font = '20px Arial'
     let displayName = patientName.toUpperCase()
-
-    // Truncate if too long to fit (NEW)
+    
+    // Truncate if too long to fit
     const metrics = ctx.measureText(displayName)
     if (metrics.width > maxNameWidth) {
-      // Truncate and add ellipsis
-      while (
-        ctx.measureText(displayName + '...').width > maxNameWidth &&
-        displayName.length > 0
-      ) {
+      while (ctx.measureText(displayName + '...').width > maxNameWidth && displayName.length > 0) {
         displayName = displayName.slice(0, -1)
       }
       displayName += '...'
     }
-
-    // Display actual patient name instead of placeholder (UPDATED)
+    
+    // Display actual patient name
     ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 28)
     currentY += 60
 
@@ -1121,33 +1131,27 @@ async function generateProfessionalPNG() {
     })
 
     // INCREASED CONTAINER SIZE FOR BETTER READABILITY
-    const maxOdontogramWidth = canvas.width - 80 // INCREASED from 200 to 120 (more width)
-    const maxOdontogramHeight = 400 // INCREASED from 250 to 350 (more height)
-
+    const maxOdontogramWidth = canvas.width - 120
+    const maxOdontogramHeight = 350
+    
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
     const scale = Math.min(scaleX, scaleY)
-
+    
     const scaledWidth = odontogramImg.naturalWidth * scale
     const scaledHeight = odontogramImg.naturalHeight * scale
     const odontogramX = (canvas.width - scaledWidth) / 2
 
-    // NO BORDER - just draw the odontogram directly
-        ctx.drawImage(
-          odontogramImg,
-          odontogramX,
-          currentY,
-          scaledWidth,
-          scaledHeight
-        )
-        currentY += scaledHeight + 40
+    // Draw the bigger odontogram
+    ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
+    currentY += scaledHeight + 40
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 22px Arial'
     ctx.textAlign = 'left'
     ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
-
+    
     // Underline for section
     ctx.strokeStyle = '#3498db'
     ctx.lineWidth = 2
@@ -1277,8 +1281,7 @@ async function generateProfessionalPNG() {
             ctx.fillText('Condiciones:', 120, currentY)
             currentY += 25
 
-            const groupedConditions =
-              groupTreatmentsBySurface(conditionTreatments)
+            const groupedConditions = groupTreatmentsBySurface(conditionTreatments)
 
             Object.values(groupedConditions).forEach((condition) => {
               let surfaceDisplay = ''
@@ -1288,11 +1291,7 @@ async function generateProfessionalPNG() {
 
               ctx.fillStyle = '#34495e'
               ctx.font = '14px Arial'
-              ctx.fillText(
-                `• ${condition.name}${surfaceDisplay}`,
-                140,
-                currentY
-              )
+              ctx.fillText(`• ${condition.name}${surfaceDisplay}`, 140, currentY)
               currentY += 20
             })
             currentY += 10
@@ -1346,24 +1345,17 @@ async function generateProfessionalPNG() {
               ctx.fillText('Prestaciones Preexistentes:', 120, currentY)
               currentY += 25
 
-              const groupedPreExistentes =
-                groupTreatmentsBySurface(preExistentes)
+              const groupedPreExistentes = groupTreatmentsBySurface(preExistentes)
 
               Object.values(groupedPreExistentes).forEach((prestacion) => {
                 let surfaceDisplay = ''
                 if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(
-                    ', '
-                  )}`
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
                 }
 
                 ctx.fillStyle = '#FF0000'
                 ctx.font = '14px Arial'
-                ctx.fillText(
-                  `• ${prestacion.name}${surfaceDisplay}`,
-                  140,
-                  currentY
-                )
+                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
                 currentY += 20
               })
               currentY += 10
@@ -1381,18 +1373,12 @@ async function generateProfessionalPNG() {
               Object.values(groupedRequeridas).forEach((prestacion) => {
                 let surfaceDisplay = ''
                 if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(
-                    ', '
-                  )}`
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
                 }
 
                 ctx.fillStyle = '#0066FF'
                 ctx.font = '14px Arial'
-                ctx.fillText(
-                  `• ${prestacion.name}${surfaceDisplay}`,
-                  140,
-                  currentY
-                )
+                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
                 currentY += 20
               })
               currentY += 10
@@ -1428,7 +1414,7 @@ async function generateProfessionalPNG() {
                 line = testLine
               }
             }
-
+            
             if (line.trim() && currentY <= 1500) {
               ctx.fillText(line.trim(), 140, currentY)
               currentY += lineHeight + 10
@@ -1436,7 +1422,7 @@ async function generateProfessionalPNG() {
           }
 
           currentY += 20 // Space between teeth
-
+          
           if (currentY > 1400) break // Stop if running out of space
         }
       }
@@ -1447,46 +1433,63 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#7f8c8d'
     ctx.font = '14px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText(
-      'Documento generado por Sistema de Odontograma Digital',
-      canvas.width / 2,
-      currentY
-    )
-
+    ctx.fillText('Documento generado por Sistema de Odontograma Digital', canvas.width / 2, currentY)
+    
     ctx.fillStyle = '#bdc3c7'
     ctx.font = '12px Arial'
-    ctx.fillText(
-      `Generado el ${new Date().toLocaleString('es-ES')}`,
-      canvas.width / 2,
-      currentY + 20
-    )
+    ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
 
-    // Download with patient name in filename (UPDATED)
-    canvas.toBlob(
-      (blob) => {
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
+    // Convert canvas to blob and upload to Airtable
+    canvas.toBlob(async (blob) => {
+      try {
+        console.log('📤 Uploading PNG to Airtable...')
+        
+        // Create filename with patient name and timestamp
         const now = new Date()
         const timestamp = now.toISOString().slice(0, 10)
-        const sanitizedName = patientName
-          .replace(/[^a-zA-Z0-9\s]/g, '')
-          .replace(/\s+/g, '_')
+        const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
+        const filename = `Odontograma_${sanitizedName}_${timestamp}.png`
+        
+        // Create FormData for upload
+        const formData = new FormData()
+        formData.append('file', blob, filename)
+        formData.append('recordId', recordId)
+        formData.append('fieldName', 'odontograma-adjunto')
+        
+        // Upload to our Vercel API endpoint
+        const uploadResponse = await fetch('/api/upload-odontogram', {
+          method: 'POST',
+          body: formData
+        })
+        
+        const uploadResult = await uploadResponse.json()
+        
+        if (uploadResponse.ok && uploadResult.success) {
+          console.log('✅ PNG uploaded successfully to Airtable!')
+          alert('✅ Odontograma subido exitosamente a Airtable')
+        } else {
+          console.error('❌ Upload failed:', uploadResult.error)
+          alert(`❌ Error al subir: ${uploadResult.error}`)
+        }
+        
+      } catch (uploadError) {
+        console.error('❌ Upload error:', uploadError)
+        alert('❌ Error al subir el archivo a Airtable')
+      } finally {
+        // Restore button state
+        downloadBtn.innerHTML = originalText
+        downloadBtn.disabled = false
+      }
+    }, 'image/png', 1.0)
 
-        link.download = `Odontograma_${sanitizedName}_${timestamp}.png`
-        link.href = url
-        link.click()
-
-        URL.revokeObjectURL(url)
-        console.log(
-          '✅ Professional clinical document downloaded with patient name:',
-          patientName
-        )
-      },
-      'image/png',
-      1.0
-    )
   } catch (error) {
     console.error('❌ Error generating document:', error)
+    alert('❌ Error al generar el documento')
+    
+    // Restore button state on error
+    const downloadBtn = document.getElementById('download')
+    downloadBtn.innerHTML = '<span class="icon">💾</span><span class="name">Descargar</span>'
+    downloadBtn.disabled = false
   }
 }
 
