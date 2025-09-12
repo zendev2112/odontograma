@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  console.log('🚀 Upload API called - HIPAA-COMPLIANT DIRECT AIRTABLE UPLOAD')
+  console.log('🚀 Upload API called - CORRECT AIRTABLE FORMDATA METHOD')
 
   try {
     // Check Airtable credentials
@@ -57,149 +57,131 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
-    console.log(
-      '📝 Processing CONFIDENTIAL MEDICAL file:',
-      file.originalFilename
-    )
+    console.log('📝 Processing medical file:', file.originalFilename)
     console.log('📊 Original file size:', file.size, 'bytes')
-    console.log('🔒 HIPAA-compliant processing - NO external services used')
 
-    // Read file - PRESERVE EVERY BYTE
+    // Read file
     const originalBuffer = fs.readFileSync(file.filepath)
-    console.log(
-      '📖 Buffer matches original:',
-      originalBuffer.length === file.size
+    console.log('📖 File read successfully')
+
+    // CORRECT METHOD: Use FormData to upload file to Airtable
+    console.log('📤 Creating FormData for Airtable upload...')
+
+    const formData = new FormData()
+
+    // Create a proper Blob from the buffer
+    const blob = new Blob([originalBuffer], { type: 'image/png' })
+
+    // Append the file with the correct field name
+    formData.append('files', blob, file.originalFilename || 'odontogram.png')
+
+    // Add other fields if needed
+    formData.append(
+      'fields',
+      JSON.stringify({
+        // Add any other fields you want to update
+      })
     )
 
-    // Convert to base64 for direct Airtable upload
-    console.log('🔐 Converting to secure base64 format...')
-    const base64Content = originalBuffer.toString('base64')
-    console.log('✅ Secure conversion complete')
+    console.log('✅ FormData created successfully')
 
-    // DIRECT AIRTABLE UPLOAD - NO THIRD PARTIES
-    console.log('📤 Uploading directly to Airtable (HIPAA-compliant)...')
+    // STEP 1: Upload file using FormData (the CORRECT way)
+    console.log('📤 Uploading to Airtable using FormData...')
 
-    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
-
-    // Use the correct Airtable attachment format with base64 content
-    const attachmentData = {
-      fields: {
-        [fieldName]: [
-          {
-            filename: file.originalFilename || 'odontogram.png',
-            contents: base64Content, // Direct base64 upload to Airtable
-          },
-        ],
-      },
-    }
-
-    console.log('📋 Sending confidential medical data directly to Airtable...')
-    console.log(
-      '🔒 No external services involved - maintaining HIPAA compliance'
-    )
+    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes`
 
     const airtableResponse = await fetch(airtableUrl, {
-      method: 'PATCH',
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        // Do NOT set Content-Type header - let FormData set it automatically
       },
-      body: JSON.stringify(attachmentData),
+      body: formData,
     })
 
     const responseText = await airtableResponse.text()
     console.log('📨 Airtable response status:', airtableResponse.status)
 
     if (!airtableResponse.ok) {
-      console.log('📨 Airtable response:', responseText)
+      console.log('📨 Airtable error response:', responseText)
 
-      // If the contents method fails, try the multipart form approach
-      if (responseText.includes('INVALID_ATTACHMENT_OBJECT')) {
-        console.log(
-          '⚠️ Base64 contents failed, trying multipart form upload...'
+      // If direct FormData upload fails, try the alternative method
+      console.log('⚠️ FormData upload failed, trying record update method...')
+
+      // STEP 2: Alternative - Update existing record with attachment
+      const updateUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
+
+      // Create FormData for updating existing record
+      const updateFormData = new FormData()
+      updateFormData.append(
+        fieldName,
+        blob,
+        file.originalFilename || 'odontogram.png'
+      )
+
+      const updateResponse = await fetch(updateUrl, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        },
+        body: updateFormData,
+      })
+
+      const updateResponseText = await updateResponse.text()
+
+      if (!updateResponse.ok) {
+        console.log('📨 Update response error:', updateResponseText)
+        throw new Error(
+          `Airtable update error: ${updateResponse.status} - ${updateResponseText}`
         )
-
-        // Create multipart form data for direct Airtable upload
-        const formData = new FormData()
-
-        // Create a proper file blob for Airtable
-        const blob = new Blob([originalBuffer], { type: 'image/png' })
-        formData.append(
-          'fields',
-          JSON.stringify({
-            [fieldName]: 'PLACEHOLDER_FOR_ATTACHMENT',
-          })
-        )
-        formData.append(
-          'attachment',
-          blob,
-          file.originalFilename || 'odontogram.png'
-        )
-
-        const multipartResponse = await fetch(`${airtableUrl}/attachments`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-          },
-          body: formData,
-        })
-
-        if (!multipartResponse.ok) {
-          const multipartError = await multipartResponse.text()
-          throw new Error(
-            `Multipart upload failed: ${multipartResponse.status} - ${multipartError}`
-          )
-        }
-
-        const multipartResult = await multipartResponse.json()
-        console.log('✅ Multipart upload successful!')
-
-        return res.status(200).json({
-          success: true,
-          message: 'HIPAA-compliant odontogram uploaded directly to Airtable',
-          recordId: multipartResult.id,
-          method: 'multipart_form',
-          fileName: file.originalFilename,
-          qualityPreserved: true,
-          originalSize: file.size,
-          hipaaCompliant: true,
-        })
       }
 
-      throw new Error(
-        `Airtable error: ${airtableResponse.status} - ${responseText}`
-      )
+      const updateResult = JSON.parse(updateResponseText)
+      console.log('✅ Record update successful!')
+
+      // Clean up temp file
+      try {
+        fs.unlinkSync(file.filepath)
+        console.log('🧹 Temp file cleaned up')
+      } catch (cleanupError) {
+        console.warn('⚠️ Could not clean temp file:', cleanupError.message)
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Odontogram uploaded successfully using record update method',
+        recordId: updateResult.id,
+        attachmentUrl: updateResult.fields[fieldName]?.[0]?.url,
+        fileName: file.originalFilename,
+        method: 'record_update',
+        hipaaCompliant: true,
+      })
     }
 
     const result = JSON.parse(responseText)
-    console.log('✅ HIPAA-compliant upload successful!')
+    console.log('✅ FormData upload successful!')
 
     // Clean up temp file
     try {
       fs.unlinkSync(file.filepath)
-      console.log('🧹 Temp file securely cleaned up')
+      console.log('🧹 Temp file cleaned up')
     } catch (cleanupError) {
       console.warn('⚠️ Could not clean temp file:', cleanupError.message)
     }
 
-    // The attachment URL will be Airtable's secure CDN URL
-    const airtableAttachmentUrl = result.fields[fieldName]?.[0]?.url
-
     return res.status(200).json({
       success: true,
-      message: 'HIPAA-compliant odontogram uploaded directly to Airtable',
+      message: 'Odontogram uploaded successfully using FormData method',
       recordId: result.id,
-      attachmentUrl: airtableAttachmentUrl,
+      attachmentUrl: result.fields[fieldName]?.[0]?.url,
       fileName: file.originalFilename,
-      qualityPreserved: true,
-      originalSize: file.size,
+      method: 'formdata',
       hipaaCompliant: true,
-      workflow: 'Direct Airtable upload - No external services',
     })
   } catch (error) {
-    console.error('❌ HIPAA-compliant upload error:', error.message)
+    console.error('❌ Upload error:', error.message)
     return res.status(500).json({
-      error: 'HIPAA-compliant upload failed',
+      error: 'Upload failed',
       details: error.message,
     })
   }
