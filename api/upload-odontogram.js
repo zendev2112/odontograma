@@ -1,4 +1,4 @@
-import formidable from 'formidable'
+import { IncomingForm } from 'formidable'
 import Airtable from 'airtable'
 import fs from 'fs'
 
@@ -10,172 +10,125 @@ export const config = {
 }
 
 export default async function handler(req, res) {
-  // Set JSON response headers
-  res.setHeader('Content-Type', 'application/json')
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  try {
-    console.log('📤 Starting odontogram upload process...')
+  console.log('🚀 Upload API called')
 
-    // Check environment variables first
-    if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
-      console.error('❌ Missing Airtable environment variables')
-      return res.status(500).json({
-        error: 'Server configuration error',
-        details: 'Airtable credentials not configured',
+  try {
+    // Check environment variables
+    if (!process.env.AIRTABLE_API_KEY) {
+      console.error('❌ AIRTABLE_API_KEY not found')
+      return res.status(500).json({ error: 'AIRTABLE_API_KEY not configured' })
+    }
+
+    if (!process.env.AIRTABLE_BASE_ID) {
+      console.error('❌ AIRTABLE_BASE_ID not found')
+      return res.status(500).json({ error: 'AIRTABLE_BASE_ID not configured' })
+    }
+
+    console.log('✅ Environment variables found')
+
+    // Parse form data
+    const form = new IncomingForm({
+      maxFileSize: 10 * 1024 * 1024, // 10MB
+      keepExtensions: true,
+    })
+
+    const parseForm = () => {
+      return new Promise((resolve, reject) => {
+        form.parse(req, (err, fields, files) => {
+          if (err) reject(err)
+          else resolve({ fields, files })
+        })
       })
     }
 
+    console.log('📋 Parsing form data...')
+    const { fields, files } = await parseForm()
+    console.log('✅ Form parsed successfully')
+
+    // Extract data
+    const recordId = fields.recordId?.[0] || fields.recordId
+    const fieldName = fields.fieldName?.[0] || fields.fieldName
+    const file = files.file?.[0] || files.file
+
+    console.log('📝 Extracted data:')
+    console.log('- Record ID:', recordId)
+    console.log('- Field name:', fieldName)
+    console.log('- File:', file ? 'Present' : 'Missing')
+
+    if (!recordId || !fieldName || !file) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        received: {
+          recordId: !!recordId,
+          fieldName: !!fieldName,
+          file: !!file,
+        },
+      })
+    }
+
+    // Read file
+    console.log('📖 Reading file...')
+    const fileBuffer = fs.readFileSync(file.filepath)
+    console.log('✅ File read, size:', fileBuffer.length)
+
     // Configure Airtable
+    console.log('🔧 Configuring Airtable...')
     const base = new Airtable({
       apiKey: process.env.AIRTABLE_API_KEY,
     }).base(process.env.AIRTABLE_BASE_ID)
 
-    console.log('✅ Airtable configured successfully')
-
-    // Parse the multipart form data with better error handling
-    const form = formidable({
-      maxFiles: 1,
-      maxFileSize: 10 * 1024 * 1024, // 10MB max
-      keepExtensions: true,
-      filter: function ({ mimetype }) {
-        console.log('File mimetype:', mimetype)
-        return (
-          mimetype &&
-          (mimetype.includes('image/png') || mimetype.includes('image/jpeg'))
-        )
-      },
-    })
-
-    console.log('📋 Parsing form data...')
-
-    let fields, files
-    try {
-      ;[fields, files] = await form.parse(req)
-      console.log('✅ Form data parsed successfully')
-      console.log('Fields:', Object.keys(fields))
-      console.log('Files:', Object.keys(files))
-    } catch (parseError) {
-      console.error('❌ Form parsing error:', parseError)
-      return res.status(400).json({
-        error: 'Failed to parse form data',
-        details: parseError.message,
-      })
-    }
-
-    // Extract form fields
-    const recordId = Array.isArray(fields.recordId)
-      ? fields.recordId[0]
-      : fields.recordId
-    const fieldName = Array.isArray(fields.fieldName)
-      ? fields.fieldName[0]
-      : fields.fieldName
-    const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file
-
-    console.log('Extracted data:')
-    console.log('- Record ID:', recordId)
-    console.log('- Field name:', fieldName)
-    console.log('- File exists:', !!uploadedFile)
-
-    // Validate required fields
-    if (!recordId) {
-      return res.status(400).json({ error: 'Missing recordId' })
-    }
-
-    if (!fieldName) {
-      return res.status(400).json({ error: 'Missing fieldName' })
-    }
-
-    if (!uploadedFile) {
-      return res.status(400).json({ error: 'Missing file upload' })
-    }
-
-    console.log('File details:')
-    console.log('- Original filename:', uploadedFile.originalFilename)
-    console.log('- Size:', uploadedFile.size, 'bytes')
-    console.log('- Mimetype:', uploadedFile.mimetype)
-    console.log('- Temp path:', uploadedFile.filepath)
-
-    // Check if file exists and is readable
-    if (!fs.existsSync(uploadedFile.filepath)) {
-      return res.status(400).json({ error: 'Uploaded file not found' })
-    }
-
-    // Read the file
-    let fileBuffer
-    try {
-      fileBuffer = fs.readFileSync(uploadedFile.filepath)
-      console.log('✅ File read successfully, buffer size:', fileBuffer.length)
-    } catch (readError) {
-      console.error('❌ File read error:', readError)
-      return res.status(500).json({
-        error: 'Failed to read uploaded file',
-        details: readError.message,
-      })
-    }
-
-    // Create attachment object for Airtable
+    // Create attachment
     const attachment = {
-      filename: uploadedFile.originalFilename || 'odontogram.png',
+      filename: file.originalFilename || 'odontogram.png',
       contents: fileBuffer,
     }
 
     console.log('📤 Uploading to Airtable...')
-    console.log('- Record ID:', recordId)
+    console.log('- Record:', recordId)
     console.log('- Field:', fieldName)
     console.log('- Filename:', attachment.filename)
 
-    // Update the Airtable record with the attachment
-    let updatedRecord
+    // Update Airtable record
+    const updatedRecord = await base('Pacientes').update(recordId, {
+      [fieldName]: [attachment],
+    })
+
+    console.log('✅ Upload successful!')
+
+    // Clean up temp file
     try {
-      updatedRecord = await base('Pacientes').update(recordId, {
-        [fieldName]: [attachment],
-      })
-      console.log('✅ Airtable update successful')
-    } catch (airtableError) {
-      console.error('❌ Airtable update error:', airtableError)
-
-      // Clean up temp file before returning error
-      try {
-        fs.unlinkSync(uploadedFile.filepath)
-      } catch (cleanupError) {
-        console.error('Warning: Failed to cleanup temp file:', cleanupError)
-      }
-
-      return res.status(500).json({
-        error: 'Failed to update Airtable record',
-        details: airtableError.message,
-      })
-    }
-
-    // Clean up temporary file
-    try {
-      fs.unlinkSync(uploadedFile.filepath)
-      console.log('✅ Temp file cleaned up')
+      fs.unlinkSync(file.filepath)
+      console.log('🧹 Temp file cleaned up')
     } catch (cleanupError) {
-      console.error('Warning: Failed to cleanup temp file:', cleanupError)
-      // Don't fail the request for cleanup errors
+      console.warn('⚠️ Could not clean up temp file:', cleanupError.message)
     }
 
-    // Success response
-    const response = {
+    // Return success
+    return res.status(200).json({
       success: true,
       message: 'Odontogram uploaded successfully',
       recordId: updatedRecord.id,
-      attachmentUrl: updatedRecord.fields[fieldName]?.[0]?.url || null,
-    }
-
-    console.log('✅ Upload completed successfully')
-    return res.status(200).json(response)
+      attachmentUrl: updatedRecord.fields[fieldName]?.[0]?.url,
+    })
   } catch (error) {
-    console.error('❌ Unexpected error:', error)
-    console.error('❌ Error stack:', error.stack)
+    console.error('❌ API Error:', error.message)
+    console.error('❌ Stack:', error.stack)
 
     return res.status(500).json({
-      error: 'Internal server error',
+      error: 'Upload failed',
       details: error.message,
       type: error.constructor.name,
     })
