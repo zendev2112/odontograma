@@ -59,21 +59,31 @@ export default async function handler(req, res) {
 
     console.log('📝 Processing file:', file.originalFilename)
 
-    // Read file and convert to base64
+    // Read file
     const fileBuffer = fs.readFileSync(file.filepath)
-    const base64Content = fileBuffer.toString('base64')
+    console.log('📖 File size:', fileBuffer.length)
 
-    console.log('📤 Uploading to Airtable using REST API...')
+    // According to Airtable docs, we need to upload the file first to get a URL
+    // Then reference that URL in the attachment field
 
-    // Use Airtable REST API directly with proper attachment format
+    // STEP 1: Create a temporary public URL for the file
+    // We'll use a data URL as this is supported by Airtable
+    const mimeType = 'image/png'
+    const base64 = fileBuffer.toString('base64')
+    const dataUrl = `data:${mimeType};base64,${base64}`
+
+    console.log('📤 Creating attachment with data URL...')
+
+    // STEP 2: Update the record with the attachment URL
     const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
 
+    // Use the correct Airtable attachment format with URL
     const attachmentData = {
       fields: {
         [fieldName]: [
           {
+            url: dataUrl,
             filename: file.originalFilename || 'odontogram.png',
-            contents: base64Content,
           },
         ],
       },
@@ -82,6 +92,7 @@ export default async function handler(req, res) {
     console.log('📋 Sending request to:', airtableUrl)
     console.log('📋 Field name:', fieldName)
     console.log('📋 Filename:', file.originalFilename)
+    console.log('📋 Using data URL attachment format')
 
     const response = await fetch(airtableUrl, {
       method: 'PATCH',
