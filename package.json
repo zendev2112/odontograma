@@ -2,6 +2,7 @@
   "dependencies": {
     "airtable": "^0.12.2",
     "formidable": "^3.5.4",
+    "googleapis": "^159.0.0",
     "node-fetch": "^3.3.2"
   }
 }
