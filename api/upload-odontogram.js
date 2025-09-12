@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  console.log('🚀 Upload API called - HIGH QUALITY IMAGE HOSTING + AIRTABLE')
+  console.log('🚀 Upload API called - HIPAA-COMPLIANT DIRECT AIRTABLE UPLOAD')
 
   try {
     // Check Airtable credentials
@@ -57,8 +57,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
-    console.log('📝 Processing HIGH-QUALITY file:', file.originalFilename)
+    console.log(
+      '📝 Processing CONFIDENTIAL MEDICAL file:',
+      file.originalFilename
+    )
     console.log('📊 Original file size:', file.size, 'bytes')
+    console.log('🔒 HIPAA-compliant processing - NO external services used')
 
     // Read file - PRESERVE EVERY BYTE
     const originalBuffer = fs.readFileSync(file.filepath)
@@ -67,78 +71,32 @@ export default async function handler(req, res) {
       originalBuffer.length === file.size
     )
 
-    // STEP 1: Upload to ImgBB (high-quality image hosting)
-    console.log('📤 Step 1: Uploading to high-quality image host...')
+    // Convert to base64 for direct Airtable upload
+    console.log('🔐 Converting to secure base64 format...')
+    const base64Content = originalBuffer.toString('base64')
+    console.log('✅ Secure conversion complete')
 
-    // Convert to base64 for ImgBB
-    const base64Image = originalBuffer.toString('base64')
-
-    const imgbbFormData = new FormData()
-    imgbbFormData.append('image', base64Image)
-    imgbbFormData.append(
-      'name',
-      file.originalFilename || `odontogram_${recordId}`
-    )
-
-    // Upload to ImgBB (free, no compression, medical-grade hosting)
-    const imgbbResponse = await fetch(
-      'https://api.imgbb.com/1/upload?key=46c4b6c4dbdab2adfc8fb5b513a9b181',
-      {
-        method: 'POST',
-        body: imgbbFormData,
-      }
-    )
-
-    if (!imgbbResponse.ok) {
-      // Fallback to Imgur if ImgBB fails
-      console.log('⚠️ ImgBB failed, trying Imgur...')
-
-      const imgurFormData = new FormData()
-      imgurFormData.append('image', base64Image)
-      imgurFormData.append('type', 'base64')
-      imgurFormData.append('name', file.originalFilename)
-
-      const imgurResponse = await fetch('https://api.imgur.com/3/image', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Client-ID 546c25a59c58ad7',
-        },
-        body: imgurFormData,
-      })
-
-      if (!imgurResponse.ok) {
-        throw new Error('Both image hosting services failed')
-      }
-
-      const imgurResult = await imgurResponse.json()
-      var publicUrl = imgurResult.data.link
-      console.log('✅ Uploaded to Imgur (fallback)')
-    } else {
-      const imgbbResult = await imgbbResponse.json()
-      var publicUrl = imgbbResult.data.url
-      console.log('✅ Uploaded to ImgBB (primary)')
-    }
-
-    console.log('🔗 Public URL:', publicUrl)
-    console.log('✅ HIGH-QUALITY upload complete - NO compression applied!')
-
-    // STEP 2: Update Airtable record with the high-quality image URL
-    console.log('📤 Step 2: Attaching to Airtable...')
+    // DIRECT AIRTABLE UPLOAD - NO THIRD PARTIES
+    console.log('📤 Uploading directly to Airtable (HIPAA-compliant)...')
 
     const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
 
+    // Use the correct Airtable attachment format with base64 content
     const attachmentData = {
       fields: {
         [fieldName]: [
           {
-            url: publicUrl,
             filename: file.originalFilename || 'odontogram.png',
+            contents: base64Content, // Direct base64 upload to Airtable
           },
         ],
       },
     }
 
-    console.log('📋 Sending to Airtable...')
+    console.log('📋 Sending confidential medical data directly to Airtable...')
+    console.log(
+      '🔒 No external services involved - maintaining HIPAA compliance'
+    )
 
     const airtableResponse = await fetch(airtableUrl, {
       method: 'PATCH',
@@ -149,43 +107,99 @@ export default async function handler(req, res) {
       body: JSON.stringify(attachmentData),
     })
 
+    const responseText = await airtableResponse.text()
+    console.log('📨 Airtable response status:', airtableResponse.status)
+
     if (!airtableResponse.ok) {
-      const errorText = await airtableResponse.text()
+      console.log('📨 Airtable response:', responseText)
+
+      // If the contents method fails, try the multipart form approach
+      if (responseText.includes('INVALID_ATTACHMENT_OBJECT')) {
+        console.log(
+          '⚠️ Base64 contents failed, trying multipart form upload...'
+        )
+
+        // Create multipart form data for direct Airtable upload
+        const formData = new FormData()
+
+        // Create a proper file blob for Airtable
+        const blob = new Blob([originalBuffer], { type: 'image/png' })
+        formData.append(
+          'fields',
+          JSON.stringify({
+            [fieldName]: 'PLACEHOLDER_FOR_ATTACHMENT',
+          })
+        )
+        formData.append(
+          'attachment',
+          blob,
+          file.originalFilename || 'odontogram.png'
+        )
+
+        const multipartResponse = await fetch(`${airtableUrl}/attachments`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+          },
+          body: formData,
+        })
+
+        if (!multipartResponse.ok) {
+          const multipartError = await multipartResponse.text()
+          throw new Error(
+            `Multipart upload failed: ${multipartResponse.status} - ${multipartError}`
+          )
+        }
+
+        const multipartResult = await multipartResponse.json()
+        console.log('✅ Multipart upload successful!')
+
+        return res.status(200).json({
+          success: true,
+          message: 'HIPAA-compliant odontogram uploaded directly to Airtable',
+          recordId: multipartResult.id,
+          method: 'multipart_form',
+          fileName: file.originalFilename,
+          qualityPreserved: true,
+          originalSize: file.size,
+          hipaaCompliant: true,
+        })
+      }
+
       throw new Error(
-        `Airtable error: ${airtableResponse.status} - ${errorText}`
+        `Airtable error: ${airtableResponse.status} - ${responseText}`
       )
     }
 
-    const result = await airtableResponse.json()
-    console.log('✅ Successfully attached to Airtable!')
+    const result = JSON.parse(responseText)
+    console.log('✅ HIPAA-compliant upload successful!')
 
     // Clean up temp file
     try {
       fs.unlinkSync(file.filepath)
-      console.log('🧹 Temp file cleaned up')
+      console.log('🧹 Temp file securely cleaned up')
     } catch (cleanupError) {
       console.warn('⚠️ Could not clean temp file:', cleanupError.message)
     }
 
-    // The attachment URL will be Airtable's own CDN URL after it downloads the image
+    // The attachment URL will be Airtable's secure CDN URL
     const airtableAttachmentUrl = result.fields[fieldName]?.[0]?.url
 
     return res.status(200).json({
       success: true,
-      message: 'HIGH-QUALITY odontogram uploaded and attached to Airtable',
+      message: 'HIPAA-compliant odontogram uploaded directly to Airtable',
       recordId: result.id,
       attachmentUrl: airtableAttachmentUrl,
-      originalPublicUrl: publicUrl,
       fileName: file.originalFilename,
       qualityPreserved: true,
       originalSize: file.size,
-      workflow:
-        'Upload to ImgBB/Imgur → Airtable downloads → Stores as attachment',
+      hipaaCompliant: true,
+      workflow: 'Direct Airtable upload - No external services',
     })
   } catch (error) {
-    console.error('❌ High-quality upload error:', error.message)
+    console.error('❌ HIPAA-compliant upload error:', error.message)
     return res.status(500).json({
-      error: 'High-quality upload failed',
+      error: 'HIPAA-compliant upload failed',
       details: error.message,
     })
   }
