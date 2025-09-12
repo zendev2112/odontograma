@@ -79,10 +79,19 @@ export default async function handler(req, res) {
       })
     }
 
-    // Read file
+    // Verify we're uploading to the correct field
+    if (fieldName !== 'odontograma-adjunto') {
+      console.warn('⚠️ Field name is not odontograma-adjunto:', fieldName)
+    }
+
+    // Read file and convert to base64
     console.log('📖 Reading file...')
     const fileBuffer = fs.readFileSync(file.filepath)
-    console.log('✅ File read, size:', fileBuffer.length)
+    console.log('✅ File read, buffer size:', fileBuffer.length)
+
+    // Convert to base64 - REQUIRED by Airtable API
+    const base64String = fileBuffer.toString('base64')
+    console.log('✅ Converted to base64, length:', base64String.length)
 
     // Configure Airtable
     console.log('🔧 Configuring Airtable...')
@@ -90,23 +99,34 @@ export default async function handler(req, res) {
       apiKey: process.env.AIRTABLE_API_KEY,
     }).base(process.env.AIRTABLE_BASE_ID)
 
-    // Create attachment
-    const attachment = {
+    // Create attachment object in correct Airtable format
+    const attachmentObject = {
       filename: file.originalFilename || 'odontogram.png',
-      contents: fileBuffer,
+      content: base64String, // Note: 'content' not 'contents'
     }
 
     console.log('📤 Uploading to Airtable...')
-    console.log('- Record:', recordId)
-    console.log('- Field:', fieldName)
-    console.log('- Filename:', attachment.filename)
+    console.log('- Record ID:', recordId)
+    console.log('- Field name:', fieldName)
+    console.log('- Filename:', attachmentObject.filename)
+    console.log('- Content type: base64 string')
+    console.log('- Content length:', base64String.length)
+
+    // Update the 'odontograma-adjunto' field with the attachment
+    const updateData = {
+      [fieldName]: [attachmentObject],
+    }
+
+    console.log(
+      '📋 Update data structure:',
+      JSON.stringify(updateData, null, 2)
+    )
 
     // Update Airtable record
-    const updatedRecord = await base('Pacientes').update(recordId, {
-      [fieldName]: [attachment],
-    })
+    const updatedRecord = await base('Pacientes').update(recordId, updateData)
 
-    console.log('✅ Upload successful!')
+    console.log('✅ Upload successful to odontograma-adjunto field!')
+    console.log('✅ Updated record ID:', updatedRecord.id)
 
     // Clean up temp file
     try {
@@ -116,15 +136,20 @@ export default async function handler(req, res) {
       console.warn('⚠️ Could not clean up temp file:', cleanupError.message)
     }
 
-    // Return success
+    // Return success with attachment URL
+    const attachmentUrl = updatedRecord.fields[fieldName]?.[0]?.url
+
     return res.status(200).json({
       success: true,
-      message: 'Odontogram uploaded successfully',
+      message: 'Odontogram uploaded successfully to odontograma-adjunto field',
       recordId: updatedRecord.id,
-      attachmentUrl: updatedRecord.fields[fieldName]?.[0]?.url,
+      fieldName: fieldName,
+      attachmentUrl: attachmentUrl,
+      filename: attachmentObject.filename,
     })
   } catch (error) {
     console.error('❌ API Error:', error.message)
+    console.error('❌ Error details:', error)
     console.error('❌ Stack:', error.stack)
 
     return res.status(500).json({
