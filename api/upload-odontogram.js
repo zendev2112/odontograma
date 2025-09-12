@@ -84,14 +84,10 @@ export default async function handler(req, res) {
       console.warn('⚠️ Field name is not odontograma-adjunto:', fieldName)
     }
 
-    // Read file and convert to base64
+    // Read file
     console.log('📖 Reading file...')
     const fileBuffer = fs.readFileSync(file.filepath)
     console.log('✅ File read, buffer size:', fileBuffer.length)
-
-    // Convert to base64 - REQUIRED by Airtable API
-    const base64String = fileBuffer.toString('base64')
-    console.log('✅ Converted to base64, length:', base64String.length)
 
     // Configure Airtable
     console.log('🔧 Configuring Airtable...')
@@ -99,28 +95,26 @@ export default async function handler(req, res) {
       apiKey: process.env.AIRTABLE_API_KEY,
     }).base(process.env.AIRTABLE_BASE_ID)
 
-    // Create attachment object in correct Airtable format
+    // Create attachment object using the CORRECT Airtable format
+    // Airtable expects: { filename: string, contents: Buffer }
     const attachmentObject = {
       filename: file.originalFilename || 'odontogram.png',
-      content: base64String, // Note: 'content' not 'contents'
+      contents: fileBuffer, // Use Buffer directly, not base64 string
     }
 
     console.log('📤 Uploading to Airtable...')
     console.log('- Record ID:', recordId)
     console.log('- Field name:', fieldName)
     console.log('- Filename:', attachmentObject.filename)
-    console.log('- Content type: base64 string')
-    console.log('- Content length:', base64String.length)
+    console.log('- Content type: Buffer')
+    console.log('- Buffer size:', fileBuffer.length)
 
     // Update the 'odontograma-adjunto' field with the attachment
     const updateData = {
       [fieldName]: [attachmentObject],
     }
 
-    console.log(
-      '📋 Update data structure:',
-      JSON.stringify(updateData, null, 2)
-    )
+    console.log('📋 Attempting to update record with attachment...')
 
     // Update Airtable record
     const updatedRecord = await base('Pacientes').update(recordId, updateData)
