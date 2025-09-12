@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "airtable": "^0.12.2",
-    "formidable": "^3.5.4"
+    "formidable": "^3.5.4",
+    "node-fetch": "^3.3.2"
   }
 }
