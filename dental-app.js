@@ -1027,12 +1027,14 @@ function setupEventHandlers() {
  */
 async function generateProfessionalPNG() {
   try {
-    console.log('🖼️ Generating professional clinical document for Airtable upload...')
+    console.log(
+      '🖼️ Generating professional clinical document for Airtable upload...'
+    )
 
     // Get current patient record ID and name
     const urlParams = new URLSearchParams(window.location.search)
     const recordId = urlParams.get('recordId') || urlParams.get('id')
-    
+
     if (!recordId) {
       console.error('❌ No record ID found in URL - cannot upload to Airtable')
       alert('Error: No se pudo identificar el paciente para subir el archivo')
@@ -1040,14 +1042,18 @@ async function generateProfessionalPNG() {
     }
 
     // Get patient name from existing functions
-    const patientName = getCurrentPatientName() || getPatientNameFromDOM() || 'PACIENTE SIN NOMBRE'
+    const patientName =
+      getCurrentPatientName() ||
+      getPatientNameFromDOM() ||
+      'PACIENTE SIN NOMBRE'
     console.log('📝 Patient name for document:', patientName)
     console.log('📝 Record ID:', recordId)
 
     // Show loading state
     const downloadBtn = document.getElementById('download')
     const originalText = downloadBtn.innerHTML
-    downloadBtn.innerHTML = '<span class="icon">⏳</span><span class="name">Subiendo...</span>'
+    downloadBtn.innerHTML =
+      '<span class="icon">⏳</span><span class="name">Subiendo...</span>'
     downloadBtn.disabled = true
 
     // Create A4-sized vertical canvas (professional medical standard)
@@ -1075,26 +1081,29 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#34495e'
     ctx.font = '20px Arial'
     ctx.textAlign = 'left'
-    
+
     // Patient name box with actual name from Airtable
     ctx.strokeStyle = '#bdc3c7'
     ctx.lineWidth = 2
     ctx.strokeRect(60, currentY, canvas.width - 120, 40)
-    
+
     // Format patient name to fit in the box
     const maxNameWidth = canvas.width - 200
     ctx.font = '20px Arial'
     let displayName = patientName.toUpperCase()
-    
+
     // Truncate if too long to fit
     const metrics = ctx.measureText(displayName)
     if (metrics.width > maxNameWidth) {
-      while (ctx.measureText(displayName + '...').width > maxNameWidth && displayName.length > 0) {
+      while (
+        ctx.measureText(displayName + '...').width > maxNameWidth &&
+        displayName.length > 0
+      ) {
         displayName = displayName.slice(0, -1)
       }
       displayName += '...'
     }
-    
+
     // Display actual patient name
     ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 28)
     currentY += 60
@@ -1133,17 +1142,23 @@ async function generateProfessionalPNG() {
     // INCREASED CONTAINER SIZE FOR BETTER READABILITY
     const maxOdontogramWidth = canvas.width - 120
     const maxOdontogramHeight = 350
-    
+
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
     const scale = Math.min(scaleX, scaleY)
-    
+
     const scaledWidth = odontogramImg.naturalWidth * scale
     const scaledHeight = odontogramImg.naturalHeight * scale
     const odontogramX = (canvas.width - scaledWidth) / 2
 
     // Draw the bigger odontogram
-    ctx.drawImage(odontogramImg, odontogramX, currentY, scaledWidth, scaledHeight)
+    ctx.drawImage(
+      odontogramImg,
+      odontogramX,
+      currentY,
+      scaledWidth,
+      scaledHeight
+    )
     currentY += scaledHeight + 40
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
@@ -1151,7 +1166,7 @@ async function generateProfessionalPNG() {
     ctx.font = 'bold 22px Arial'
     ctx.textAlign = 'left'
     ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
-    
+
     // Underline for section
     ctx.strokeStyle = '#3498db'
     ctx.lineWidth = 2
@@ -1281,7 +1296,8 @@ async function generateProfessionalPNG() {
             ctx.fillText('Condiciones:', 120, currentY)
             currentY += 25
 
-            const groupedConditions = groupTreatmentsBySurface(conditionTreatments)
+            const groupedConditions =
+              groupTreatmentsBySurface(conditionTreatments)
 
             Object.values(groupedConditions).forEach((condition) => {
               let surfaceDisplay = ''
@@ -1291,7 +1307,11 @@ async function generateProfessionalPNG() {
 
               ctx.fillStyle = '#34495e'
               ctx.font = '14px Arial'
-              ctx.fillText(`• ${condition.name}${surfaceDisplay}`, 140, currentY)
+              ctx.fillText(
+                `• ${condition.name}${surfaceDisplay}`,
+                140,
+                currentY
+              )
               currentY += 20
             })
             currentY += 10
@@ -1345,17 +1365,24 @@ async function generateProfessionalPNG() {
               ctx.fillText('Prestaciones Preexistentes:', 120, currentY)
               currentY += 25
 
-              const groupedPreExistentes = groupTreatmentsBySurface(preExistentes)
+              const groupedPreExistentes =
+                groupTreatmentsBySurface(preExistentes)
 
               Object.values(groupedPreExistentes).forEach((prestacion) => {
                 let surfaceDisplay = ''
                 if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(
+                    ', '
+                  )}`
                 }
 
                 ctx.fillStyle = '#FF0000'
                 ctx.font = '14px Arial'
-                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
+                ctx.fillText(
+                  `• ${prestacion.name}${surfaceDisplay}`,
+                  140,
+                  currentY
+                )
                 currentY += 20
               })
               currentY += 10
@@ -1373,12 +1400,18 @@ async function generateProfessionalPNG() {
               Object.values(groupedRequeridas).forEach((prestacion) => {
                 let surfaceDisplay = ''
                 if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+                  surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(
+                    ', '
+                  )}`
                 }
 
                 ctx.fillStyle = '#0066FF'
                 ctx.font = '14px Arial'
-                ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, 140, currentY)
+                ctx.fillText(
+                  `• ${prestacion.name}${surfaceDisplay}`,
+                  140,
+                  currentY
+                )
                 currentY += 20
               })
               currentY += 10
@@ -1414,7 +1447,7 @@ async function generateProfessionalPNG() {
                 line = testLine
               }
             }
-            
+
             if (line.trim() && currentY <= 1500) {
               ctx.fillText(line.trim(), 140, currentY)
               currentY += lineHeight + 10
@@ -1422,7 +1455,7 @@ async function generateProfessionalPNG() {
           }
 
           currentY += 20 // Space between teeth
-          
+
           if (currentY > 1400) break // Stop if running out of space
         }
       }
@@ -1433,74 +1466,150 @@ async function generateProfessionalPNG() {
     ctx.fillStyle = '#7f8c8d'
     ctx.font = '14px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText('Documento generado por Sistema de Odontograma Digital', canvas.width / 2, currentY)
-    
+    ctx.fillText(
+      'Documento generado por Sistema de Odontograma Digital',
+      canvas.width / 2,
+      currentY
+    )
+
     ctx.fillStyle = '#bdc3c7'
     ctx.font = '12px Arial'
-    ctx.fillText(`Generado el ${new Date().toLocaleString('es-ES')}`, canvas.width / 2, currentY + 20)
+    ctx.fillText(
+      `Generado el ${new Date().toLocaleString('es-ES')}`,
+      canvas.width / 2,
+      currentY + 20
+    )
 
-// Convert canvas to blob and upload to Airtable
-canvas.toBlob(async (blob) => {
-  try {
-    console.log('📤 Uploading PNG to Airtable...')
-    
-    // Create filename with patient name and timestamp
-    const now = new Date()
-    const timestamp = now.toISOString().slice(0, 10)
-    const sanitizedName = patientName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_')
-    const filename = `Odontograma_${sanitizedName}_${timestamp}.png`
-    
-    // Create FormData for upload
-    const formData = new FormData()
-    formData.append('file', blob, filename)
-    formData.append('recordId', recordId)
-    formData.append('fieldName', 'odontograma-adjunto')
-    
-    console.log('Uploading with data:')
-    console.log('- Record ID:', recordId)
-    console.log('- Filename:', filename)
-    console.log('- Blob size:', blob.size)
-    
-    // Upload to our Vercel API endpoint
-    const uploadResponse = await fetch('/api/upload-odontogram', {
-      method: 'POST',
-      body: formData
-    })
-    
-    console.log('Upload response status:', uploadResponse.status)
-    console.log('Upload response headers:', Object.fromEntries(uploadResponse.headers.entries()))
-    
-    // Try to get response text first to see what we're getting
-    const responseText = await uploadResponse.text()
-    console.log('Raw response:', responseText)
-    
-    let uploadResult
-    try {
-      uploadResult = JSON.parse(responseText)
-    } catch (jsonError) {
-      console.error('❌ Response is not valid JSON:', responseText)
-      throw new Error(`Server returned invalid JSON: ${responseText.substring(0, 100)}...`)
-    }
-    
-    if (uploadResponse.ok && uploadResult.success) {
-      console.log('✅ PNG uploaded successfully to Airtable!')
-      console.log('✅ Attachment URL:', uploadResult.attachmentUrl)
-      alert('✅ Odontograma subido exitosamente a Airtable')
-    } else {
-      console.error('❌ Upload failed:', uploadResult)
-      alert(`❌ Error al subir: ${uploadResult.error || 'Unknown error'}`)
-    }
-    
-  } catch (uploadError) {
-    console.error('❌ Upload error:', uploadError)
-    alert(`❌ Error al subir el archivo: ${uploadError.message}`)
-  } finally {
-    // Restore button state
-    downloadBtn.innerHTML = originalText
-    downloadBtn.disabled = false
-  }
-}, 'image/png', 1.0)
+    // Convert canvas to blob and upload to Airtable
+    canvas.toBlob(
+      async (blob) => {
+        try {
+          console.log('📤 Uploading PNG to Airtable...')
 
+          // Create filename with patient name and timestamp
+          const now = new Date()
+          const timestamp =
+            now.toLocaleDateString('es-ES').replace(/\//g, '-') +
+            '_' +
+            now
+              .toLocaleTimeString('es-ES', { hour12: false })
+              .replace(/:/g, '-')
+          const sanitizedName = patientName
+            .replace(/[^a-zA-Z0-9\s]/g, '')
+            .replace(/\s+/g, '_')
+          const filename = `Odontograma_${sanitizedName}_${timestamp}.png`
+
+          // Create FormData for upload
+          const formData = new FormData()
+          formData.append('file', blob, filename)
+          formData.append('recordId', recordId)
+          formData.append('fieldName', 'odontograma-adjunto')
+
+          console.log('Uploading with data:')
+          console.log('- Record ID:', recordId)
+          console.log('- Filename:', filename)
+          console.log('- Blob size:', blob.size)
+
+          // Upload to our Vercel API endpoint
+          const uploadResponse = await fetch('/api/upload-odontogram', {
+            method: 'POST',
+            body: formData,
+          })
+
+          const responseText = await uploadResponse.text()
+          console.log('Raw response:', responseText)
+
+          let uploadResult
+          try {
+            uploadResult = JSON.parse(responseText)
+          } catch (jsonError) {
+            console.error('❌ Response is not valid JSON:', responseText)
+            throw new Error(
+              `Server returned invalid JSON: ${responseText.substring(
+                0,
+                100
+              )}...`
+            )
+          }
+
+          if (uploadResponse.ok && uploadResult.success) {
+            console.log('✅ PNG uploaded successfully to Cloudinary!')
+
+            // NEW: Get existing attachments from Airtable
+            console.log('📋 Getting existing attachments from Airtable...')
+            const getRecordUrl = `https://api.airtable.com/v0/appRhgMlVacDPwA4u/Pacientes/${recordId}`
+
+            const getResponse = await fetch(getRecordUrl, {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer pat7tmduyaTtc3d7E`,
+              },
+            })
+
+            let existingAttachments = []
+            if (getResponse.ok) {
+              const currentRecord = await getResponse.json()
+              existingAttachments =
+                currentRecord.fields['odontograma-adjunto'] || []
+              console.log(
+                '📋 Found existing attachments:',
+                existingAttachments.length
+              )
+            }
+
+            // NEW: Append new attachment to existing ones
+            const newAttachment = {
+              url: uploadResult.cloudinaryUrl,
+              filename: filename,
+            }
+
+            const allAttachments = [...existingAttachments, newAttachment]
+            console.log(
+              '📋 Total attachments after upload:',
+              allAttachments.length
+            )
+
+            // Update Airtable with ALL attachments (existing + new)
+            const updateUrl = `https://api.airtable.com/v0/appRhgMlVacDPwA4u/Pacientes/${recordId}`
+            const updateResponse = await fetch(updateUrl, {
+              method: 'PATCH',
+              headers: {
+                Authorization: `Bearer pat7tmduyaTtc3d7E`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                fields: {
+                  'odontograma-adjunto': allAttachments,
+                },
+              }),
+            })
+
+            if (updateResponse.ok) {
+              console.log('✅ Odontogram appended to existing attachments!')
+              alert(
+                `✅ Odontograma subido exitosamente!\n\nTotal de odontogramas: ${allAttachments.length}`
+              )
+            } else {
+              const errorText = await updateResponse.text()
+              console.error('❌ Airtable update failed:', errorText)
+              alert('❌ Error al actualizar Airtable')
+            }
+          } else {
+            console.error('❌ Upload failed:', uploadResult)
+            alert(`❌ Error al subir: ${uploadResult.error || 'Unknown error'}`)
+          }
+        } catch (uploadError) {
+          console.error('❌ Upload error:', uploadError)
+          alert(`❌ Error al subir el archivo: ${uploadError.message}`)
+        } finally {
+          // Restore button state
+          downloadBtn.innerHTML = originalText
+          downloadBtn.disabled = false
+        }
+      },
+      'image/png',
+      1.0
+    )
   } catch (error) {
     console.error('❌ Error generating document:', error)
     alert('❌ Error al generar el documento')
