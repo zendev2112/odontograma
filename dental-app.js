@@ -1482,11 +1482,13 @@ async function generateProfessionalPNG() {
 
     // Replace the upload section (around line 1530-1590) with this simplified version:
 
+    // Replace the upload section in generateProfessionalPNG function with this:
+
     // Convert canvas to blob and upload to Airtable
     canvas.toBlob(
       async (blob) => {
         try {
-          console.log('📤 Uploading PNG to backend...')
+          console.log('📤 Uploading PNG and JSON data to backend...')
 
           // Create filename with patient name and timestamp
           const now = new Date()
@@ -1501,18 +1503,271 @@ async function generateProfessionalPNG() {
             .replace(/\s+/g, '_')
           const filename = `Odontograma_${sanitizedName}_${timestamp}.png`
 
-          // Create FormData for upload
+          // GENERATE JSON DATA (same as export function)
+          console.log('📋 Generating JSON data...')
+          const instance = $('#odontogram').data('odontogram')
+
+          const jsonData = {
+            fecha: now.toISOString().split('T')[0],
+            nombre: patientName,
+            piezas: [],
+          }
+
+          // Process each tooth with treatments - SAME LOGIC AS EXPORT
+          for (const [key, treatments] of Object.entries(currentGeometry)) {
+            if (treatments && treatments.length > 0) {
+              // Get tooth number for FDI identification
+              let toothNum = null
+              if (instance && instance.teeth) {
+                for (const [teethKey, teethData] of Object.entries(
+                  instance.teeth
+                )) {
+                  if (teethKey === key) {
+                    toothNum = teethData.num
+                    break
+                  }
+                }
+              }
+
+              if (toothNum) {
+                // Get tooth information from JSON data
+                const toothInfo = getToothInfo(toothNum)
+
+                // Initialize tooth data structure
+                const toothData = {
+                  pieza: toothNum,
+                  condiciones: [],
+                  prestacion_requerida: [],
+                  prestacion_preexistente: [],
+                  notas: toothNotes[toothNum] || '',
+                }
+
+                // Group treatments by surface for proper display
+                function groupTreatmentsBySurface(treatmentList) {
+                  const grouped = {}
+
+                  treatmentList.forEach((treatment) => {
+                    const treatmentName = getTreatmentName(treatment.name)
+                    const withSides = [
+                      'CARIES',
+                      'CARIES_UNTREATABLE',
+                      'REF',
+                      'NVT',
+                      'SIL',
+                      'RES',
+                      'AMF',
+                      'COF',
+                      'INC',
+                    ]
+
+                    if (!grouped[treatment.name]) {
+                      grouped[treatment.name] = {
+                        nombre: treatmentName,
+                        superficies: [],
+                        usa_superficies: withSides.includes(treatment.name),
+                      }
+                    }
+
+                    // Collect surface information for treatments that use surfaces
+                    if (
+                      withSides.includes(treatment.name) &&
+                      treatment.pos &&
+                      toothInfo
+                    ) {
+                      let surfaceCode = null
+
+                      if (treatment.pos.includes('-')) {
+                        const parts = treatment.pos.split('-')
+                        surfaceCode = parts[1]
+                      } else if (
+                        typeof treatment.pos === 'string' &&
+                        treatment.pos.length <= 2
+                      ) {
+                        surfaceCode = treatment.pos
+                      }
+
+                      const canvasPositionMap = {
+                        T: 'top',
+                        B: 'bottom',
+                        L: 'left',
+                        R: 'right',
+                        M: 'middle',
+                        top: 'top',
+                        bottom: 'bottom',
+                        left: 'left',
+                        right: 'right',
+                        middle: 'middle',
+                      }
+
+                      const fullCanvasPosition = canvasPositionMap[surfaceCode]
+
+                      if (fullCanvasPosition) {
+                        const correctMapping =
+                          getCorrectSurfaceMapping(toothNum)
+                        const anatomical = correctMapping[fullCanvasPosition]
+
+                        if (
+                          anatomical &&
+                          !grouped[treatment.name].superficies.includes(
+                            anatomical
+                          )
+                        ) {
+                          grouped[treatment.name].superficies.push(anatomical)
+                        }
+                      }
+                    }
+                  })
+
+                  return grouped
+                }
+
+                // Categorize treatments
+                const condicionTreatments = treatments.filter((treatment) => {
+                  const treatmentCode = treatment.name
+                  const wholeTooth = ['PRE']
+                  const withSides = ['CARIES_UNTREATABLE']
+                  return (
+                    wholeTooth.includes(treatmentCode) ||
+                    withSides.includes(treatmentCode)
+                  )
+                })
+
+                const prestacionTreatments = treatments.filter((treatment) => {
+                  const treatmentCode = treatment.name
+                  const wholeTooth = [
+                    'CFR',
+                    'FRM_ACR',
+                    'BRIDGE',
+                    'ORT',
+                    'POC',
+                    'FMC',
+                    'IPX',
+                    'RCT',
+                    'MIS',
+                    'UNE',
+                    'PRE',
+                  ]
+                  const withSides = [
+                    'CARIES',
+                    'REF',
+                    'NVT',
+                    'SIL',
+                    'RES',
+                    'AMF',
+                    'COF',
+                    'INC',
+                  ]
+                  return (
+                    wholeTooth.includes(treatmentCode) ||
+                    withSides.includes(treatmentCode)
+                  )
+                })
+
+                // Process Condiciones
+                if (condicionTreatments.length > 0) {
+                  const groupedConditions =
+                    groupTreatmentsBySurface(condicionTreatments)
+
+                  Object.values(groupedConditions).forEach((condition) => {
+                    let conditionText = condition.nombre
+                    if (
+                      condition.usa_superficies &&
+                      condition.superficies.length > 0
+                    ) {
+                      conditionText += ` - Cara/s: ${condition.superficies.join(
+                        ', '
+                      )}`
+                    }
+                    toothData.condiciones.push(conditionText)
+                  })
+                }
+
+                // Process Prestaciones by layer
+                if (prestacionTreatments.length > 0) {
+                  const preExistentes = prestacionTreatments.filter(
+                    (t) => t.layer === 'pre'
+                  )
+                  const requeridas = prestacionTreatments.filter(
+                    (t) => t.layer === 'req' || !t.layer
+                  )
+
+                  // Prestaciones Preexistentes
+                  if (preExistentes.length > 0) {
+                    const groupedPreExistentes =
+                      groupTreatmentsBySurface(preExistentes)
+
+                    Object.values(groupedPreExistentes).forEach(
+                      (prestacion) => {
+                        let prestacionText = prestacion.nombre
+                        if (
+                          prestacion.usa_superficies &&
+                          prestacion.superficies.length > 0
+                        ) {
+                          prestacionText += ` - Cara/s: ${prestacion.superficies.join(
+                            ', '
+                          )}`
+                        }
+                        toothData.prestacion_preexistente.push(prestacionText)
+                      }
+                    )
+                  }
+
+                  // Prestaciones Requeridas
+                  if (requeridas.length > 0) {
+                    const groupedRequeridas =
+                      groupTreatmentsBySurface(requeridas)
+
+                    Object.values(groupedRequeridas).forEach((prestacion) => {
+                      let prestacionText = prestacion.nombre
+                      if (
+                        prestacion.usa_superficies &&
+                        prestacion.superficies.length > 0
+                      ) {
+                        prestacionText += ` - Cara/s: ${prestacion.superficies.join(
+                          ', '
+                        )}`
+                      }
+                      toothData.prestacion_requerida.push(prestacionText)
+                    })
+                  }
+                }
+
+                // Only add tooth data if there are treatments or notes
+                if (
+                  toothData.condiciones.length > 0 ||
+                  toothData.prestacion_requerida.length > 0 ||
+                  toothData.prestacion_preexistente.length > 0 ||
+                  toothData.notas.trim() !== ''
+                ) {
+                  jsonData.piezas.push(toothData)
+                }
+              }
+            }
+          }
+
+          // Sort teeth by FDI number
+          jsonData.piezas.sort((a, b) => parseInt(a.pieza) - parseInt(b.pieza))
+
+          console.log('📋 JSON data generated:', jsonData)
+
+          // Create FormData for upload (PNG + JSON)
           const formData = new FormData()
           formData.append('file', blob, filename)
           formData.append('recordId', recordId)
           formData.append('fieldName', 'odontograma-adjunto')
 
+          // ADD JSON DATA TO FORM - UPDATE FIELD NAME
+          formData.append('jsonData', JSON.stringify(jsonData, null, 2))
+          formData.append('jsonFieldName', 'notas-odontograma-paciente') // CORRECT FIELD NAME
+
           console.log('Uploading with data:')
           console.log('- Record ID:', recordId)
           console.log('- Filename:', filename)
           console.log('- Blob size:', blob.size)
+          console.log('- JSON data included: YES')
+          console.log('- JSON field name:', 'notas-odontograma-paciente')
 
-          // Upload to our backend API (handles Cloudinary + Airtable)
+          // Upload to our backend API (handles Cloudinary + Airtable + JSON with append)
           const uploadResponse = await fetch('/api/upload-odontogram', {
             method: 'POST',
             body: formData,
@@ -1537,9 +1792,15 @@ async function generateProfessionalPNG() {
           if (uploadResponse.ok && uploadResult.success) {
             console.log('✅ Complete upload workflow successful!')
             console.log('📋 Total attachments:', uploadResult.totalAttachments)
+            console.log('📋 JSON data appended:', uploadResult.jsonAppended)
 
             alert(
-              `✅ Odontograma subido exitosamente!\n\nTotal de odontogramas: ${uploadResult.totalAttachments}\n\nArchivo: ${uploadResult.fileName}`
+              `✅ Odontograma subido exitosamente!\n\n` +
+                `📷 Imagen: Total de odontogramas: ${uploadResult.totalAttachments}\n` +
+                `📋 Datos JSON: ${
+                  uploadResult.jsonAppended ? 'Añadidos a notas' : 'Error'
+                }\n\n` +
+                `Archivo: ${uploadResult.fileName}`
             )
           } else {
             console.error('❌ Upload failed:', uploadResult)

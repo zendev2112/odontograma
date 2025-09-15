@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  console.log('🚀 Upload API called - CLOUDINARY FREE + AIRTABLE WITH APPEND')
+  console.log('🚀 Upload API called - CLOUDINARY + AIRTABLE + APPEND JSON')
 
   try {
     // Check credentials
@@ -72,12 +72,21 @@ export default async function handler(req, res) {
     const fieldName = fields.fieldName?.[0] || fields.fieldName
     const file = files.file?.[0] || files.file
 
+    // NEW: Get JSON data and field name
+    const jsonData = fields.jsonData?.[0] || fields.jsonData
+    const jsonFieldName =
+      fields.jsonFieldName?.[0] ||
+      fields.jsonFieldName ||
+      'notas-odontograma-paciente'
+
     if (!recordId || !fieldName || !file) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
     console.log('📝 Processing file:', file.originalFilename)
     console.log('📊 Original file size:', file.size, 'bytes')
+    console.log('📋 JSON data included:', jsonData ? 'YES' : 'NO')
+    console.log('📋 JSON field name:', jsonFieldName)
 
     // Read file
     const originalBuffer = fs.readFileSync(file.filepath)
@@ -118,8 +127,8 @@ export default async function handler(req, res) {
     console.log('📁 Public ID:', uploadResult.public_id)
     console.log('🔗 Secure URL:', uploadResult.secure_url)
 
-    // STEP 2: Get existing attachments from Airtable
-    console.log('📋 Getting existing attachments from Airtable...')
+    // STEP 2: Get existing record data from Airtable (for both attachments and notes)
+    console.log('📋 Getting existing data from Airtable...')
 
     const getRecordUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
 
@@ -131,13 +140,17 @@ export default async function handler(req, res) {
     })
 
     let existingAttachments = []
+    let existingNotes = ''
+
     if (getResponse.ok) {
       const currentRecord = await getResponse.json()
       existingAttachments = currentRecord.fields[fieldName] || []
+      existingNotes = currentRecord.fields[jsonFieldName] || ''
       console.log('📋 Found existing attachments:', existingAttachments.length)
+      console.log('📋 Found existing notes length:', existingNotes.length)
     } else {
       console.warn(
-        '⚠️ Could not fetch existing attachments, proceeding with new upload only'
+        '⚠️ Could not fetch existing data, proceeding with new data only'
       )
     }
 
@@ -150,15 +163,43 @@ export default async function handler(req, res) {
     const allAttachments = [...existingAttachments, newAttachment]
     console.log('📋 Total attachments after upload:', allAttachments.length)
 
-    // STEP 4: Update Airtable with ALL attachments (existing + new)
-    console.log('📤 Updating Airtable with all attachments...')
+    // STEP 4: Prepare JSON text for appending with separator
+    let finalNotesText = existingNotes
+
+    if (jsonData && jsonFieldName) {
+      console.log('📋 Preparing to append JSON data...')
+
+      // Create a timestamp header for the new entry
+      const now = new Date()
+      const timestamp = now.toLocaleString('es-ES')
+
+      // Format the new JSON entry
+      const newEntry = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n=============================\n\n${jsonData}`
+
+      // Append to existing notes
+      finalNotesText = finalNotesText + newEntry
+
+      console.log('📋 JSON data formatted for appending')
+    }
+
+    // STEP 5: Update Airtable with all data (IMAGE + APPENDED JSON)
+    console.log('📤 Updating Airtable with all data...')
 
     const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
 
+    // Build fields object
+    const updateFields = {
+      [fieldName]: allAttachments, // Image attachments
+    }
+
+    // ADD APPENDED JSON DATA TO TEXT FIELD
+    if (jsonData && jsonFieldName) {
+      updateFields[jsonFieldName] = finalNotesText
+      console.log('📋 Adding appended JSON data to field:', jsonFieldName)
+    }
+
     const attachmentData = {
-      fields: {
-        [fieldName]: allAttachments,
-      },
+      fields: updateFields,
     }
 
     const airtableResponse = await fetch(airtableUrl, {
@@ -178,7 +219,9 @@ export default async function handler(req, res) {
     }
 
     const result = await airtableResponse.json()
-    console.log('✅ Success! All attachments updated in Airtable')
+    console.log('✅ Success! All data updated in Airtable')
+    console.log('📷 Image uploaded and appended')
+    console.log('📋 JSON data appended to existing notes')
 
     // Clean up
     try {
@@ -190,13 +233,15 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Odontogram uploaded successfully! Total: ${allAttachments.length}`,
+      message: `Complete odontogram data uploaded! Image + JSON data appended.`,
       recordId: result.id,
       attachmentUrl: result.fields[fieldName]?.[0]?.url,
       cloudinaryUrl: uploadResult.secure_url,
       fileName: file.originalFilename,
       service: 'Cloudinary FREE',
       totalAttachments: allAttachments.length,
+      jsonAppended: jsonData ? true : false,
+      jsonFieldName: jsonFieldName,
     })
   } catch (error) {
     console.error('❌ Upload error:', error.message)
