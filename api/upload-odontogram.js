@@ -1,5 +1,14 @@
 import { IncomingForm } from 'formidable'
 import fs from 'fs'
+import { v2 as cloudinary } from 'cloudinary'
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+})
 
 // Disable default body parsing
 export const config = {
@@ -21,14 +30,24 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  console.log('🚀 Upload API called - CORRECT AIRTABLE FORMDATA METHOD')
+  console.log('🚀 Upload API called - CLOUDINARY FREE + AIRTABLE')
 
   try {
-    // Check Airtable credentials
+    // Check credentials
     if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
       return res
         .status(500)
         .json({ error: 'Airtable credentials not configured' })
+    }
+
+    if (
+      !process.env.CLOUDINARY_CLOUD_NAME ||
+      !process.env.CLOUDINARY_API_KEY ||
+      !process.env.CLOUDINARY_API_SECRET
+    ) {
+      return res
+        .status(500)
+        .json({ error: 'Cloudinary credentials not configured' })
     }
 
     // Parse form data
@@ -57,111 +76,84 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' })
     }
 
-    console.log('📝 Processing medical file:', file.originalFilename)
+    console.log('📝 Processing file:', file.originalFilename)
     console.log('📊 Original file size:', file.size, 'bytes')
 
     // Read file
     const originalBuffer = fs.readFileSync(file.filepath)
     console.log('📖 File read successfully')
 
-    // CORRECT METHOD: Use FormData to upload file to Airtable
-    console.log('📤 Creating FormData for Airtable upload...')
+    // STEP 1: Upload to Cloudinary
+    console.log('📤 Uploading to Cloudinary FREE...')
 
-    const formData = new FormData()
-
-    // Create a proper Blob from the buffer
-    const blob = new Blob([originalBuffer], { type: 'image/png' })
-
-    // Append the file with the correct field name
-    formData.append('files', blob, file.originalFilename || 'odontogram.png')
-
-    // Add other fields if needed
-    formData.append(
-      'fields',
-      JSON.stringify({
-        // Add any other fields you want to update
-      })
-    )
-
-    console.log('✅ FormData created successfully')
-
-    // STEP 1: Upload file using FormData (the CORRECT way)
-    console.log('📤 Uploading to Airtable using FormData...')
-
-    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes`
-
-    const airtableResponse = await fetch(airtableUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        // Do NOT set Content-Type header - let FormData set it automatically
+    const uploadOptions = {
+      resource_type: 'image',
+      format: 'png',
+      quality: 'auto:best',
+      public_id: `odontograms/${recordId}_${Date.now()}`,
+      folder: 'odontograms',
+      context: {
+        patient_record: recordId,
+        upload_date: new Date().toISOString(),
+        original_name: file.originalFilename,
       },
-      body: formData,
-    })
-
-    const responseText = await airtableResponse.text()
-    console.log('📨 Airtable response status:', airtableResponse.status)
-
-    if (!airtableResponse.ok) {
-      console.log('📨 Airtable error response:', responseText)
-
-      // If direct FormData upload fails, try the alternative method
-      console.log('⚠️ FormData upload failed, trying record update method...')
-
-      // STEP 2: Alternative - Update existing record with attachment
-      const updateUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
-
-      // Create FormData for updating existing record
-      const updateFormData = new FormData()
-      updateFormData.append(
-        fieldName,
-        blob,
-        file.originalFilename || 'odontogram.png'
-      )
-
-      const updateResponse = await fetch(updateUrl, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
-        },
-        body: updateFormData,
-      })
-
-      const updateResponseText = await updateResponse.text()
-
-      if (!updateResponse.ok) {
-        console.log('📨 Update response error:', updateResponseText)
-        throw new Error(
-          `Airtable update error: ${updateResponse.status} - ${updateResponseText}`
-        )
-      }
-
-      const updateResult = JSON.parse(updateResponseText)
-      console.log('✅ Record update successful!')
-
-      // Clean up temp file
-      try {
-        fs.unlinkSync(file.filepath)
-        console.log('🧹 Temp file cleaned up')
-      } catch (cleanupError) {
-        console.warn('⚠️ Could not clean temp file:', cleanupError.message)
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: 'Odontogram uploaded successfully using record update method',
-        recordId: updateResult.id,
-        attachmentUrl: updateResult.fields[fieldName]?.[0]?.url,
-        fileName: file.originalFilename,
-        method: 'record_update',
-        hipaaCompliant: true,
-      })
     }
 
-    const result = JSON.parse(responseText)
-    console.log('✅ FormData upload successful!')
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        uploadOptions,
+        (error, result) => {
+          if (error) {
+            console.error('❌ Cloudinary error:', error)
+            reject(error)
+          } else {
+            resolve(result)
+          }
+        }
+      )
+      uploadStream.end(originalBuffer)
+    })
 
-    // Clean up temp file
+    console.log('✅ Uploaded to Cloudinary!')
+    console.log('📁 Public ID:', uploadResult.public_id)
+    console.log('🔗 Secure URL:', uploadResult.secure_url)
+
+    // STEP 2: Update Airtable
+    console.log('📤 Updating Airtable...')
+
+    const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
+
+    const attachmentData = {
+      fields: {
+        [fieldName]: [
+          {
+            url: uploadResult.secure_url,
+            filename: file.originalFilename || 'odontogram.png',
+          },
+        ],
+      },
+    }
+
+    const airtableResponse = await fetch(airtableUrl, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(attachmentData),
+    })
+
+    if (!airtableResponse.ok) {
+      const errorText = await airtableResponse.text()
+      throw new Error(
+        `Airtable error: ${airtableResponse.status} - ${errorText}`
+      )
+    }
+
+    const result = await airtableResponse.json()
+    console.log('✅ Success!')
+
+    // Clean up
     try {
       fs.unlinkSync(file.filepath)
       console.log('🧹 Temp file cleaned up')
@@ -171,12 +163,12 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Odontogram uploaded successfully using FormData method',
+      message: 'Odontogram uploaded successfully!',
       recordId: result.id,
       attachmentUrl: result.fields[fieldName]?.[0]?.url,
+      cloudinaryUrl: uploadResult.secure_url,
       fileName: file.originalFilename,
-      method: 'formdata',
-      hipaaCompliant: true,
+      service: 'Cloudinary FREE',
     })
   } catch (error) {
     console.error('❌ Upload error:', error.message)
