@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  console.log('🚀 Upload API called - CLOUDINARY + AIRTABLE + APPEND JSON')
+  console.log('🚀 Upload API called - CLOUDINARY + AIRTABLE + FORMATTED TEXT')
 
   try {
     // Check credentials
@@ -163,26 +163,80 @@ export default async function handler(req, res) {
     const allAttachments = [...existingAttachments, newAttachment]
     console.log('📋 Total attachments after upload:', allAttachments.length)
 
-    // STEP 4: Prepare JSON text for appending with separator
+    // STEP 4: Format JSON data exactly like PNG text format
     let finalNotesText = existingNotes
 
     if (jsonData && jsonFieldName) {
-      console.log('📋 Preparing to append JSON data...')
+      console.log('📋 Formatting JSON data for text field...')
+
+      // Parse the JSON data to format it properly
+      const parsedData = JSON.parse(jsonData)
 
       // Create a timestamp header for the new entry
       const now = new Date()
       const timestamp = now.toLocaleString('es-ES')
 
-      // Format the new JSON entry
-      const newEntry = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n=============================\n\n${jsonData}`
+      // Format the text exactly like the PNG
+      let formattedText = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n=============================\n\n`
+
+      // Header information
+      formattedText += `PACIENTE: ${parsedData.nombre}\n`
+      formattedText += `FECHA: ${parsedData.fecha}\n\n`
+
+      if (parsedData.piezas && parsedData.piezas.length > 0) {
+        formattedText += `TRATAMIENTOS Y OBSERVACIONES:\n\n`
+
+        parsedData.piezas.forEach((pieza) => {
+          formattedText += `PIEZA ${pieza.pieza}:\n`
+
+          // Condiciones (existing conditions)
+          if (pieza.condiciones && pieza.condiciones.length > 0) {
+            formattedText += `  • Condiciones:\n`
+            pieza.condiciones.forEach((condicion) => {
+              formattedText += `    - ${condicion}\n`
+            })
+          }
+
+          // Prestaciones Preexistentes
+          if (
+            pieza.prestacion_preexistente &&
+            pieza.prestacion_preexistente.length > 0
+          ) {
+            formattedText += `  • Prestaciones Preexistentes:\n`
+            pieza.prestacion_preexistente.forEach((prestacion) => {
+              formattedText += `    - ${prestacion}\n`
+            })
+          }
+
+          // Prestaciones Requeridas
+          if (
+            pieza.prestacion_requerida &&
+            pieza.prestacion_requerida.length > 0
+          ) {
+            formattedText += `  • Prestaciones Requeridas:\n`
+            pieza.prestacion_requerida.forEach((prestacion) => {
+              formattedText += `    - ${prestacion}\n`
+            })
+          }
+
+          // Notas específicas
+          if (pieza.notas && pieza.notas.trim() !== '') {
+            formattedText += `  • Notas: ${pieza.notas}\n`
+          }
+
+          formattedText += `\n` // Space between teeth
+        })
+      } else {
+        formattedText += `Sin hallazgos registrados.\n\n`
+      }
 
       // Append to existing notes
-      finalNotesText = finalNotesText + newEntry
+      finalNotesText = finalNotesText + formattedText
 
-      console.log('📋 JSON data formatted for appending')
+      console.log('📋 Text formatted for appending')
     }
 
-    // STEP 5: Update Airtable with all data (IMAGE + APPENDED JSON)
+    // STEP 5: Update Airtable with all data (IMAGE + FORMATTED TEXT)
     console.log('📤 Updating Airtable with all data...')
 
     const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
@@ -192,10 +246,10 @@ export default async function handler(req, res) {
       [fieldName]: allAttachments, // Image attachments
     }
 
-    // ADD APPENDED JSON DATA TO TEXT FIELD
+    // ADD FORMATTED TEXT TO TEXT FIELD
     if (jsonData && jsonFieldName) {
       updateFields[jsonFieldName] = finalNotesText
-      console.log('📋 Adding appended JSON data to field:', jsonFieldName)
+      console.log('📋 Adding formatted text data to field:', jsonFieldName)
     }
 
     const attachmentData = {
@@ -221,7 +275,7 @@ export default async function handler(req, res) {
     const result = await airtableResponse.json()
     console.log('✅ Success! All data updated in Airtable')
     console.log('📷 Image uploaded and appended')
-    console.log('📋 JSON data appended to existing notes')
+    console.log('📋 Formatted text appended to existing notes')
 
     // Clean up
     try {
@@ -233,7 +287,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Complete odontogram data uploaded! Image + JSON data appended.`,
+      message: `Complete odontogram data uploaded! Image + formatted text appended.`,
       recordId: result.id,
       attachmentUrl: result.fields[fieldName]?.[0]?.url,
       cloudinaryUrl: uploadResult.secure_url,
