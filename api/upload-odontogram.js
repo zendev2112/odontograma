@@ -174,7 +174,16 @@ export default async function handler(req, res) {
 
       // Create a timestamp header for the new entry
       const now = new Date()
-      const timestamp = now.toLocaleString('es-ES')
+        const timestamp = now.toLocaleString('es-AR', {
+          timeZone: 'America/Argentina/Buenos_Aires',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        })
 
       // Format the text exactly like the PNG
       let formattedText = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n=============================\n\n`
