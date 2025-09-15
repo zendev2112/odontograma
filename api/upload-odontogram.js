@@ -186,7 +186,7 @@ export default async function handler(req, res) {
         })
 
       // Format the text exactly like the PNG
-      let formattedText = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n=============================\n\n`
+      let formattedText = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n\nPACIENTE: ${parsedData.nombre}\n=============================\n\n`
 
       // Header information
       formattedText += `PACIENTE: ${parsedData.nombre}\n`
