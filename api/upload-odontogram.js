@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  console.log('🚀 Upload API called - CLOUDINARY FREE + AIRTABLE')
+  console.log('🚀 Upload API called - CLOUDINARY FREE + AIRTABLE WITH APPEND')
 
   try {
     // Check credentials
@@ -118,19 +118,46 @@ export default async function handler(req, res) {
     console.log('📁 Public ID:', uploadResult.public_id)
     console.log('🔗 Secure URL:', uploadResult.secure_url)
 
-    // STEP 2: Update Airtable
-    console.log('📤 Updating Airtable...')
+    // STEP 2: Get existing attachments from Airtable
+    console.log('📋 Getting existing attachments from Airtable...')
+
+    const getRecordUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
+
+    const getResponse = await fetch(getRecordUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      },
+    })
+
+    let existingAttachments = []
+    if (getResponse.ok) {
+      const currentRecord = await getResponse.json()
+      existingAttachments = currentRecord.fields[fieldName] || []
+      console.log('📋 Found existing attachments:', existingAttachments.length)
+    } else {
+      console.warn(
+        '⚠️ Could not fetch existing attachments, proceeding with new upload only'
+      )
+    }
+
+    // STEP 3: Append new attachment to existing ones
+    const newAttachment = {
+      url: uploadResult.secure_url,
+      filename: file.originalFilename || 'odontogram.png',
+    }
+
+    const allAttachments = [...existingAttachments, newAttachment]
+    console.log('📋 Total attachments after upload:', allAttachments.length)
+
+    // STEP 4: Update Airtable with ALL attachments (existing + new)
+    console.log('📤 Updating Airtable with all attachments...')
 
     const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Pacientes/${recordId}`
 
     const attachmentData = {
       fields: {
-        [fieldName]: [
-          {
-            url: uploadResult.secure_url,
-            filename: file.originalFilename || 'odontogram.png',
-          },
-        ],
+        [fieldName]: allAttachments,
       },
     }
 
@@ -151,7 +178,7 @@ export default async function handler(req, res) {
     }
 
     const result = await airtableResponse.json()
-    console.log('✅ Success!')
+    console.log('✅ Success! All attachments updated in Airtable')
 
     // Clean up
     try {
@@ -163,12 +190,13 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: 'Odontogram uploaded successfully!',
+      message: `Odontogram uploaded successfully! Total: ${allAttachments.length}`,
       recordId: result.id,
       attachmentUrl: result.fields[fieldName]?.[0]?.url,
       cloudinaryUrl: uploadResult.secure_url,
       fileName: file.originalFilename,
       service: 'Cloudinary FREE',
+      totalAttachments: allAttachments.length,
     })
   } catch (error) {
     console.error('❌ Upload error:', error.message)

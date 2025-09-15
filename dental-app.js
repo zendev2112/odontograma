@@ -1480,11 +1480,13 @@ async function generateProfessionalPNG() {
       currentY + 20
     )
 
+    // Replace the upload section (around line 1530-1590) with this simplified version:
+
     // Convert canvas to blob and upload to Airtable
     canvas.toBlob(
       async (blob) => {
         try {
-          console.log('📤 Uploading PNG to Airtable...')
+          console.log('📤 Uploading PNG to backend...')
 
           // Create filename with patient name and timestamp
           const now = new Date()
@@ -1510,7 +1512,7 @@ async function generateProfessionalPNG() {
           console.log('- Filename:', filename)
           console.log('- Blob size:', blob.size)
 
-          // Upload to our Vercel API endpoint
+          // Upload to our backend API (handles Cloudinary + Airtable)
           const uploadResponse = await fetch('/api/upload-odontogram', {
             method: 'POST',
             body: formData,
@@ -1533,67 +1535,12 @@ async function generateProfessionalPNG() {
           }
 
           if (uploadResponse.ok && uploadResult.success) {
-            console.log('✅ PNG uploaded successfully to Cloudinary!')
+            console.log('✅ Complete upload workflow successful!')
+            console.log('📋 Total attachments:', uploadResult.totalAttachments)
 
-            // NEW: Get existing attachments from Airtable
-            console.log('📋 Getting existing attachments from Airtable...')
-            const getRecordUrl = `https://api.airtable.com/v0/appRhgMlVacDPwA4u/Pacientes/${recordId}`
-
-            const getResponse = await fetch(getRecordUrl, {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer pat7tmduyaTtc3d7E`,
-              },
-            })
-
-            let existingAttachments = []
-            if (getResponse.ok) {
-              const currentRecord = await getResponse.json()
-              existingAttachments =
-                currentRecord.fields['odontograma-adjunto'] || []
-              console.log(
-                '📋 Found existing attachments:',
-                existingAttachments.length
-              )
-            }
-
-            // NEW: Append new attachment to existing ones
-            const newAttachment = {
-              url: uploadResult.cloudinaryUrl,
-              filename: filename,
-            }
-
-            const allAttachments = [...existingAttachments, newAttachment]
-            console.log(
-              '📋 Total attachments after upload:',
-              allAttachments.length
+            alert(
+              `✅ Odontograma subido exitosamente!\n\nTotal de odontogramas: ${uploadResult.totalAttachments}\n\nArchivo: ${uploadResult.fileName}`
             )
-
-            // Update Airtable with ALL attachments (existing + new)
-            const updateUrl = `https://api.airtable.com/v0/appRhgMlVacDPwA4u/Pacientes/${recordId}`
-            const updateResponse = await fetch(updateUrl, {
-              method: 'PATCH',
-              headers: {
-                Authorization: `Bearer pat7tmduyaTtc3d7E`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                fields: {
-                  'odontograma-adjunto': allAttachments,
-                },
-              }),
-            })
-
-            if (updateResponse.ok) {
-              console.log('✅ Odontogram appended to existing attachments!')
-              alert(
-                `✅ Odontograma subido exitosamente!\n\nTotal de odontogramas: ${allAttachments.length}`
-              )
-            } else {
-              const errorText = await updateResponse.text()
-              console.error('❌ Airtable update failed:', errorText)
-              alert('❌ Error al actualizar Airtable')
-            }
           } else {
             console.error('❌ Upload failed:', uploadResult)
             alert(`❌ Error al subir: ${uploadResult.error || 'Unknown error'}`)
