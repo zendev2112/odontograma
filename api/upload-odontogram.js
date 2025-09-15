@@ -186,12 +186,9 @@ export default async function handler(req, res) {
         })
 
       // Format the text exactly like the PNG
-      let formattedText = `\n\n=============================\nODONTOGRAMA GENERADO: ${timestamp}\n\nPACIENTE: ${parsedData.nombre}\n=============================\n\n`
+      let formattedText = `\n\n=============================\nPACIENTE: ${parsedData.nombre}\nODONTOGRAMA GENERADO: ${timestamp}\n\=============================\n\n`
 
-      // Header information
-      formattedText += `PACIENTE: ${parsedData.nombre}\n`
-      
-      if (parsedData.piezas && parsedData.piezas.length > 0) {
+       if (parsedData.piezas && parsedData.piezas.length > 0) {
         formattedText += `TRATAMIENTOS Y OBSERVACIONES:\n\n`
 
         parsedData.piezas.forEach((pieza) => {
