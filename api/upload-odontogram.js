@@ -190,8 +190,7 @@ export default async function handler(req, res) {
 
       // Header information
       formattedText += `PACIENTE: ${parsedData.nombre}\n`
-      formattedText += `FECHA: ${parsedData.fecha}\n\n`
-
+      
       if (parsedData.piezas && parsedData.piezas.length > 0) {
         formattedText += `TRATAMIENTOS Y OBSERVACIONES:\n\n`
 
