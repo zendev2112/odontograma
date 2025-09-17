@@ -1154,269 +1154,343 @@ async function generateProfessionalPNG() {
     )
     currentY += scaledHeight - 60
 
-// TREATMENTS AND NOTES SECTION - 2 COLUMNS, MAX 10 TEETH
-ctx.fillStyle = '#2c3e50'
-ctx.font = 'bold 32px Arial'
-ctx.textAlign = 'left'
-ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
+    // TREATMENTS AND NOTES SECTION - 2 COLUMNS, MAX 10 TEETH
+    ctx.fillStyle = '#2c3e50'
+    ctx.font = 'bold 32px Arial'
+    ctx.textAlign = 'left'
+    ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
 
-// Underline for section
-ctx.strokeStyle = '#3498db'
-ctx.lineWidth = 3
-ctx.beginPath()
-ctx.moveTo(80, currentY + 8)
-ctx.lineTo(700, currentY + 8)
-ctx.stroke()
-currentY += 15
+    // Underline for section
+    ctx.strokeStyle = '#3498db'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.moveTo(80, currentY + 8)
+    ctx.lineTo(700, currentY + 8)
+    ctx.stroke()
+    currentY += 15
 
-// COLLECT ALL TEETH WITH TREATMENTS/NOTES - ANY TEETH, LIMIT TO 10
-const teethWithData = []
+    // COLLECT ALL TEETH WITH TREATMENTS/NOTES - ANY TEETH, LIMIT TO 10
+    const teethWithData = []
 
-for (const [key, treatments] of Object.entries(currentGeometry)) {
-  if (treatments && treatments.length > 0) {
+    // Get odontogram instance to access ALL teeth
     const instance = $('#odontogram').data('odontogram')
-    let toothNum = null
 
-    for (const [teethKey, teethData] of Object.entries(instance.teeth)) {
-      if (teethKey === key) {
-        toothNum = teethData.num
-        break
+    // First, collect teeth with treatments
+    for (const [key, treatments] of Object.entries(currentGeometry)) {
+      if (treatments && treatments.length > 0) {
+        let toothNum = null
+
+        for (const [teethKey, teethData] of Object.entries(instance.teeth)) {
+          if (teethKey === key) {
+            toothNum = teethData.num
+            break
+          }
+        }
+
+        if (toothNum) {
+          const toothInfo = getToothInfo(toothNum)
+          const toothName = toothInfo ? toothInfo.nombre : `Diente ${toothNum}`
+          const existingNote = toothNotes[toothNum] || ''
+
+          teethWithData.push({
+            toothNum,
+            toothName,
+            treatments,
+            note: existingNote.trim(),
+          })
+        }
       }
     }
 
-    if (toothNum) {
-      const toothInfo = getToothInfo(toothNum)
-      const toothName = toothInfo ? toothInfo.nombre : `Diente ${toothNum}`
-      const existingNote = toothNotes[toothNum] || ''
+    // NO SORTING - TAKE FIRST 10 TEETH AS THEY COME
+    const limitedTeeth = teethWithData.slice(0, 10)
 
-      // Include ANY teeth with treatments or notes
-      if (treatments.length > 0 || existingNote.trim() !== '') {
-        teethWithData.push({
-          toothNum,
-          toothName,
-          treatments,
-          note: existingNote.trim()
+    console.log(
+      `📋 Processing first ${limitedTeeth.length} teeth for PNG (max 10)`
+    )
+
+    // 2-COLUMN LAYOUT: 5 teeth per column
+    const leftColumnTeeth = limitedTeeth.slice(0, 5) // Teeth 1-5
+    const rightColumnTeeth = limitedTeeth.slice(5, 10) // Teeth 6-10
+
+    const startY = currentY
+    const leftColumnX = 80
+    const rightColumnX = 850 // Right column starts here
+    const columnWidth = 700
+
+    // GROUP TREATMENTS FUNCTION
+    function groupTreatmentsBySurface(treatmentList, toothInfo) {
+      const grouped = {}
+
+      treatmentList.forEach((treatment) => {
+        const treatmentName = getTreatmentName(treatment.name)
+        const withSides = [
+          'CARIES',
+          'CARIES_UNTREATABLE',
+          'REF',
+          'NVT',
+          'SIL',
+          'RES',
+          'AMF',
+          'COF',
+          'INC',
+        ]
+
+        if (!grouped[treatment.name]) {
+          grouped[treatment.name] = {
+            name: treatmentName,
+            surfaces: [],
+            layer: treatment.layer || 'pre',
+            usesSides: withSides.includes(treatment.name),
+          }
+        }
+
+        if (withSides.includes(treatment.name) && treatment.pos && toothInfo) {
+          let surfaceCode = null
+
+          if (treatment.pos.includes('-')) {
+            const parts = treatment.pos.split('-')
+            surfaceCode = parts[1]
+          } else if (
+            typeof treatment.pos === 'string' &&
+            treatment.pos.length <= 2
+          ) {
+            surfaceCode = treatment.pos
+          }
+
+          const canvasPositionMap = {
+            T: 'top',
+            B: 'bottom',
+            L: 'left',
+            R: 'right',
+            M: 'middle',
+            top: 'top',
+            bottom: 'bottom',
+            left: 'left',
+            right: 'right',
+            middle: 'middle',
+          }
+
+          const fullCanvasPosition = canvasPositionMap[surfaceCode]
+
+          if (fullCanvasPosition) {
+            const correctMapping = getCorrectSurfaceMapping(
+              parseInt(toothInfo.fdi)
+            )
+            const anatomical = correctMapping[fullCanvasPosition]
+
+            if (
+              anatomical &&
+              !grouped[treatment.name].surfaces.includes(anatomical)
+            ) {
+              grouped[treatment.name].surfaces.push(anatomical)
+            }
+          }
+        }
+      })
+
+      return grouped
+    }
+
+    // RENDER TOOTH DATA FUNCTION
+    function renderToothData(tooth, x, y) {
+      let localY = y
+      const toothInfo = getToothInfo(parseInt(tooth.toothNum))
+
+      // TOOTH HEADER
+      ctx.fillStyle = '#2c3e50'
+      ctx.font = 'bold 20px Arial'
+      ctx.fillText(`Pieza: ${tooth.toothNum} - ${tooth.toothName}`, x, localY)
+      localY += 30
+
+      // CONDITIONS
+      const conditionTreatments = tooth.treatments.filter((treatment) => {
+        const treatmentCode = treatment.name
+        const wholeTooth = []
+        const withSides = ['CARIES_UNTREATABLE']
+        return (
+          wholeTooth.includes(treatmentCode) ||
+          withSides.includes(treatmentCode)
+        )
+      })
+
+      if (conditionTreatments.length > 0) {
+        ctx.fillStyle = '#34495e'
+        ctx.font = 'bold 16px Arial'
+        ctx.fillText('Condiciones:', x + 20, localY)
+        localY += 25
+
+        const groupedConditions = groupTreatmentsBySurface(
+          conditionTreatments,
+          toothInfo
+        )
+
+        Object.values(groupedConditions).forEach((condition) => {
+          let surfaceDisplay = ''
+          if (condition.usesSides && condition.surfaces.length > 0) {
+            surfaceDisplay = ` - Cara/s: ${condition.surfaces.join(', ')}`
+          }
+
+          ctx.fillStyle = '#34495e'
+          ctx.font = '14px Arial'
+          ctx.fillText(`• ${condition.name}${surfaceDisplay}`, x + 40, localY)
+          localY += 20
         })
-      }
-    }
-  }
-}
-
-// NO SORTING - TAKE FIRST 10 TEETH AS THEY COME
-const limitedTeeth = teethWithData.slice(0, 10)
-
-console.log(`📋 Processing first ${limitedTeeth.length} teeth for PNG (max 10)`)
-
-// 2-COLUMN LAYOUT: 5 teeth per column
-const leftColumnTeeth = limitedTeeth.slice(0, 5)  // Teeth 1-5
-const rightColumnTeeth = limitedTeeth.slice(5, 10) // Teeth 6-10
-
-const startY = currentY
-const leftColumnX = 80
-const rightColumnX = 850  // Right column starts here
-const columnWidth = 700
-
-// GROUP TREATMENTS FUNCTION
-function groupTreatmentsBySurface(treatmentList, toothInfo) {
-  const grouped = {}
-
-  treatmentList.forEach((treatment) => {
-    const treatmentName = getTreatmentName(treatment.name)
-    const withSides = [
-      'CARIES', 'CARIES_UNTREATABLE', 'REF', 'NVT', 'SIL', 'RES', 'AMF', 'COF', 'INC'
-    ]
-
-    if (!grouped[treatment.name]) {
-      grouped[treatment.name] = {
-        name: treatmentName,
-        surfaces: [],
-        layer: treatment.layer || 'pre',
-        usesSides: withSides.includes(treatment.name),
-      }
-    }
-
-    if (withSides.includes(treatment.name) && treatment.pos && toothInfo) {
-      let surfaceCode = null
-
-      if (treatment.pos.includes('-')) {
-        const parts = treatment.pos.split('-')
-        surfaceCode = parts[1]
-      } else if (typeof treatment.pos === 'string' && treatment.pos.length <= 2) {
-        surfaceCode = treatment.pos
+        localY += 10
       }
 
-      const canvasPositionMap = {
-        T: 'top', B: 'bottom', L: 'left', R: 'right', M: 'middle',
-        top: 'top', bottom: 'bottom', left: 'left', right: 'right', middle: 'middle',
-      }
+      // PRESTACIONES
+      const prestacionTreatments = tooth.treatments.filter((treatment) => {
+        const treatmentCode = treatment.name
+        const wholeTooth = [
+          'CFR',
+          'FRM_ACR',
+          'BRIDGE',
+          'ORT',
+          'POC',
+          'FMC',
+          'IPX',
+          'RCT',
+          'MIS',
+          'UNE',
+          'PRE',
+        ]
+        const withSides = [
+          'CARIES',
+          'REF',
+          'NVT',
+          'SIL',
+          'RES',
+          'AMF',
+          'COF',
+          'INC',
+        ]
+        return (
+          wholeTooth.includes(treatmentCode) ||
+          withSides.includes(treatmentCode)
+        )
+      })
 
-      const fullCanvasPosition = canvasPositionMap[surfaceCode]
+      if (prestacionTreatments.length > 0) {
+        const preExistentes = prestacionTreatments.filter(
+          (t) => t.layer === 'pre'
+        )
+        const requeridas = prestacionTreatments.filter(
+          (t) => t.layer === 'req' || !t.layer
+        )
 
-      if (fullCanvasPosition) {
-        const correctMapping = getCorrectSurfaceMapping(parseInt(toothInfo.fdi))
-        const anatomical = correctMapping[fullCanvasPosition]
+        // PRESTACIONES PREEXISTENTES
+        if (preExistentes.length > 0) {
+          ctx.fillStyle = '#FF0000'
+          ctx.font = 'bold 16px Arial'
+          ctx.fillText('Prestaciones Preexistentes:', x + 20, localY)
+          localY += 25
 
-        if (anatomical && !grouped[treatment.name].surfaces.includes(anatomical)) {
-          grouped[treatment.name].surfaces.push(anatomical)
+          const groupedPreExistentes = groupTreatmentsBySurface(
+            preExistentes,
+            toothInfo
+          )
+
+          Object.values(groupedPreExistentes).forEach((prestacion) => {
+            let surfaceDisplay = ''
+            if (prestacion.usesSides && prestacion.surfaces.length > 0) {
+              surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+            }
+
+            ctx.fillStyle = '#FF0000'
+            ctx.font = '14px Arial'
+            ctx.fillText(
+              `• ${prestacion.name}${surfaceDisplay}`,
+              x + 40,
+              localY
+            )
+            localY += 20
+          })
+          localY += 10
+        }
+
+        // PRESTACIONES REQUERIDAS
+        if (requeridas.length > 0) {
+          ctx.fillStyle = '#0066FF'
+          ctx.font = 'bold 16px Arial'
+          ctx.fillText('Prestaciones Requeridas:', x + 20, localY)
+          localY += 25
+
+          const groupedRequeridas = groupTreatmentsBySurface(
+            requeridas,
+            toothInfo
+          )
+
+          Object.values(groupedRequeridas).forEach((prestacion) => {
+            let surfaceDisplay = ''
+            if (prestacion.usesSides && prestacion.surfaces.length > 0) {
+              surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
+            }
+
+            ctx.fillStyle = '#0066FF'
+            ctx.font = '14px Arial'
+            ctx.fillText(
+              `• ${prestacion.name}${surfaceDisplay}`,
+              x + 40,
+              localY
+            )
+            localY += 20
+          })
+          localY += 10
         }
       }
-    }
-  })
 
-  return grouped
-}
+      // NOTES
+      if (tooth.note) {
+        ctx.fillStyle = '#34495e'
+        ctx.font = 'bold 16px Arial'
+        ctx.fillText('Notas:', x + 20, localY)
+        localY += 25
 
-// RENDER TOOTH DATA FUNCTION
-function renderToothData(tooth, x, y) {
-  let localY = y
-  const toothInfo = getToothInfo(parseInt(tooth.toothNum))
+        // Word wrap notes
+        ctx.fillStyle = '#34495e'
+        ctx.font = '14px Arial'
+        const words = tooth.note.split(' ')
+        let line = ''
+        const maxWidth = columnWidth - 60
+        const lineHeight = 18
 
-  // TOOTH HEADER
-  ctx.fillStyle = '#2c3e50'
-  ctx.font = 'bold 20px Arial'
-  ctx.fillText(`Pieza: ${tooth.toothNum} - ${tooth.toothName}`, x, localY)
-  localY += 30
+        for (const word of words) {
+          const testLine = line + word + ' '
+          const metrics = ctx.measureText(testLine)
 
-  // CONDITIONS
-  const conditionTreatments = tooth.treatments.filter((treatment) => {
-    const treatmentCode = treatment.name
-    const wholeTooth = []
-    const withSides = ['CARIES_UNTREATABLE']
-    return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
-  })
+          if (metrics.width > maxWidth && line !== '') {
+            ctx.fillText(line.trim(), x + 40, localY)
+            line = word + ' '
+            localY += lineHeight
+          } else {
+            line = testLine
+          }
+        }
 
-  if (conditionTreatments.length > 0) {
-    ctx.fillStyle = '#34495e'
-    ctx.font = 'bold 16px Arial'
-    ctx.fillText('Condiciones:', x + 20, localY)
-    localY += 25
-
-    const groupedConditions = groupTreatmentsBySurface(conditionTreatments, toothInfo)
-
-    Object.values(groupedConditions).forEach((condition) => {
-      let surfaceDisplay = ''
-      if (condition.usesSides && condition.surfaces.length > 0) {
-        surfaceDisplay = ` - Cara/s: ${condition.surfaces.join(', ')}`
+        if (line.trim()) {
+          ctx.fillText(line.trim(), x + 40, localY)
+          localY += lineHeight + 10
+        }
       }
 
-      ctx.fillStyle = '#34495e'
-      ctx.font = '14px Arial'
-      ctx.fillText(`• ${condition.name}${surfaceDisplay}`, x + 40, localY)
-      localY += 20
+      return localY + 30 // Return final Y position with spacing
+    }
+
+    // RENDER LEFT COLUMN (teeth 1-5) - WHATEVER TEETH THEY ARE
+    let leftY = startY
+    leftColumnTeeth.forEach((tooth) => {
+      leftY = renderToothData(tooth, leftColumnX, leftY)
     })
-    localY += 10
-  }
 
-  // PRESTACIONES
-  const prestacionTreatments = tooth.treatments.filter((treatment) => {
-    const treatmentCode = treatment.name
-    const wholeTooth = ['CFR', 'FRM_ACR', 'BRIDGE', 'ORT', 'POC', 'FMC', 'IPX', 'RCT', 'MIS', 'UNE', 'PRE']
-    const withSides = ['CARIES', 'REF', 'NVT', 'SIL', 'RES', 'AMF', 'COF', 'INC']
-    return wholeTooth.includes(treatmentCode) || withSides.includes(treatmentCode)
-  })
+    // RENDER RIGHT COLUMN (teeth 6-10) - WHATEVER TEETH THEY ARE
+    let rightY = startY
+    rightColumnTeeth.forEach((tooth) => {
+      rightY = renderToothData(tooth, rightColumnX, rightY)
+    })
 
-  if (prestacionTreatments.length > 0) {
-    const preExistentes = prestacionTreatments.filter(t => t.layer === 'pre')
-    const requeridas = prestacionTreatments.filter(t => t.layer === 'req' || !t.layer)
-
-    // PRESTACIONES PREEXISTENTES
-    if (preExistentes.length > 0) {
-      ctx.fillStyle = '#FF0000'
-      ctx.font = 'bold 16px Arial'
-      ctx.fillText('Prestaciones Preexistentes:', x + 20, localY)
-      localY += 25
-
-      const groupedPreExistentes = groupTreatmentsBySurface(preExistentes, toothInfo)
-
-      Object.values(groupedPreExistentes).forEach((prestacion) => {
-        let surfaceDisplay = ''
-        if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-          surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
-        }
-
-        ctx.fillStyle = '#FF0000'
-        ctx.font = '14px Arial'
-        ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, x + 40, localY)
-        localY += 20
-      })
-      localY += 10
-    }
-
-    // PRESTACIONES REQUERIDAS
-    if (requeridas.length > 0) {
-      ctx.fillStyle = '#0066FF'
-      ctx.font = 'bold 16px Arial'
-      ctx.fillText('Prestaciones Requeridas:', x + 20, localY)
-      localY += 25
-
-      const groupedRequeridas = groupTreatmentsBySurface(requeridas, toothInfo)
-
-      Object.values(groupedRequeridas).forEach((prestacion) => {
-        let surfaceDisplay = ''
-        if (prestacion.usesSides && prestacion.surfaces.length > 0) {
-          surfaceDisplay = ` - Cara/s: ${prestacion.surfaces.join(', ')}`
-        }
-
-        ctx.fillStyle = '#0066FF'
-        ctx.font = '14px Arial'
-        ctx.fillText(`• ${prestacion.name}${surfaceDisplay}`, x + 40, localY)
-        localY += 20
-      })
-      localY += 10
-    }
-  }
-
-  // NOTES
-  if (tooth.note) {
-    ctx.fillStyle = '#34495e'
-    ctx.font = 'bold 16px Arial'
-    ctx.fillText('Notas:', x + 20, localY)
-    localY += 25
-
-    // Word wrap notes
-    ctx.fillStyle = '#34495e'
-    ctx.font = '14px Arial'
-    const words = tooth.note.split(' ')
-    let line = ''
-    const maxWidth = columnWidth - 60
-    const lineHeight = 18
-
-    for (const word of words) {
-      const testLine = line + word + ' '
-      const metrics = ctx.measureText(testLine)
-
-      if (metrics.width > maxWidth && line !== '') {
-        ctx.fillText(line.trim(), x + 40, localY)
-        line = word + ' '
-        localY += lineHeight
-      } else {
-        line = testLine
-      }
-    }
-
-    if (line.trim()) {
-      ctx.fillText(line.trim(), x + 40, localY)
-      localY += lineHeight + 10
-    }
-  }
-
-  return localY + 30 // Return final Y position with spacing
-}
-
-// RENDER LEFT COLUMN (teeth 1-5) - WHATEVER TEETH THEY ARE
-let leftY = startY
-leftColumnTeeth.forEach((tooth) => {
-  leftY = renderToothData(tooth, leftColumnX, leftY)
-})
-
-// RENDER RIGHT COLUMN (teeth 6-10) - WHATEVER TEETH THEY ARE  
-let rightY = startY
-rightColumnTeeth.forEach((tooth) => {
-  rightY = renderToothData(tooth, rightColumnX, rightY)
-})
-
-// Update currentY to the lower of the two columns
-currentY = Math.max(leftY, rightY)
+    // Update currentY to the lower of the two columns
+    currentY = Math.max(leftY, rightY)
 
     // PROFESSIONAL FOOTER
     currentY = Math.max(currentY + 50, canvas.height - 100)
