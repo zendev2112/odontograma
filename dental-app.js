@@ -1133,8 +1133,8 @@ async function generateProfessionalPNG() {
     })
 
     // INCREASED CONTAINER SIZE FOR BETTER READABILITY
-    const maxOdontogramWidth = canvas.width - 80
-    const maxOdontogramHeight = 500
+    const maxOdontogramWidth = canvas.width - 60
+    const maxOdontogramHeight = 700
 
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
@@ -1152,7 +1152,7 @@ async function generateProfessionalPNG() {
       scaledWidth,
       scaledHeight
     )
-    currentY += scaledHeight + 50
+    currentY += scaledHeight + 20
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
@@ -1164,10 +1164,10 @@ async function generateProfessionalPNG() {
     ctx.strokeStyle = '#3498db'
     ctx.lineWidth = 3
     ctx.beginPath()
-    ctx.moveTo(80, currentY + 5)
-    ctx.lineTo(700, currentY + 5)
+    ctx.moveTo(80, currentY + 8)
+    ctx.lineTo(700, currentY + 8)
     ctx.stroke()
-    currentY += 50
+    currentY += 35
 
     // Process each tooth with treatments and notes - MATCHING HTML STRUCTURE
     for (const [key, treatments] of Object.entries(currentGeometry)) {
