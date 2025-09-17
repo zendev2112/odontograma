@@ -1157,7 +1157,7 @@ async function generateProfessionalPNG() {
     // TREATMENTS AND NOTES SECTION - 2 COLUMNS, MAX 10 TEETH
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 32px Arial'
-    ctx.textAlign = 'center'
+    ctx.textAlign = 'left'
     ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
 
     // Underline for section
