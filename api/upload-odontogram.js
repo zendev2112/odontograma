@@ -174,21 +174,21 @@ export default async function handler(req, res) {
 
       // Create a timestamp header for the new entry
       const now = new Date()
-        const timestamp = now.toLocaleString('es-AR', {
-          timeZone: 'America/Argentina/Buenos_Aires',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-        })
+      const timestamp = now.toLocaleString('es-AR', {
+        timeZone: 'America/Argentina/Buenos_Aires',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      })
 
       // Format the text exactly like the PNG
       let formattedText = `\n\n=============================\nPACIENTE: ${parsedData.nombre}\nODONTOGRAMA GENERADO: ${timestamp}\n\=============================\n\n`
 
-       if (parsedData.piezas && parsedData.piezas.length > 0) {
+      if (parsedData.piezas && parsedData.piezas.length > 0) {
         formattedText += `TRATAMIENTOS Y OBSERVACIONES:\n\n`
 
         parsedData.piezas.forEach((pieza) => {
@@ -255,6 +255,75 @@ export default async function handler(req, res) {
     if (jsonData && jsonFieldName) {
       updateFields[jsonFieldName] = finalNotesText
       console.log('📋 Adding formatted text data to field:', jsonFieldName)
+    }
+
+    // ===== NEW: ADD LATEST NOTE FIELD =====
+    if (jsonData) {
+      // Create ONLY the current/latest entry (no existing notes, no timestamp header)
+      let latestNoteText = ''
+
+      const parsedData = JSON.parse(jsonData)
+
+      // Format ONLY current data without timestamp header
+      latestNoteText += `PACIENTE: ${parsedData.nombre}\n`
+      latestNoteText += `FECHA: ${parsedData.fecha}\n\n`
+
+      if (parsedData.piezas && parsedData.piezas.length > 0) {
+        latestNoteText += `TRATAMIENTOS Y NOTAS:\n\n`
+
+        parsedData.piezas.forEach((pieza) => {
+          latestNoteText += `PIEZA ${pieza.pieza}:\n`
+
+          // Condiciones (existing conditions)
+          if (pieza.condiciones && pieza.condiciones.length > 0) {
+            latestNoteText += `  • Condiciones:\n`
+            pieza.condiciones.forEach((condicion) => {
+              latestNoteText += `    - ${condicion}\n`
+            })
+          }
+
+          // Prestaciones Preexistentes
+          if (
+            pieza.prestacion_preexistente &&
+            pieza.prestacion_preexistente.length > 0
+          ) {
+            latestNoteText += `  • Prestaciones Preexistentes:\n`
+            pieza.prestacion_preexistente.forEach((prestacion) => {
+              latestNoteText += `    - ${prestacion}\n`
+            })
+          }
+
+          // Prestaciones Requeridas
+          if (
+            pieza.prestacion_requerida &&
+            pieza.prestacion_requerida.length > 0
+          ) {
+            latestNoteText += `  • Prestaciones Requeridas:\n`
+            pieza.prestacion_requerida.forEach((prestacion) => {
+              latestNoteText += `    - ${prestacion}\n`
+            })
+          }
+
+          // Notas específicas
+          if (pieza.notas && pieza.notas.trim() !== '') {
+            latestNoteText += `  • Notas: ${pieza.notas}\n`
+          }
+
+          latestNoteText += `\n` // Space between teeth
+        })
+      } else {
+        latestNoteText += `Sin hallazgos registrados.\n\n`
+      }
+
+      // Add to update fields - REPLACE the latest note field completely
+      updateFields['ultima-nota-odontograma-paciente'] = latestNoteText
+      console.log(
+        '📋 Adding latest note data to field: ultima-nota-odontograma-paciente'
+      )
+      console.log(
+        '📋 Latest note preview:',
+        latestNoteText.substring(0, 200) + '...'
+      )
     }
 
     const attachmentData = {
