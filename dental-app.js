@@ -1297,13 +1297,13 @@ async function generateProfessionalPNG() {
       let localY = y
       const toothInfo = getToothInfo(parseInt(tooth.toothNum))
 
-      // TOOTH HEADER
+      // TOOTH HEADER - BIGGER
       ctx.fillStyle = '#2c3e50'
-      ctx.font = 'bold 20px Arial'
+      ctx.font = 'bold 24px Arial' // INCREASED from 20px to 24px
       ctx.fillText(`Pieza: ${tooth.toothNum} - ${tooth.toothName}`, x, localY)
-      localY += 30
+      localY += 35 // INCREASED spacing
 
-      // CONDITIONS
+      // CONDITIONS - BIGGER FONTS
       const conditionTreatments = tooth.treatments.filter((treatment) => {
         const treatmentCode = treatment.name
         const wholeTooth = []
@@ -1316,9 +1316,9 @@ async function generateProfessionalPNG() {
 
       if (conditionTreatments.length > 0) {
         ctx.fillStyle = '#34495e'
-        ctx.font = 'bold 16px Arial'
+        ctx.font = 'bold 20px Arial' // INCREASED from 16px to 20px
         ctx.fillText('Condiciones:', x + 20, localY)
-        localY += 25
+        localY += 28 // INCREASED spacing
 
         const groupedConditions = groupTreatmentsBySurface(
           conditionTreatments,
@@ -1332,14 +1332,14 @@ async function generateProfessionalPNG() {
           }
 
           ctx.fillStyle = '#34495e'
-          ctx.font = '14px Arial'
+          ctx.font = '18px Arial' // INCREASED from 14px to 18px
           ctx.fillText(`• ${condition.name}${surfaceDisplay}`, x + 40, localY)
-          localY += 20
+          localY += 24 // INCREASED spacing
         })
-        localY += 10
+        localY += 15 // INCREASED spacing
       }
 
-      // PRESTACIONES
+      // PRESTACIONES - BIGGER FONTS
       const prestacionTreatments = tooth.treatments.filter((treatment) => {
         const treatmentCode = treatment.name
         const wholeTooth = [
@@ -1379,12 +1379,12 @@ async function generateProfessionalPNG() {
           (t) => t.layer === 'req' || !t.layer
         )
 
-        // PRESTACIONES PREEXISTENTES
+        // PRESTACIONES PREEXISTENTES - BIGGER FONTS
         if (preExistentes.length > 0) {
           ctx.fillStyle = '#FF0000'
-          ctx.font = 'bold 16px Arial'
+          ctx.font = 'bold 20px Arial' // INCREASED from 16px to 20px
           ctx.fillText('Prestaciones Preexistentes:', x + 20, localY)
-          localY += 25
+          localY += 28 // INCREASED spacing
 
           const groupedPreExistentes = groupTreatmentsBySurface(
             preExistentes,
@@ -1398,23 +1398,23 @@ async function generateProfessionalPNG() {
             }
 
             ctx.fillStyle = '#FF0000'
-            ctx.font = '14px Arial'
+            ctx.font = '18px Arial' // INCREASED from 14px to 18px
             ctx.fillText(
               `• ${prestacion.name}${surfaceDisplay}`,
               x + 40,
               localY
             )
-            localY += 20
+            localY += 24 // INCREASED spacing
           })
-          localY += 10
+          localY += 15 // INCREASED spacing
         }
 
-        // PRESTACIONES REQUERIDAS
+        // PRESTACIONES REQUERIDAS - BIGGER FONTS
         if (requeridas.length > 0) {
           ctx.fillStyle = '#0066FF'
-          ctx.font = 'bold 16px Arial'
+          ctx.font = 'bold 20px Arial' // INCREASED from 16px to 20px
           ctx.fillText('Prestaciones Requeridas:', x + 20, localY)
-          localY += 25
+          localY += 28 // INCREASED spacing
 
           const groupedRequeridas = groupTreatmentsBySurface(
             requeridas,
@@ -1428,32 +1428,32 @@ async function generateProfessionalPNG() {
             }
 
             ctx.fillStyle = '#0066FF'
-            ctx.font = '14px Arial'
+            ctx.font = '18px Arial' // INCREASED from 14px to 18px
             ctx.fillText(
               `• ${prestacion.name}${surfaceDisplay}`,
               x + 40,
               localY
             )
-            localY += 20
+            localY += 24 // INCREASED spacing
           })
-          localY += 10
+          localY += 15 // INCREASED spacing
         }
       }
 
-      // NOTES
+      // NOTES - MUCH BIGGER FONTS
       if (tooth.note) {
         ctx.fillStyle = '#34495e'
-        ctx.font = 'bold 24px Arial'
+        ctx.font = 'bold 28px Arial' // INCREASED from 24px to 28px - MUCH BIGGER LABEL
         ctx.fillText('Notas:', x + 20, localY)
-        localY += 25
+        localY += 35 // INCREASED spacing after "Notas:" label
 
-        // Word wrap notes
+        // Word wrap notes with MUCH BIGGER font
         ctx.fillStyle = '#34495e'
-        ctx.font = '24px Arial'
+        ctx.font = '24px Arial' // INCREASED from 18px to 24px - MUCH BIGGER NOTES TEXT
         const words = tooth.note.split(' ')
         let line = ''
         const maxWidth = columnWidth - 60
-        const lineHeight = 24
+        const lineHeight = 30 // INCREASED from 24 to 30 - MORE LINE SPACING
 
         for (const word of words) {
           const testLine = line + word + ' '
@@ -1470,11 +1470,11 @@ async function generateProfessionalPNG() {
 
         if (line.trim()) {
           ctx.fillText(line.trim(), x + 40, localY)
-          localY += lineHeight + 16
+          localY += lineHeight + 20 // INCREASED spacing after notes
         }
       }
 
-      return localY + 30 // Return final Y position with spacing
+      return localY + 35 // INCREASED final spacing
     }
 
     // RENDER LEFT COLUMN (teeth 1-5) - WHATEVER TEETH THEY ARE
