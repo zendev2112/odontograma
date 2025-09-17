@@ -1152,7 +1152,7 @@ async function generateProfessionalPNG() {
       scaledWidth,
       scaledHeight
     )
-    currentY += scaledHeight + 20
+    currentY += scaledHeight - 10
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
