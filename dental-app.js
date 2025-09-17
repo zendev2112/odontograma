@@ -1443,17 +1443,17 @@ async function generateProfessionalPNG() {
       // NOTES
       if (tooth.note) {
         ctx.fillStyle = '#34495e'
-        ctx.font = 'bold 16px Arial'
+        ctx.font = 'bold 24px Arial'
         ctx.fillText('Notas:', x + 20, localY)
         localY += 25
 
         // Word wrap notes
         ctx.fillStyle = '#34495e'
-        ctx.font = '18px Arial'
+        ctx.font = '24px Arial'
         const words = tooth.note.split(' ')
         let line = ''
         const maxWidth = columnWidth - 60
-        const lineHeight = 22
+        const lineHeight = 24
 
         for (const word of words) {
           const testLine = line + word + ' '
@@ -1470,7 +1470,7 @@ async function generateProfessionalPNG() {
 
         if (line.trim()) {
           ctx.fillText(line.trim(), x + 40, localY)
-          localY += lineHeight + 14
+          localY += lineHeight + 16
         }
       }
 
