@@ -266,7 +266,19 @@ export default async function handler(req, res) {
 
       // Format ONLY current data without timestamp header
       latestNoteText += `PACIENTE: ${parsedData.nombre}\n`
-      latestNoteText += `FECHA: ${parsedData.fecha}\n\n`
+
+      // LATIN DATE FORMAT: DD-MM-YYYY
+      const now = new Date()
+      const latinDate = now
+        .toLocaleDateString('es-AR', {
+          timeZone: 'America/Argentina/Buenos_Aires',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+        .replace(/\//g, '-') // Replace slashes with dashes
+
+      latestNoteText += `FECHA: ${latinDate}\n\n`
 
       if (parsedData.piezas && parsedData.piezas.length > 0) {
         latestNoteText += `TRATAMIENTOS Y NOTAS:\n\n`
