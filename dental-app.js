@@ -1152,12 +1152,12 @@ async function generateProfessionalPNG() {
       scaledWidth,
       scaledHeight
     )
-    currentY += scaledHeight - 60
+    currentY += scaledHeight + 40
 
     // TREATMENTS AND NOTES SECTION - 2 COLUMNS, MAX 10 TEETH
     ctx.fillStyle = '#2c3e50'
     ctx.font = 'bold 32px Arial'
-    ctx.textAlign = 'left'
+    ctx.textAlign = 'center'
     ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
 
     // Underline for section
@@ -1167,7 +1167,7 @@ async function generateProfessionalPNG() {
     ctx.moveTo(80, currentY + 8)
     ctx.lineTo(700, currentY + 8)
     ctx.stroke()
-    currentY += 15
+    currentY += 35
 
     // COLLECT ALL TEETH WITH TREATMENTS/NOTES - ANY TEETH, LIMIT TO 10
     const teethWithData = []
@@ -1449,11 +1449,11 @@ async function generateProfessionalPNG() {
 
         // Word wrap notes
         ctx.fillStyle = '#34495e'
-        ctx.font = '14px Arial'
+        ctx.font = '18px Arial'
         const words = tooth.note.split(' ')
         let line = ''
         const maxWidth = columnWidth - 60
-        const lineHeight = 18
+        const lineHeight = 22
 
         for (const word of words) {
           const testLine = line + word + ' '
@@ -1470,7 +1470,7 @@ async function generateProfessionalPNG() {
 
         if (line.trim()) {
           ctx.fillText(line.trim(), x + 40, localY)
-          localY += lineHeight + 10
+          localY += lineHeight + 14
         }
       }
 
