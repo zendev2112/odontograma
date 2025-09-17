@@ -1061,8 +1061,8 @@ async function generateProfessionalPNG() {
     const ctx = canvas.getContext('2d')
 
     // A4 proportions at high resolution
-    canvas.width = 1200
-    canvas.height = 1600
+    canvas.width = 1600
+    canvas.height = 2000
 
     // Clinical white background
     ctx.fillStyle = '#FFFFFF'
@@ -1072,24 +1072,24 @@ async function generateProfessionalPNG() {
 
     // PROFESSIONAL HEADER
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 36px Arial'
+    ctx.font = 'bold 48px Arial'
     ctx.textAlign = 'center'
-    ctx.fillText('FICHA ODONTOLÓGICA', canvas.width / 2, currentY)
+    ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
     currentY += 50
 
     // Patient info section
     ctx.fillStyle = '#34495e'
-    ctx.font = '20px Arial'
+    ctx.font = '28px Arial'
     ctx.textAlign = 'left'
 
     // Patient name box with actual name from Airtable
     ctx.strokeStyle = '#bdc3c7'
-    ctx.lineWidth = 2
-    ctx.strokeRect(60, currentY, canvas.width - 120, 40)
+    ctx.lineWidth = 3
+    ctx.strokeRect(60, currentY, canvas.width - 120, 60)
 
     // Format patient name to fit in the box
     const maxNameWidth = canvas.width - 200
-    ctx.font = '20px Arial'
+    ctx.font = '28px Arial'
     let displayName = patientName.toUpperCase()
 
     // Truncate if too long to fit
@@ -1105,14 +1105,14 @@ async function generateProfessionalPNG() {
     }
 
     // Display actual patient name
-    ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 28)
-    currentY += 60
+    ctx.fillText(`PACIENTE: ${displayName}`, 80, currentY + 38)
+    currentY += 80
 
     // Date and professional info
     const currentDate = new Date().toLocaleDateString('es-ES')
-    ctx.font = '18px Arial'
+    ctx.font = '24px Arial'
     ctx.fillText(`FECHA: ${currentDate}`, 80, currentY)
-    currentY += 40
+    currentY += 50
 
     // Professional header line
     ctx.strokeStyle = '#3498db'
@@ -1122,13 +1122,6 @@ async function generateProfessionalPNG() {
     ctx.lineTo(canvas.width - 60, currentY)
     ctx.stroke()
     currentY += 40
-
-    // ODONTOGRAM SECTION - BIGGER SIZE FOR BETTER READABILITY
-    ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 20px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillText('ODONTOGRAMA', canvas.width / 2, currentY)
-    currentY += 20
 
     // Get odontogram and scale bigger for better reading
     const odontogramDataURL = $('#odontogram').odontogram('getDataURL')
@@ -1140,8 +1133,8 @@ async function generateProfessionalPNG() {
     })
 
     // INCREASED CONTAINER SIZE FOR BETTER READABILITY
-    const maxOdontogramWidth = canvas.width - 120
-    const maxOdontogramHeight = 350
+    const maxOdontogramWidth = canvas.width - 80
+    const maxOdontogramHeight = 500
 
     const scaleX = maxOdontogramWidth / odontogramImg.naturalWidth
     const scaleY = maxOdontogramHeight / odontogramImg.naturalHeight
@@ -1159,22 +1152,22 @@ async function generateProfessionalPNG() {
       scaledWidth,
       scaledHeight
     )
-    currentY += scaledHeight + 40
+    currentY += scaledHeight + 50
 
     // TREATMENTS AND NOTES SECTION - MATCHING HTML FORMAT
     ctx.fillStyle = '#2c3e50'
-    ctx.font = 'bold 22px Arial'
+    ctx.font = 'bold 32px Arial'
     ctx.textAlign = 'left'
     ctx.fillText('TRATAMIENTOS Y OBSERVACIONES', 80, currentY)
 
     // Underline for section
     ctx.strokeStyle = '#3498db'
-    ctx.lineWidth = 2
+    ctx.lineWidth = 3
     ctx.beginPath()
     ctx.moveTo(80, currentY + 5)
-    ctx.lineTo(550, currentY + 5)
+    ctx.lineTo(700, currentY + 5)
     ctx.stroke()
-    currentY += 40
+    currentY += 50
 
     // Process each tooth with treatments and notes - MATCHING HTML STRUCTURE
     for (const [key, treatments] of Object.entries(currentGeometry)) {
@@ -1195,9 +1188,9 @@ async function generateProfessionalPNG() {
 
           // TOOTH HEADER - MATCHING HTML
           ctx.fillStyle = '#2c3e50'
-          ctx.font = 'bold 18px Arial'
+          ctx.font = 'bold 24px Arial'
           ctx.fillText(`Pieza: ${toothNum} - ${toothName}`, 100, currentY)
-          currentY += 30
+          currentY += 40
 
           // Group treatments by surface for proper display - MATCHING HTML LOGIC
           function groupTreatmentsBySurface(treatmentList) {
@@ -1294,7 +1287,7 @@ async function generateProfessionalPNG() {
             ctx.fillStyle = '#34495e'
             ctx.font = 'bold 16px Arial'
             ctx.fillText('Condiciones:', 120, currentY)
-            currentY += 25
+            currentY += 35
 
             const groupedConditions =
               groupTreatmentsBySurface(conditionTreatments)
@@ -1306,15 +1299,15 @@ async function generateProfessionalPNG() {
               }
 
               ctx.fillStyle = '#34495e'
-              ctx.font = '14px Arial'
+              ctx.font = '18px Arial'
               ctx.fillText(
                 `• ${condition.name}${surfaceDisplay}`,
                 140,
                 currentY
               )
-              currentY += 20
+              currentY += 25
             })
-            currentY += 10
+            currentY += 15
           }
 
           // PRESTACIONES SECTION - MATCHING HTML STRUCTURE
@@ -1361,9 +1354,9 @@ async function generateProfessionalPNG() {
             // PRESTACIONES PREEXISTENTES - MATCHING HTML
             if (preExistentes.length > 0) {
               ctx.fillStyle = '#FF0000'
-              ctx.font = 'bold 16px Arial'
+              ctx.font = 'bold 22px Arial'
               ctx.fillText('Prestaciones Preexistentes:', 120, currentY)
-              currentY += 25
+              currentY += 35
 
               const groupedPreExistentes =
                 groupTreatmentsBySurface(preExistentes)
@@ -1377,15 +1370,15 @@ async function generateProfessionalPNG() {
                 }
 
                 ctx.fillStyle = '#FF0000'
-                ctx.font = '14px Arial'
+                ctx.font = '18px Arial'
                 ctx.fillText(
                   `• ${prestacion.name}${surfaceDisplay}`,
                   140,
                   currentY
                 )
-                currentY += 20
+                currentY += 25
               })
-              currentY += 10
+              currentY += 15
             }
 
             // PRESTACIONES REQUERIDAS - MATCHING HTML
@@ -1393,7 +1386,7 @@ async function generateProfessionalPNG() {
               ctx.fillStyle = '#0066FF'
               ctx.font = 'bold 16px Arial'
               ctx.fillText('Prestaciones Requeridas:', 120, currentY)
-              currentY += 25
+              currentY += 35
 
               const groupedRequeridas = groupTreatmentsBySurface(requeridas)
 
@@ -1406,15 +1399,15 @@ async function generateProfessionalPNG() {
                 }
 
                 ctx.fillStyle = '#0066FF'
-                ctx.font = '14px Arial'
+                ctx.font = '18px Arial'
                 ctx.fillText(
                   `• ${prestacion.name}${surfaceDisplay}`,
                   140,
                   currentY
                 )
-                currentY += 20
+                currentY += 25
               })
-              currentY += 10
+              currentY += 15
             }
           }
 
@@ -1422,17 +1415,17 @@ async function generateProfessionalPNG() {
           const existingNote = toothNotes[toothNum]
           if (existingNote && existingNote.trim()) {
             ctx.fillStyle = '#34495e'
-            ctx.font = 'bold 16px Arial'
+            ctx.font = 'bold 22px Arial'
             ctx.fillText('Notas:', 120, currentY)
-            currentY += 25
+            currentY += 35
 
             // Format notes text with word wrapping - MATCHING HTML DISPLAY
             ctx.fillStyle = '#34495e'
-            ctx.font = '14px Arial'
+            ctx.font = '18px Arial'
             const words = existingNote.trim().split(' ')
             let line = ''
-            const maxWidth = 1000
-            const lineHeight = 18
+            const maxWidth = 1300
+            const lineHeight = 24
 
             for (const word of words) {
               const testLine = line + word + ' '
