@@ -1109,10 +1109,11 @@ async function generateProfessionalPNG() {
     currentY += 80
 
     // Date and professional info
-    const currentDate = new Date().toLocaleDateString('es-ES')
-    ctx.font = '24px Arial'
-    ctx.fillText(`FECHA: ${currentDate}`, 80, currentY)
-    currentY += 50
+const currentDate = new Date().toLocaleDateString('es-ES')
+const currentTime = new Date().toLocaleTimeString('es-ES', { hour12: false })
+ctx.font = '24px Arial'
+ctx.fillText(`FECHA: ${currentDate} - HORA: ${currentTime}`, 80, currentY)
+currentY += 50
 
     // Professional header line
     ctx.strokeStyle = '#3498db'
@@ -1203,15 +1204,15 @@ async function generateProfessionalPNG() {
     }
 
     // NO SORTING - TAKE FIRST 10 TEETH AS THEY COME
-    const limitedTeeth = teethWithData.slice(0, 10)
+    const limitedTeeth = teethWithData.slice(0, 8)
 
     console.log(
       `📋 Processing first ${limitedTeeth.length} teeth for PNG (max 10)`
     )
 
     // 2-COLUMN LAYOUT: 5 teeth per column
-    const leftColumnTeeth = limitedTeeth.slice(0, 5) // Teeth 1-5
-    const rightColumnTeeth = limitedTeeth.slice(5, 10) // Teeth 6-10
+    const leftColumnTeeth = limitedTeeth.slice(0, 4) // Teeth 1-5
+    const rightColumnTeeth = limitedTeeth.slice(4, 8) // Teeth 6-10
 
     const startY = currentY
     const leftColumnX = 80
