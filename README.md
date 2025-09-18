@@ -1,203 +1,33 @@
-# jquery-odontogram plugin
+# Dental Odontogram — Clinical Charting Web App
 
-Easy to use jQuery plugin for creating Odontogram using HTML5 Canvas.
+Lightweight clinical odontogram web application for dental charting and documentation.  
+Supports per‑tooth annotations, dual annotation layers, JSON export and professional A4‑style PNG report generation.
 
-Example
------
-![Example 1](1.gif)
-![Example 2](2.gif)
-![Example 3](3.gif)
+## Key features
 
-Usage
------
-Initialize Odontogram, make sure the element is a Canvas.
-```js
-$("#odontogram-canvas").odontogram({
-	width: "900px",
-	height: "420px"
-});
-```
+- Dual annotation layers: Pre‑existente (red) and Requerido (blue)
+- Surface‑aware treatments (FDI‑based anatomical mapping).FDI‑based anatomical mapping maps canvas positions (top/bottom/left/right/middle) to dental surfaces (vestibular, palatina/lingual, mesial, distal, oclusal/incisal) according to the tooth's FDI quadrant so mesial/distal orientation is correct.
+- Per‑tooth notes with auto‑save and manual save/clear
+- Export structured JSON (fecha, nombre, piezas)
+- Generate A4 PNG report (odontogram + treatments + notes)
+- Backend upload hook: POST to /api/upload-odontogram (PNG + JSON)
 
-Set to Default mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_DEFAULT);
-```
+## Quick start
 
-Set to Delete mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_HAPUS);
-```
+1. Ensure project files are served from a web server (e.g. python3 -m http.server).
+2. Open the app in a browser (http://localhost:8000).
+3. Verify dientes_fdi_completo.json is available next to the app.
+4. Use the UI to mark treatments, add notes, export JSON or generate the PNG.
 
-Set to AMF mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_AMF);
-```
+## Notes & configuration
 
-Set to AMF mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_AMF);
-```
+- PNG teeth limit, column layout, fonts and odontogram scale are configurable inside generateProfessionalPNG() in dental-app.js.
+- Patient name is read from the DOM or URL (recordId / id) for uploads.
+- Review and implement the backend endpoint /api/upload-odontogram to handle file + JSON.
 
-Set to COF mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_COF);
-```
+## Attribution
 
-Set to FIS mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_FIS);
-```
+This project extends and is based on the jQuery odontogram plugin by Adhiana46:  
+https://github.com/Adhiana46/jquery-odontogram
 
-Set to NVT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_NVT);
-```
-
-Set to RCT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_RCT);
-```
-
-Set to NON mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_NON);
-```
-
-Set to UNE mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_UNE);
-```
-
-Set to PRE mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_PRE);
-```
-
-Set to ANO mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ANO);
-```
-
-Set to CARIES mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_CARIES);
-```
-
-Set to CFR mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_CFR);
-```
-
-Set to FMC mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_FMC);
-```
-
-Set to POC mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_POC);
-```
-
-Set to RRX mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_RRX);
-```
-
-Set to MIS mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_MIS);
-```
-
-Set to IPX mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_IPX);
-```
-
-Set to FRM_ACR mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_FRM_ACR);
-```
-
-Set to BRIDGE mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_BRIDGE);
-```
-
-Set to ARROW_TOP_LEFT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_TOP_LEFT);
-```
-
-Set to ARROW_TOP_RIGHT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_TOP_RIGHT);
-```
-
-Set to ARROW_TOP_TURN_LEFT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_TOP_TURN_LEFT);
-```
-
-Set to ARROW_TOP_TURN_RIGHT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_TOP_TURN_RIGHT);
-```
-
-Set to ARROW_BOTTOM_LEFT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_BOTTOM_LEFT);
-```
-
-Set to ARROW_BOTTOM_RIGHT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_BOTTOM_RIGHT);
-```
-
-Set to ARROW_BOTTOM_TURN_LEFT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_LEFT);
-```
-
-Set to ARROW_BOTTOM_TURN_RIGHT mode.
-```js
-$("#odontogram-canvas").odontogram('setMode', ODONTOGRAM_MODE_ARROW_BOTTOM_TURN_RIGHT);
-```
-
-Event listener for get all the position with the procedure name (code)
-```js
-$('#odontogram').on('change', function (_, geometry) {
-	console.log(geometry)
-})
-```
-
-Set data by Position and Procedure Name (code).
-```js
-$("#odontogram-canvas").data('odontogram').setGeometryByPos([
-	{ code: 'AMF', pos: '18-R' },
-	{ code: 'AMF', pos: '18-L' },
-	{ code: 'CARIES', pos: '83-M' },
-	{ code: 'POC', pos: '84' },
-]);
-```
-or
-```js
-var odontogram = $("#odontogram-canvas").odontogram('init', {
-	width: "900px",
-	height: "420px"
-});
-odontogram.setGeometryByPos([
-	{ code: 'AMF', pos: '18-R' },
-	{ code: 'AMF', pos: '18-L' },
-	{ code: 'CARIES', pos: '83-M' },
-	{ code: 'POC', pos: '84' },
-]);
-```
-
-
-Contribute
-----
-If you like the project please support with your contribution.
-
-[Donate on Paypal](https://www.paypal.me/adhiana46)
-
-Thank you and Happy Coding :)
+Please review the original repository license before redistribution.
